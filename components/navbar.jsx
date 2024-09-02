@@ -28,6 +28,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import ConnectWallet from "./connect-wallet";
+import { FaGasPump } from "react-icons/fa6";
 
 export function Navbar() {
   return (
@@ -38,41 +39,24 @@ export function Navbar() {
           className="flex items-center gap-2 hover:text-primary transition-colors"
           prefetch={false}
         >
-          <SwatchBookIcon className="h-6 w-6" />
-          <span className="text-lg font-semibold">Uniswap</span>
+          <FaGasPump className="h-6 w-6" />
+          <span className="text-lg font-semibold">pump.it</span>
         </Link>
-        <nav className="flex items-center gap-6">
-          <Link
-            href="/create"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            prefetch={false}
-          >
-            Create
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            prefetch={false}
-          >
-            1
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            prefetch={false}
-          >
-            2
-          </Link>
-          <Link
-            href="#"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            prefetch={false}
-          >
-            3
-          </Link>
-        </nav>
       </div>
       <div className="flex items-center gap-4">
+        <Link
+          href="/create"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          prefetch={false}
+        >
+          <Button
+            variant="outline"
+            size="sm"
+            className="hidden sm:inline-flex hover:bg-primary hover:text-primary-foreground transition-colors"
+          >
+            Create
+          </Button>
+        </Link>
         <ConnectWallet />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -120,28 +104,6 @@ function SettingsIcon(props) {
     >
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
-    </svg>
-  );
-}
-
-function SwatchBookIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M11 17a4 4 0 0 1-8 0V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2Z" />
-      <path d="M16.7 13H19a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2H7" />
-      <path d="M 7 17h0.01" />
-      <path d="m11 8 2.3-2.3a2.4 2.4 0 0 1 3.404.004L18.6 7.6a2.4 2.4 0 0 1 .026 3.434L9.9 19.8" />
     </svg>
   );
 }
