@@ -24,30 +24,34 @@ import Link from "next/link";
 export function TokenCard() {
   return (
     <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full">
-      <div className="flex items-center justify-between px-6 py-4 border-b">
-        <div className="flex items-center gap-4">
-          <img
-            src="/placeholder.svg"
-            alt="Token Logo"
-            className="w-10 h-10 rounded-full"
-            width="40"
-            height="40"
-            style={{ aspectRatio: "40/40", objectFit: "cover" }}
-          />
-          <div className="overflow-hidden">
-            <h3 className="text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300">
-              Uniswap
-            </h3>
-            <p className="text-sm text-muted-foreground">UNI</p>
+      <Link href="/token-page" prefetch={false}>
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <div className="flex items-center gap-4">
+            <img
+              src="/placeholder.svg"
+              alt="Token Logo"
+              className="w-10 h-10 rounded-full"
+              width="40"
+              height="40"
+              style={{ aspectRatio: "40/40", objectFit: "cover" }}
+            />
+            <div className="overflow-hidden">
+              <h3 className="text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300">
+                Uniswap
+              </h3>
+              <p className="text-sm text-muted-foreground">UNI</p>
+            </div>
           </div>
+          <div className="text-sm text-muted-foreground mt-2">$1.23B</div>
         </div>
-        <div className="text-sm text-muted-foreground mt-2">$1.23B</div>
-      </div>
-      <div className="p-6">
-        <p className="text-muted-foreground">
-          Uniswap is a decentralized exchange (DEX) that allows for peer-to-peer
-          cryptocurrency trading without a central authority.
-        </p>
+        <div className="p-6">
+          <p className="text-muted-foreground">
+            Uniswap is a decentralized exchange (DEX) that allows for
+            peer-to-peer cryptocurrency trading without a central authority.
+          </p>
+        </div>
+      </Link>
+      <div className="px-6 pb-6">
         <div className="flex items-center gap-4 mt-4">
           <Link
             href="#"
