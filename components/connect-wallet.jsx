@@ -34,7 +34,7 @@ const ConnectWallet = () => {
       <Button
         variant="outline"
         size="sm"
-        className="hidden sm:inline-flex hover:bg-primary hover:text-primary-foreground transition-colors"
+        className="sm:inline-flex hover:bg-primary hover:text-primary-foreground transition-colors"
         onClick={connectWallet}
       >
         {account ? shortenAddress(account) : "Connect Wallet"}
