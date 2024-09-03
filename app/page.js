@@ -1,13 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TokenCard } from "@/components/token-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { getRecentTokens } from "@/lib/factory";
 
 export default function Home() {
-  const numberOfTokenCards = 12;
   const [searchQuery, setSearchQuery] = useState("");
+  const [recentTokens, setRecentTokens] = useState([]);
+
+  // Fetch recent tokens on component mount
+  useEffect(() => {
+    async function fetchTokens() {
+      try {
+        const tokens = await getRecentTokens();
+        setRecentTokens(tokens);
+      } catch (err) {
+        console.error("Error fetching recent tokens:", err);
+      }
+    }
+
+    fetchTokens();
+  }, []);
+
+  // Filter tokens based on the search query
+  const filteredTokens = recentTokens.filter((token) =>
+    token.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="container mx-auto px-8 py-16">
@@ -34,9 +54,9 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-10 justify-items-center">
-        {[...Array(numberOfTokenCards)].map((_, index) => (
+        {filteredTokens.map((token, index) => (
           <div key={index} className="w-full max-w-lg">
-            <TokenCard />
+            <TokenCard tokenAddress={token} />
           </div>
         ))}
       </div>

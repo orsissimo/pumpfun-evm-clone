@@ -21,10 +21,10 @@ To read more about using these font, please visit the Next.js documentation:
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
 
-export function TokenCard() {
+export const TokenCard = ({ tokenAddress }) => {
   return (
     <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full">
-      <Link href="/token-page" prefetch={false}>
+      <Link href={`/${tokenAddress}`} prefetch={false}>
         <div className="flex items-center justify-between px-6 py-4 border-b">
           <div className="flex items-center gap-4">
             <img
@@ -78,7 +78,7 @@ export function TokenCard() {
       </div>
     </Card>
   );
-}
+};
 
 function GlobeIcon(props) {
   return (
