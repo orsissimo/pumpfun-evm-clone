@@ -97,7 +97,7 @@ export function TokenCard({
           <div className="flex items-center gap-2">
             {/* Display the token address */}
             <Link
-              className="text-sm text-muted-foreground cursor-pointer hover:underline"
+              className="text-sm text-muted-foreground cursor-pointer text-blue-500 hover:underline"
               href={`https://basescan.org/address//${tokenAddress}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -113,7 +113,7 @@ export function TokenCard({
                 toast("Token address copied to clipboard!");
               }}
             >
-              <CopyIcon className="w-5 h-5" />
+              <CopyIcon className="w-5 h-5 text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
           </div>

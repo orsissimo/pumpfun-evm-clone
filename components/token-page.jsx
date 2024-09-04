@@ -25,12 +25,17 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 import { buyToken, sellToken } from "@/lib/factory";
-import { getEtherBalance, getTokenBalance } from "@/lib/fetch";
+import {
+  fetchTokenBuysAndSells,
+  getEtherBalance,
+  getTokenBalance,
+} from "@/lib/fetch";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [ethBalance, setEthBalance] = useState(0);
+  const [transactions, setTransactions] = useState([]);
 
   const {
     name,
@@ -43,7 +48,7 @@ export function TokenPage({ tokenData }) {
     address,
   } = tokenData;
 
-  console.log(tokenData);
+  //console.log(tokenData);
 
   const handleBuyToken = () => {
     // Validate required fields
@@ -91,6 +96,19 @@ export function TokenPage({ tokenData }) {
   const handleMaxEth = () => {
     setAmount(Number(ethBalance).toFixed(4));
   };
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const fetchedTransactions = await fetchTokenBuysAndSells(address); // Replace with your function to fetch transactions
+        setTransactions(fetchedTransactions);
+      } catch (error) {
+        console.error("Failed to fetch transactions", error);
+      }
+    };
+
+    fetchTransactions();
+  }, [address]);
 
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -152,7 +170,7 @@ export function TokenPage({ tokenData }) {
           {/* Right side with token address and copy button */}
           <div className="flex items-center gap-2">
             <Link
-              className="text-sm text-muted-foreground cursor-pointer hover:underline"
+              className="text-sm text-muted-foreground cursor-pointer text-blue-500 hover:underline"
               href={`https://basescan.org/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -168,7 +186,7 @@ export function TokenPage({ tokenData }) {
                 toast("Token address copied to clipboard!");
               }}
             >
-              <CopyIcon className="w-5 h-5" />
+              <CopyIcon className="w-5 h-5 text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
           </div>
@@ -212,7 +230,10 @@ export function TokenPage({ tokenData }) {
                     </div>
                     {/* Display fetched token balance */}
                     <div className="font-bold">
-                      {Number(tokenBalance).toFixed(2)} {symbol}
+                      {Number(Number(tokenBalance).toFixed(2))
+                        .toLocaleString("en-US")
+                        .replace(/,/g, "'")}{" "}
+                      {symbol}
                     </div>
                   </div>
                   <div className="grid gap-2">
@@ -229,7 +250,10 @@ export function TokenPage({ tokenData }) {
                     </div>
                     {/* Display fetched ETH balance */}
                     <div className="font-bold">
-                      {Number(ethBalance).toFixed(4)} ETH
+                      {Number(Number(ethBalance).toFixed(4))
+                        .toLocaleString("en-US")
+                        .replace(/,/g, "'")}{" "}
+                      ETH
                     </div>
                   </div>
                 </div>
@@ -289,54 +313,81 @@ export function TokenPage({ tokenData }) {
                 <TableRow>
                   <TableHead>Time</TableHead>
                   <TableHead>Type</TableHead>
-                  <TableHead>$ACM</TableHead>
+                  <TableHead>{symbol}</TableHead>
                   <TableHead>For</TableHead>
                   <TableHead>USD</TableHead>
                   <TableHead>Wallet</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {/* Replace with dynamic transaction data */}
-                <TableRow>
-                  <TableCell>2023-04-01</TableCell>
-                  <TableCell className="text-green-500">Buy</TableCell>
-                  <TableCell>10.5</TableCell>
-                  <TableCell>1.16 ETH</TableCell>
-                  <TableCell>$26.25</TableCell>
-                  <TableCell>0xD1Fa...0cB7</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2023-04-02</TableCell>
-                  <TableCell className="text-red-500">Sell</TableCell>
-                  <TableCell>5.0</TableCell>
-                  <TableCell>2991.04 USDT</TableCell>
-                  <TableCell>$15.00</TableCell>
-                  <TableCell>0xD1Fa...0cB7</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2023-04-03</TableCell>
-                  <TableCell className="text-green-500">Buy</TableCell>
-                  <TableCell>15.0</TableCell>
-                  <TableCell>1.50 ETH</TableCell>
-                  <TableCell>$41.25</TableCell>
-                  <TableCell>0xD1Fa...0cB7</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2023-04-04</TableCell>
-                  <TableCell className="text-red-500">Sell</TableCell>
-                  <TableCell>8.0</TableCell>
-                  <TableCell>2600.00 USDT</TableCell>
-                  <TableCell>$26.00</TableCell>
-                  <TableCell>0xD1Fa...0cB7</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>2023-04-05</TableCell>
-                  <TableCell className="text-green-500">Buy</TableCell>
-                  <TableCell>12.0</TableCell>
-                  <TableCell>1.20 ETH</TableCell>
-                  <TableCell>$34.80</TableCell>
-                  <TableCell>0xD1Fa...0cB7</TableCell>
-                </TableRow>
+                {transactions.length > 0 ? (
+                  transactions.map((tx, index) => (
+                    <TableRow key={index}>
+                      {/* Time Column */}
+                      <TableCell>
+                        {new Date(tx.timestamp).toLocaleString()}
+                      </TableCell>
+
+                      {/* Event Type Column */}
+                      <TableCell
+                        className={
+                          tx.eventType === "TokenPurchased"
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }
+                      >
+                        {tx.eventType === "TokenPurchased" ? "Buy" : "Sell"}
+                      </TableCell>
+
+                      {/* Token Amount (Divided by 10^18) */}
+                      <TableCell>
+                        {(
+                          Number(tx.tokensBought || tx.tokensSold) /
+                          10 ** 18
+                        ).toFixed(2)}
+                      </TableCell>
+
+                      {/* ETH Amount (Divided by 10^18) */}
+                      <TableCell>
+                        {(
+                          Number(tx.ethSpent || tx.ethReceived) /
+                          10 ** 18
+                        ).toFixed(4)}{" "}
+                        ETH
+                      </TableCell>
+
+                      {/* USD Amount */}
+                      <TableCell>
+                        $
+                        {(
+                          ((Number(tx.ethSpent || tx.ethReceived) / 10 ** 18) *
+                            Number(tx.pricePerToken)) /
+                          10 ** 18
+                        ).toFixed(2)}
+                      </TableCell>
+
+                      {/* Wallet Address (Formatted and Clickable) */}
+                      <TableCell>
+                        <a
+                          href={`https://basescan.org/address/${
+                            tx.buyer || tx.seller
+                          }`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline"
+                        >
+                          {`${(tx.buyer || tx.seller).slice(0, 6)}...${(
+                            tx.buyer || tx.seller
+                          ).slice(-4)}`}
+                        </a>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={6}>No transactions found.</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </CardContent>
@@ -352,7 +403,7 @@ export function TokenPage({ tokenData }) {
             <div className="h-full overflow-y-auto scrollbar-hide pr-4">
               <div className="flex flex-col gap-2">
                 {[...Array(10)].map((_, index) => (
-                  <>
+                  <div key={`message-${index}`}>
                     <div
                       key={`other-${index}`}
                       className="flex items-start gap-4 mt-4"
@@ -389,7 +440,7 @@ export function TokenPage({ tokenData }) {
                         <AvatarFallback>YO</AvatarFallback>
                       </Avatar>
                     </div>
-                  </>
+                  </div>
                 ))}
               </div>
             </div>
@@ -422,7 +473,7 @@ export function TokenPage({ tokenData }) {
               <div className="grid gap-2">
                 {[...Array(20)].map((_, index) => (
                   <div
-                    key={index}
+                    key={`holder-${index}`}
                     className="flex items-center justify-between mt-4"
                   >
                     <div className="flex items-center gap-2">
