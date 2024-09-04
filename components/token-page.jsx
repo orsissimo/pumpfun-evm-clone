@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -25,10 +25,12 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
 import { buyToken, sellToken } from "@/lib/factory";
+import { getEtherBalance, getTokenBalance } from "@/lib/fetch";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [tokenBalance, setTokenBalance] = useState(0);
+  const [ethBalance, setEthBalance] = useState(0);
 
   const {
     name,
@@ -61,6 +63,33 @@ export function TokenPage({ tokenData }) {
     }
     // Call createToken function from your factory
     sellToken(amount, address);
+  };
+
+  // Fetch balances when component mounts
+  useEffect(() => {
+    const fetchBalances = async () => {
+      try {
+        const fetchedTokenBalance = await getTokenBalance(address); // Fetch token balance
+        const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
+
+        setTokenBalance(fetchedTokenBalance);
+        setEthBalance(fetchedEthBalance);
+      } catch (error) {
+        console.error("Failed to fetch balances", error);
+      }
+    };
+
+    fetchBalances();
+  }, [address]); // Run when tokenAddress changes
+
+  // Handler to set the max token balance to the input field
+  const handleMaxToken = () => {
+    setAmount(Number(tokenBalance).toFixed(0));
+  };
+
+  // Handler to set the max ETH balance to the input field
+  const handleMaxEth = () => {
+    setAmount(Number(ethBalance).toFixed(4));
   };
 
   // Format the token address for display (e.g., "0x1234...5678")
@@ -150,7 +179,7 @@ export function TokenPage({ tokenData }) {
         </div>
       </div>
       <div className="flex flex-col gap-8 h-full">
-        <Card className="flex flex-col h-[280px]">
+        <Card className="flex flex-col h-[350px]">
           <CardHeader className="border-b">
             <CardTitle>Buy / Sell</CardTitle>
           </CardHeader>
@@ -168,6 +197,42 @@ export function TokenPage({ tokenData }) {
                     onChange={(e) => setAmount(e.target.value)}
                   />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="grid gap-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="balance">{symbol} Balance</Label>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMaxToken}
+                      >
+                        <ArrowUpIcon className="h-4 w-4" />
+                        <span className="sr-only">Use max</span>
+                      </Button>
+                    </div>
+                    {/* Display fetched token balance */}
+                    <div className="font-bold">
+                      {Number(tokenBalance).toFixed(2)} {symbol}
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="eth-balance">ETH Balance</Label>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMaxEth}
+                      >
+                        <ArrowUpIcon className="h-4 w-4" />
+                        <span className="sr-only">Use max</span>
+                      </Button>
+                    </div>
+                    {/* Display fetched ETH balance */}
+                    <div className="font-bold">
+                      {Number(ethBalance).toFixed(4)} ETH
+                    </div>
+                  </div>
+                </div>
                 <div className="flex gap-4 w-full">
                   <Button className="flex-1" onClick={handleBuyToken}>
                     Buy
@@ -184,7 +249,7 @@ export function TokenPage({ tokenData }) {
             </div>
           </CardContent>
         </Card>
-        <Card className="flex flex-col h-[280px]">
+        <Card className="flex flex-col h-[250px]">
           <CardHeader className="border-b">
             <CardTitle>Token Stats</CardTitle>
           </CardHeader>
