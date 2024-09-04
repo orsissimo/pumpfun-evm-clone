@@ -44,6 +44,9 @@ export function TokenCard({
               <p className="text-sm text-muted-foreground">{symbol}</p>
             </div>
           </div>
+          <div className="text-md opacity-60 text-muted-foreground mt-2">
+            $1.23B
+          </div>
         </div>
         <div className="p-6 h-16 overflow-y-auto scrollbar-hide">
           <p className="text-muted-foreground">
