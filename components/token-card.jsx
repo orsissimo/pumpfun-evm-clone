@@ -30,7 +30,7 @@ export function TokenCard({
             <Image
               src={displayedImageUrl} // Use provided image or fallback
               alt="Token Logo"
-              className="w-[100px] h-[100px] rounded-full"
+              className="w-[80px] h-[80px] rounded-full"
               width="70"
               height="70"
               style={{ objectFit: "cover" }}
@@ -45,9 +45,8 @@ export function TokenCard({
             </div>
           </div>
         </div>
-        <div className="p-6 h-24 overflow-y-auto scrollbar-hide">
+        <div className="p-6 h-16 overflow-y-auto scrollbar-hide">
           <p className="text-muted-foreground">
-            {/* Use the provided description or a default message */}
             {description
               ? description
               : `This is a decentralized token named ${name} with the symbol ${symbol}.`}
