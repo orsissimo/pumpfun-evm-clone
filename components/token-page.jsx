@@ -46,8 +46,15 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "react-toastify";
 
 export function TokenPage() {
+  const tokenAddress = "0x947fd87ec69e47c451f1a0348c0fa7f81166908b";
+  // Format the token address for display (e.g., "0x1234...5678")
+  const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
+    -4
+  )}`;
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div>
@@ -69,29 +76,58 @@ export function TokenPage() {
           Acme Token is a decentralized cryptocurrency that powers the Acme
           ecosystem. It is used for transactions, governance, and staking.
         </p>
-        <div className="flex items-center gap-4 mb-6">
-          <Link
-            href="#"
-            className="text-muted-foreground hover:text-primary transition"
-            prefetch={false}
-          >
-            <GlobeIcon className="h-5 w-5" />
-          </Link>
-          <Link
-            href="#"
-            className="text-muted-foreground hover:text-primary transition"
-            prefetch={false}
-          >
-            <TwitterIcon className="h-5 w-5" />
-          </Link>
-          <Link
-            href="#"
-            className="text-muted-foreground hover:text-primary transition"
-            prefetch={false}
-          >
-            <TextIcon className="h-5 w-5" />
-          </Link>
+
+        <div className="flex items-center justify-between mb-6">
+          {/* Left side with icons */}
+          <div className="flex items-center gap-4">
+            <Link
+              href="#"
+              className="text-muted-foreground hover:text-primary transition"
+              prefetch={false}
+            >
+              <GlobeIcon className="h-5 w-5" />
+            </Link>
+            <Link
+              href="#"
+              className="text-muted-foreground hover:text-primary transition"
+              prefetch={false}
+            >
+              <TwitterIcon className="h-5 w-5" />
+            </Link>
+            <Link
+              href="#"
+              className="text-muted-foreground hover:text-primary transition"
+              prefetch={false}
+            >
+              <TextIcon className="h-5 w-5" />
+            </Link>
+          </div>
+
+          {/* Right side with token address and copy button */}
+          <div className="flex items-center gap-2">
+            <Link
+              className="text-sm text-muted-foreground cursor-pointer hover:underline"
+              href={`https://basescan.org/address//${tokenAddress}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              prefetch={false}
+            >
+              {formattedAddress}
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                navigator.clipboard.writeText(tokenAddress);
+                toast("Token address copied to clipboard!");
+              }}
+            >
+              <CopyIcon className="w-5 h-5" />
+              <span className="sr-only">Copy token address</span>
+            </Button>
+          </div>
         </div>
+
         <div className="h-[400px] bg-muted rounded-lg overflow-hidden">
           <div />
         </div>
@@ -396,6 +432,26 @@ function TwitterIcon(props) {
       strokeLinejoin="round"
     >
       <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
+    </svg>
+  );
+}
+
+function CopyIcon(props) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
     </svg>
   );
 }

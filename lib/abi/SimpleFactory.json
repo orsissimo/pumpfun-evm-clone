@@ -5,11 +5,6 @@
         "internalType": "address",
         "name": "tokenAddress",
         "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "maxEth",
-        "type": "uint256"
       }
     ],
     "name": "buyToken",
@@ -28,6 +23,31 @@
         "internalType": "string",
         "name": "_symbol",
         "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_description",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_imageUrl",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_twitterLink",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_telegramLink",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_websiteLink",
+        "type": "string"
       }
     ],
     "name": "createToken",
@@ -44,7 +64,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "_tokenAmount",
+        "name": "tokenAmount",
         "type": "uint256"
       }
     ],
@@ -84,6 +104,36 @@
         "internalType": "uint256",
         "name": "initialSupply",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "description",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "imageUrl",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "twitterLink",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "telegramLink",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "websiteLink",
+        "type": "string"
       }
     ],
     "name": "TokenCreated",
@@ -114,6 +164,12 @@
         "indexed": false,
         "internalType": "uint256",
         "name": "tokensBought",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pricePerToken",
         "type": "uint256"
       }
     ],
@@ -146,6 +202,12 @@
         "internalType": "uint256",
         "name": "tokensSold",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "pricePerToken",
+        "type": "uint256"
       }
     ],
     "name": "TokenSold",
@@ -166,92 +228,12 @@
         "type": "address"
       }
     ],
-    "name": "getCurrentPrice",
+    "name": "getTokenPrice",
     "outputs": [
       {
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "getEthAmountToSell",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "getRecentTokens",
-    "outputs": [
-      {
-        "internalType": "address[100]",
-        "name": "",
-        "type": "address[100]"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "ethAmount",
-        "type": "uint256"
-      }
-    ],
-    "name": "getTokenAmountToBuy",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "user",
-        "type": "address"
-      }
-    ],
-    "name": "getTokensByUser",
-    "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
       }
     ],
     "stateMutability": "view",
@@ -285,52 +267,7 @@
   },
   {
     "inputs": [],
-    "name": "MAX_RECENT_TOKENS",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
     "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "recentTokenIndex",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "recentTokens",
     "outputs": [
       {
         "internalType": "address",
@@ -370,30 +307,6 @@
         "internalType": "uint256",
         "name": "virtualTokens",
         "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "userTokens",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
