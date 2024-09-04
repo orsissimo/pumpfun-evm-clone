@@ -18,10 +18,10 @@ export function Navbar() {
       <div className="flex gap-x-12">
         <Link
           href="/"
-          className="flex items-center gap-4 hover:text-primary transition-colors"
+          className="flex items-center gap-2 hover:text-primary transition-colors"
           prefetch={false}
         >
-          <FaWandMagicSparkles className="h-10 w-10" />
+          <FaWandMagicSparkles className="h-8 w-8" />
           <span className="text-lg font-semibold">pump.store</span>
         </Link>
       </div>

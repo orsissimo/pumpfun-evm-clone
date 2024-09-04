@@ -30,7 +30,7 @@ export function TokenCard({
             <Image
               src={displayedImageUrl} // Use provided image or fallback
               alt="Token Logo"
-              className="w-[70px] h-[70px] rounded-full"
+              className="w-[100px] h-[100px] rounded-full"
               width="70"
               height="70"
               style={{ objectFit: "cover" }}
