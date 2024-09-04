@@ -4,29 +4,35 @@ import { useState, useEffect } from "react";
 import { TokenCard } from "@/components/token-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import { getRecentTokens } from "@/lib/factory";
+import { fetchCreateTokenEvents } from "@/lib/fetch"; // Import the function
+import { LoadingLines } from "@/components/LoadingRows"; // Import the loading component
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [recentTokens, setRecentTokens] = useState([]);
+  const [tokens, setTokens] = useState([]);
+  const [loading, setLoading] = useState(true); // Add loading state
 
-  // Fetch recent tokens on component mount
+  // Fetch recent tokens and CreateToken events on component mount
   useEffect(() => {
     async function fetchTokens() {
       try {
-        const tokens = await getRecentTokens();
-        setRecentTokens(tokens);
+        const fetchedTokens = await fetchCreateTokenEvents();
+        console.log(fetchedTokens);
+        setTokens(fetchedTokens);
       } catch (err) {
-        console.error("Error fetching recent tokens:", err);
+        console.error("Error fetching recent tokens or events:", err);
+      } finally {
+        setLoading(false); // Set loading to false once data is fetched
       }
     }
-
     fetchTokens();
   }, []);
 
-  // Filter tokens based on the search query
-  const filteredTokens = recentTokens.filter((token) =>
-    token.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter tokens based on the search query (name or symbol)
+  const filteredTokens = tokens.filter(
+    (token) =>
+      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -53,13 +59,34 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-10 justify-items-center">
-        {filteredTokens.map((token, index) => (
-          <div key={index} className="w-full max-w-lg">
-            <TokenCard tokenAddress={token} />
-          </div>
-        ))}
-      </div>
+      {/* Display loading indicator if data is still being fetched */}
+      {loading ? (
+        <div className="mt-20">
+          <LoadingLines />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-10 justify-items-center">
+          {filteredTokens.length > 0 ? (
+            filteredTokens.map((token, index) => (
+              <div key={index} className="w-full max-w-lg">
+                {/* Pass all relevant token data to TokenCard */}
+                <TokenCard
+                  tokenAddress={token.tokenAddress} // Address of the token
+                  name={token.name} // Name of the token
+                  symbol={token.symbol} // Symbol (ticker) of the token
+                  description={token.description} // Description of the token
+                  imageUrl={token.imageUrl} // Image URL (from IPFS)
+                  twitterLink={token.twitterLink} // Twitter link
+                  telegramLink={token.telegramLink} // Telegram link
+                  websiteLink={token.websiteLink} // Website link
+                />
+              </div>
+            ))
+          ) : (
+            <p>No tokens found matching your search.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

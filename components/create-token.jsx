@@ -15,9 +15,20 @@ export function CreateToken() {
   const [telegram, setTelegram] = useState("");
   const [website, setWebsite] = useState("");
   const [image, setImage] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleCreateToken = () => {
-    createToken(name, ticker, description, twitter, telegram, website, image);
+    // Validate required fields
+    if (!name || !ticker || !description || !image) {
+      setErrorMessage("Name, Ticker, Description and Image are required.");
+      return;
+    }
+
+    // Reset error message
+    setErrorMessage("");
+
+    // Call createToken function from your factory
+    createToken(name, ticker, description, image, twitter, telegram, website);
   };
 
   const handleImageChange = (e) => {
@@ -51,41 +62,46 @@ export function CreateToken() {
           </p>
         </div>
         <div className="space-y-6">
+          {/* Error message */}
+          {errorMessage && (
+            <p className="text-red-500 text-center">{errorMessage}</p>
+          )}
+
           <div>
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Name*</Label>
             <Input
               id="name"
               type="text"
               placeholder="Enter token name"
-              className="mt-1 block w-full"
+              className="mt-1 block w-full placeholder:text-secondary"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </div>
           <div>
-            <Label htmlFor="ticker">Ticker</Label>
+            <Label htmlFor="ticker">Ticker*</Label>
             <Input
               id="ticker"
               type="text"
               placeholder="Enter token ticker"
-              className="mt-1 block w-full"
+              className="mt-1 block w-full placeholder:text-secondary"
               value={ticker}
               onChange={(e) => setTicker(e.target.value)}
             />
           </div>
           <div>
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Description*</Label>
             <Textarea
               id="description"
               placeholder="Enter token description"
-              className="mt-1 block w-full"
+              className="mt-1 block w-full placeholder:text-secondary"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
           <div>
-            <Label htmlFor="image">Image</Label>
+            <Label htmlFor="image">Image*</Label>
             <div
               className="mt-1 flex justify-center rounded-md border-2 border-dashed border-muted px-6 pt-5 pb-6"
               onDrop={handleDrop}
@@ -110,7 +126,7 @@ export function CreateToken() {
                   </label>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  PNG, JPG, GIF up to 10MB
+                  Must be PNG, JPG, GIF up to 10MB
                 </p>
                 {image && (
                   <p className="text-sm text-muted-foreground">{image.name}</p>
@@ -120,7 +136,7 @@ export function CreateToken() {
           </div>
           <div>
             <div className="flex items-center justify-between">
-              <Label className="mb-4">Social Links</Label>
+              <Label className="mb-4">Social Links (Optional)</Label>
             </div>
             <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
               <div>
@@ -134,7 +150,7 @@ export function CreateToken() {
                   id="twitter"
                   type="text"
                   placeholder="Enter Twitter link"
-                  className="mt-2 block w-full"
+                  className="mt-2 block w-full placeholder:text-secondary"
                   value={twitter}
                   onChange={(e) => setTwitter(e.target.value)}
                 />
@@ -150,7 +166,7 @@ export function CreateToken() {
                   id="telegram"
                   type="text"
                   placeholder="Enter Telegram link"
-                  className="mt-2 block w-full"
+                  className="mt-2 block w-full placeholder:text-secondary"
                   value={telegram}
                   onChange={(e) => setTelegram(e.target.value)}
                 />
@@ -166,7 +182,7 @@ export function CreateToken() {
                   id="website"
                   type="text"
                   placeholder="Enter website link"
-                  className="mt-2 block w-full"
+                  className="mt-2 block w-full placeholder:text-secondary"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                 />

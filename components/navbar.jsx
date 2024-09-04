@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import ConnectWallet from "./connect-wallet";
-import { FaGasPump } from "react-icons/fa6";
+import { FaWandMagicSparkles } from "react-icons/fa6";
 import { Menu } from "lucide-react";
 
 export function Navbar() {
@@ -21,7 +21,7 @@ export function Navbar() {
           className="flex items-center gap-2 hover:text-primary transition-colors"
           prefetch={false}
         >
-          <FaGasPump className="h-6 w-6" />
+          <FaWandMagicSparkles className="h-7 w-7" />
           <span className="text-lg font-semibold">pump.store</span>
         </Link>
       </div>
