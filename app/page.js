@@ -17,7 +17,7 @@ export default function Home() {
     async function fetchTokens() {
       try {
         const fetchedTokens = await fetchCreateTokenEvents();
-        console.log(fetchedTokens);
+        //console.log(fetchedTokens);
         setTokens(fetchedTokens);
       } catch (err) {
         console.error("Error fetching recent tokens or events:", err);
