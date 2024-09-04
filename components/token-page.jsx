@@ -46,13 +46,9 @@ export function TokenPage({ tokenData }) {
   const handleBuyToken = () => {
     // Validate required fields
     if (!amount || amount <= 0) {
-      setErrorMessage("Insert a valid amount.");
+      toast.error("Insert a valid amount.");
       return;
     }
-
-    // Reset error message
-    setErrorMessage("");
-
     // Call createToken function from your factory
     buyToken(amount, address);
   };
@@ -60,13 +56,9 @@ export function TokenPage({ tokenData }) {
   const handleSellToken = () => {
     // Validate required fields
     if (!amount || amount <= 1) {
-      setErrorMessage("Insert a valid amount.");
+      toast.error("Insert a valid amount.");
       return;
     }
-
-    // Reset error message
-    setErrorMessage("");
-
     // Call createToken function from your factory
     sellToken(amount, address);
   };
@@ -171,7 +163,7 @@ export function TokenPage({ tokenData }) {
                     id="amount"
                     type="number"
                     placeholder="Enter amount"
-                    className="mt-1 block w-full placeholder:opacity-20"
+                    className="mt-1 block w-full placeholder:opacity-20 focus-visible:ring-0 focus-visible:ring-offset-0"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
