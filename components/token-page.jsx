@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 
+import { useState } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -23,8 +24,12 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
+import { buyToken, sellToken } from "@/lib/factory";
 
 export function TokenPage({ tokenData }) {
+  const [amount, setAmount] = useState(0);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const {
     name,
     symbol,
@@ -37,6 +42,34 @@ export function TokenPage({ tokenData }) {
   } = tokenData;
 
   console.log(tokenData);
+
+  const handleBuyToken = () => {
+    // Validate required fields
+    if (!amount || amount <= 0) {
+      setErrorMessage("Insert a valid amount.");
+      return;
+    }
+
+    // Reset error message
+    setErrorMessage("");
+
+    // Call createToken function from your factory
+    buyToken(amount, address);
+  };
+
+  const handleSellToken = () => {
+    // Validate required fields
+    if (!amount || amount <= 1) {
+      setErrorMessage("Insert a valid amount.");
+      return;
+    }
+
+    // Reset error message
+    setErrorMessage("");
+
+    // Call createToken function from your factory
+    sellToken(amount, address);
+  };
 
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -134,11 +167,24 @@ export function TokenPage({ tokenData }) {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="amount">Amount</Label>
-                  <Input id="amount" type="number" placeholder="Enter amount" />
+                  <Input
+                    id="amount"
+                    type="number"
+                    placeholder="Enter amount"
+                    className="mt-1 block w-full placeholder:opacity-20"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                  />
                 </div>
                 <div className="flex gap-4 w-full">
-                  <Button className="flex-1">Buy</Button>
-                  <Button variant="secondary" className="flex-1">
+                  <Button className="flex-1" onClick={handleBuyToken}>
+                    Buy
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="flex-1"
+                    onClick={handleSellToken}
+                  >
                     Sell
                   </Button>
                 </div>

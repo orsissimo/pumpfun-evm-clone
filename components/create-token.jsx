@@ -73,7 +73,7 @@ export function CreateToken() {
               id="name"
               type="text"
               placeholder="Enter token name"
-              className="mt-1 block w-full placeholder:text-secondary"
+              className="mt-1 block w-full placeholder:opacity-20"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -84,7 +84,7 @@ export function CreateToken() {
               id="ticker"
               type="text"
               placeholder="Enter token ticker"
-              className="mt-1 block w-full placeholder:text-secondary"
+              className="mt-1 block w-full placeholder:opacity-20"
               value={ticker}
               onChange={(e) => setTicker(e.target.value)}
             />
@@ -94,7 +94,7 @@ export function CreateToken() {
             <Textarea
               id="description"
               placeholder="Enter token description"
-              className="mt-1 block w-full placeholder:text-secondary"
+              className="mt-1 block w-full placeholder:opacity-20"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -150,7 +150,7 @@ export function CreateToken() {
                   id="twitter"
                   type="text"
                   placeholder="Enter Twitter link"
-                  className="mt-2 block w-full placeholder:text-secondary"
+                  className="mt-2 block w-full placeholder:opacity-20"
                   value={twitter}
                   onChange={(e) => setTwitter(e.target.value)}
                 />
@@ -166,7 +166,7 @@ export function CreateToken() {
                   id="telegram"
                   type="text"
                   placeholder="Enter Telegram link"
-                  className="mt-2 block w-full placeholder:text-secondary"
+                  className="mt-2 block w-full placeholder:opacity-20"
                   value={telegram}
                   onChange={(e) => setTelegram(e.target.value)}
                 />
@@ -182,7 +182,7 @@ export function CreateToken() {
                   id="website"
                   type="text"
                   placeholder="Enter website link"
-                  className="mt-2 block w-full placeholder:text-secondary"
+                  className="mt-2 block w-full placeholder:opacity-20"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
                 />
