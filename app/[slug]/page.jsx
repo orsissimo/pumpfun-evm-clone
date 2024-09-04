@@ -4,6 +4,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { TokenPage } from "@/components/token-page";
 import { useEffect, useState } from "react";
 import { LoadingLines } from "@/components/LoadingRows";
+import { fetchCreateTokenEvents } from "@/lib/fetch"; // Import the modified function
 
 export default function TokenDetail() {
   const [tokenData, setTokenData] = useState(null);
@@ -11,24 +12,28 @@ export default function TokenDetail() {
   const [error, setError] = useState(null);
 
   const pathname = usePathname();
-  const address = pathname.split("/")[1];
+  const address = pathname.split("/")[1]; // Extract token address from the URL
 
   useEffect(() => {
-    if (address) {
-      async function fetchTokenData() {
-        try {
-          // Simulate fetching token details
-          const data = await fetchTokenDetails(address);
-          setTokenData(data);
-        } catch (err) {
-          setError("Failed to fetch token data");
-        } finally {
-          setLoading(false);
-        }
-      }
+    async function fetchTokenData() {
+      try {
+        // Fetch token details based on the address
+        const data = await fetchCreateTokenEvents(address);
 
-      fetchTokenData();
+        // If no data found, handle it gracefully
+        if (!data) {
+          setError("No token found for this address.");
+        } else {
+          setTokenData(data);
+        }
+      } catch (err) {
+        setError("Failed to fetch token data.");
+      } finally {
+        setLoading(false);
+      }
     }
+
+    fetchTokenData();
   }, [address]);
 
   if (loading) {
@@ -48,20 +53,4 @@ export default function TokenDetail() {
   }
 
   return <TokenPage tokenData={tokenData} />;
-}
-
-// Mock function to simulate fetching token details
-async function fetchTokenDetails(address) {
-  // Replace this with actual smart contract interaction
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        address,
-        name: "Sample Token",
-        symbol: "STK",
-        totalSupply: 1000000,
-        // Add more token properties as needed
-      });
-    }, 1000); // Simulate network delay
-  });
 }
