@@ -38,6 +38,7 @@ export function TokenPage({ tokenData }) {
   const [tokenBalance, setTokenBalance] = useState(0);
   const [ethBalance, setEthBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true); // For chart and transactions loading state
 
   const {
     name,
@@ -87,7 +88,22 @@ export function TokenPage({ tokenData }) {
     };
 
     fetchBalances();
-  }, [address]); // Run when tokenAddress changes
+  }, [address]);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setLoading(true); // Start loading
+      try {
+        const fetchedTransactions = await fetchTokenBuysAndSells(address); // Replace with your function to fetch transactions
+        setTransactions(fetchedTransactions);
+      } catch (error) {
+        console.error("Failed to fetch transactions", error);
+      }
+      setLoading(false); // Stop loading
+    };
+
+    fetchTransactions();
+  }, [address]);
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {
@@ -99,25 +115,12 @@ export function TokenPage({ tokenData }) {
     setAmount(Number(ethBalance).toFixed(4));
   };
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const fetchedTransactions = await fetchTokenBuysAndSells(address); // Replace with your function to fetch transactions
-        setTransactions(fetchedTransactions);
-      } catch (error) {
-        console.error("Failed to fetch transactions", error);
-      }
-    };
-
-    fetchTransactions();
-  }, [address]);
-
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div classname="">
+      <div className="">
         <div className="flex items-center gap-4 mb-6">
           <img
             src={imageUrl || "/placeholder.svg"} // Use imageUrl if provided, otherwise use placeholder
@@ -129,7 +132,7 @@ export function TokenPage({ tokenData }) {
           />
           <div>
             <h1 className="text-2xl font-bold">{name}</h1>
-            <div className="text-muted-foreground">${symbol}</div>
+            <div className="text-muted-foreground">$ {symbol}</div>
           </div>
         </div>
         <p className="text-muted-foreground mb-6 h-8 overflow-hidden scrollbar-hide max-w-prose">
@@ -197,7 +200,17 @@ export function TokenPage({ tokenData }) {
         {/* <div className="h-[400px] bg-muted rounded-lg overflow-hidden">
           <div />
         </div> */}
-        <CandlestickChart transactions={transactions} />
+        {loading ? (
+          <Card>
+            <CardContent>
+              <div className="w-full h-[456px]">
+                <LoadingSpinner />
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <CandlestickChart transactions={transactions} />
+        )}
       </div>
       <div className="flex flex-col gap-8 h-full">
         <Card className="flex flex-col h-[400px]">
@@ -336,15 +349,21 @@ export function TokenPage({ tokenData }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {transactions.length > 0 ? (
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={6}>
+                      <div className="flex items-center h-full">
+                        <LoadingSpinner />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ) : transactions.length > 0 ? (
                   transactions.map((tx, index) => (
                     <TableRow key={index}>
-                      {/* Time Column */}
+                      {/* Render transaction rows */}
                       <TableCell>
                         {new Date(tx.timestamp).toLocaleString()}
                       </TableCell>
-
-                      {/* Event Type Column */}
                       <TableCell
                         className={
                           tx.eventType === "TokenPurchased"
@@ -354,16 +373,12 @@ export function TokenPage({ tokenData }) {
                       >
                         {tx.eventType === "TokenPurchased" ? "Buy" : "Sell"}
                       </TableCell>
-
-                      {/* Token Amount (Divided by 10^18) */}
                       <TableCell>
                         {(
                           Number(tx.tokensBought || tx.tokensSold) /
                           10 ** 18
                         ).toFixed(2)}
                       </TableCell>
-
-                      {/* ETH Amount (Divided by 10^18) */}
                       <TableCell>
                         {(
                           Number(tx.ethSpent || tx.ethReceived) /
@@ -371,13 +386,9 @@ export function TokenPage({ tokenData }) {
                         ).toFixed(4)}{" "}
                         ETH
                       </TableCell>
-
-                      {/* TOKEN/ETH Price */}
                       <TableCell>
                         {Number(tx.pricePerToken / 10 ** 18)}
                       </TableCell>
-
-                      {/* Wallet Address (Formatted and Clickable) */}
                       <TableCell>
                         <a
                           href={`https://basescan.org/address/${
@@ -611,5 +622,32 @@ function CopyIcon(props) {
       <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
       <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
     </svg>
+  );
+}
+
+function LoadingSpinner() {
+  return (
+    <div className="flex justify-center items-center h-full">
+      <svg
+        className="animate-spin h-8 w-8 text-gray-400"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          className="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        ></circle>
+        <path
+          className="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+        ></path>
+      </svg>
+    </div>
   );
 }

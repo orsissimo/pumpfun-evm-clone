@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createChart, ColorType } from "lightweight-charts";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
@@ -8,13 +8,21 @@ import { Card, CardContent } from "./ui/card";
 
 export default function CandlestickChart({ transactions }) {
   const [timeframe, setTimeframe] = useState("1m");
-  const [chart, setChart] = useState(null);
-  const [candlestickSeries, setCandlestickSeries] = useState(null);
+  const chartContainerRef = useRef();
+  const chartInstanceRef = useRef(); // Use a ref to store the chart instance
+  const candlestickSeriesRef = useRef(); // Use a ref to store the candlestick series
 
   useEffect(() => {
     if (transactions.length > 0) {
       plotCandlestickChart(transactions);
     }
+    // Cleanup the chart when the component unmounts
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.remove();
+        chartInstanceRef.current = null;
+      }
+    };
   }, [transactions, timeframe]);
 
   function formatTransactionsForCandlestick(transactions, timeframe) {
@@ -69,12 +77,16 @@ export default function CandlestickChart({ transactions }) {
   }
 
   function plotCandlestickChart(transactions) {
-    const chartContainer = document.getElementById("chart");
-
-    if (chart) {
-      chart.remove();
+    // Check if chart has already been created
+    if (chartInstanceRef.current) {
+      // Clear previous series before re-adding new data
+      candlestickSeriesRef.current.setData(
+        formatTransactionsForCandlestick(transactions, timeframe)
+      );
+      return;
     }
 
+    const chartContainer = chartContainerRef.current;
     const newChart = createChart(chartContainer, {
       width: chartContainer.clientWidth,
       height: 400,
@@ -103,19 +115,20 @@ export default function CandlestickChart({ transactions }) {
       wickDownColor: "#ef4444",
     });
 
-    const chartData = formatTransactionsForCandlestick(transactions, timeframe);
-    candlestick.setData(chartData);
+    candlestick.setData(
+      formatTransactionsForCandlestick(transactions, timeframe)
+    );
 
-    setChart(newChart);
-    setCandlestickSeries(candlestick);
+    chartInstanceRef.current = newChart; // Store chart instance in ref
+    candlestickSeriesRef.current = candlestick; // Store series instance in ref
 
     window.addEventListener("resize", () => {
       newChart.applyOptions({ width: chartContainer.clientWidth });
     });
   }
 
-  const handleTimeframeChange = (timeframe) => {
-    setTimeframe(timeframe);
+  const handleTimeframeChange = (newTimeframe) => {
+    setTimeframe(newTimeframe);
   };
 
   return (
@@ -123,55 +136,24 @@ export default function CandlestickChart({ transactions }) {
       <div className="flex items-center justify-between">
         <Label className="text-md">Creator: 0x1234...5678</Label>
         <div className="flex space-x-2">
-          <Button
-            variant={timeframe === "1s" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("1s")}
-          >
-            1s
-          </Button>
-          <Button
-            variant={timeframe === "1m" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("1m")}
-          >
-            1m
-          </Button>
-          <Button
-            variant={timeframe === "5m" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("5m")}
-          >
-            5m
-          </Button>
-          <Button
-            variant={timeframe === "15m" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("15m")}
-          >
-            15m
-          </Button>
-          <Button
-            variant={timeframe === "1H" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("1H")}
-          >
-            1H
-          </Button>
-          <Button
-            variant={timeframe === "4H" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("4H")}
-          >
-            4H
-          </Button>
-          <Button
-            variant={timeframe === "1D" ? "secondary" : "outline"}
-            onClick={() => handleTimeframeChange("1D")}
-          >
-            1D
-          </Button>
+          {["1s", "1m", "5m", "15m", "1H", "4H", "1D"].map((tf) => (
+            <Button
+              key={tf}
+              variant={timeframe === tf ? "secondary" : "outline"}
+              onClick={() => handleTimeframeChange(tf)}
+            >
+              {tf}
+            </Button>
+          ))}
         </div>
       </div>
       <Card>
         <CardContent>
-          <div id="chart" className="w-full h-[400px]">
-            <div />
-          </div>
+          <div
+            id="chart"
+            ref={chartContainerRef}
+            className="w-full h-[400px]"
+          ></div>
         </CardContent>
       </Card>
     </div>
