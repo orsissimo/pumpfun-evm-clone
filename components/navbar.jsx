@@ -40,7 +40,7 @@ export function Navbar() {
           </Button>
         </Link>
         <ConnectWallet />
-        <DropdownMenu>
+        {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -64,7 +64,7 @@ export function Navbar() {
               Logout
             </DropdownMenuItem>
           </DropdownMenuContent>
-        </DropdownMenu>
+        </DropdownMenu> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
