@@ -13,6 +13,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { FaEthereum } from "react-icons/fa";
 import {
   Table,
   TableHeader,
@@ -30,6 +31,7 @@ import {
   getEtherBalance,
   getTokenBalance,
 } from "@/lib/fetch";
+import CandlestickChart from "./chart";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -115,7 +117,7 @@ export function TokenPage({ tokenData }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div>
+      <div classname="">
         <div className="flex items-center gap-4 mb-6">
           <img
             src={imageUrl || "/placeholder.svg"} // Use imageUrl if provided, otherwise use placeholder
@@ -127,10 +129,10 @@ export function TokenPage({ tokenData }) {
           />
           <div>
             <h1 className="text-2xl font-bold">{name}</h1>
-            <div className="text-muted-foreground">{symbol}</div>
+            <div className="text-muted-foreground">${symbol}</div>
           </div>
         </div>
-        <p className="text-muted-foreground mb-6">
+        <p className="text-muted-foreground mb-6 h-8 overflow-hidden scrollbar-hide max-w-prose">
           {description ||
             `${name} is a decentralized cryptocurrency that powers an ecosystem.`}
         </p>
@@ -192,12 +194,13 @@ export function TokenPage({ tokenData }) {
           </div>
         </div>
 
-        <div className="h-[400px] bg-muted rounded-lg overflow-hidden">
+        {/* <div className="h-[400px] bg-muted rounded-lg overflow-hidden">
           <div />
-        </div>
+        </div> */}
+        <CandlestickChart transactions={transactions} />
       </div>
       <div className="flex flex-col gap-8 h-full">
-        <Card className="flex flex-col h-[350px]">
+        <Card className="flex flex-col h-[400px]">
           <CardHeader className="border-b">
             <CardTitle>Buy / Sell</CardTitle>
           </CardHeader>
@@ -281,15 +284,24 @@ export function TokenPage({ tokenData }) {
             <div className="h-full overflow-y-auto scrollbar-hide pr-4">
               <div className="grid grid-cols-2 gap-4 py-4">
                 <div>
-                  <div className="text-muted-foreground">TVL</div>
-                  <div className="font-bold">$12.3M</div>
+                  <div className="text-muted-foreground">
+                    <div className="flex items-center space-x-1">
+                      <span>Market Cap in</span>{" "}
+                      <FaEthereum className="h-4 w-4" />
+                    </div>
+                  </div>
+                  <div className="font-bold">
+                    {transactions.length > 0
+                      ? (transactions[0].pricePerToken / 10 ** 18) * 1000000000
+                      : 0}
+                  </div>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">Market Cap</div>
+                  <div className="text-muted-foreground">Liquidity</div>
                   <div className="font-bold">$45.6M</div>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">FDV</div>
+                  <div className="text-muted-foreground">Jailbreak %</div>
                   <div className="font-bold">$78.9M</div>
                 </div>
                 <div>
@@ -315,7 +327,11 @@ export function TokenPage({ tokenData }) {
                   <TableHead>Type</TableHead>
                   <TableHead>{symbol}</TableHead>
                   <TableHead>For</TableHead>
-                  <TableHead>USD</TableHead>
+                  <TableHead>
+                    <div className="flex items-center space-x-1">
+                      <span>Price in</span> <FaEthereum className="h-4 w-4" />
+                    </div>
+                  </TableHead>
                   <TableHead>Wallet</TableHead>
                 </TableRow>
               </TableHeader>
@@ -356,14 +372,9 @@ export function TokenPage({ tokenData }) {
                         ETH
                       </TableCell>
 
-                      {/* USD Amount */}
+                      {/* TOKEN/ETH Price */}
                       <TableCell>
-                        $
-                        {(
-                          ((Number(tx.ethSpent || tx.ethReceived) / 10 ** 18) *
-                            Number(tx.pricePerToken)) /
-                          10 ** 18
-                        ).toFixed(2)}
+                        {Number(tx.pricePerToken / 10 ** 18)}
                       </TableCell>
 
                       {/* Wallet Address (Formatted and Clickable) */}
