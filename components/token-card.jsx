@@ -48,8 +48,8 @@ export function TokenCard({
             $1.23B
           </div>
         </div>
-        <div className="p-6 h-16 overflow-y-auto scrollbar-hide">
-          <p className="text-muted-foreground">
+        <div className="p-6 h-16 overflow-auto scrollbar-hide">
+          <p className="text-muted-foreground break-words">
             {description
               ? description
               : `This is a decentralized token named ${name} with the symbol ${symbol}.`}
