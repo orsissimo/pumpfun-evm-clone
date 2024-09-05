@@ -135,7 +135,7 @@ export function TokenPage({ tokenData }) {
             <div className="text-muted-foreground">$ {symbol}</div>
           </div>
         </div>
-        <p className="text-muted-foreground mb-6 h-8 overflow-hidden scrollbar-hide max-w-prose">
+        <p className="text-muted-foreground mb-6 h-8 overflow-auto scrollbar-hide max-w-prose">
           {description ||
             `${name} is a decentralized cryptocurrency that powers an ecosystem.`}
         </p>
@@ -485,6 +485,7 @@ export function TokenPage({ tokenData }) {
           </CardFooter>
         </Card>
       </div>
+
       <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
         <Card className="flex flex-col h-[600px]">
           <CardHeader className="border-b">
