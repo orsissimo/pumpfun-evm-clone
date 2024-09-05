@@ -175,7 +175,7 @@ export function TokenPage({ tokenData }) {
           {/* Right side with token address and copy button */}
           <div className="flex items-center gap-2">
             <Link
-              className="text-sm text-muted-foreground cursor-pointer text-blue-500 hover:underline"
+              className="text-sm text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
               href={`https://basescan.org/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -191,7 +191,7 @@ export function TokenPage({ tokenData }) {
                 toast("Token address copied to clipboard!");
               }}
             >
-              <CopyIcon className="w-5 h-5 text-blue-500" />
+              <CopyIcon className="w-5 h-5 !text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
           </div>
@@ -396,7 +396,7 @@ export function TokenPage({ tokenData }) {
                           }`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-500 hover:underline"
+                          className="!text-blue-500 hover:underline"
                         >
                           {`${(tx.buyer || tx.seller).slice(0, 6)}...${(
                             tx.buyer || tx.seller
