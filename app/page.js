@@ -5,7 +5,7 @@ import { TokenCard } from "@/components/token-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { fetchCreateTokenEvents } from "@/lib/fetch"; // Import the function
-import { LoadingLines } from "@/components/LoadingRows"; // Import the loading component
+import { LoadingLines } from "@/components/loading-rows"; // Import the loading component
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");

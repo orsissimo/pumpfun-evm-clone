@@ -3,7 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import { TokenPage } from "@/components/token-page";
 import { useEffect, useState } from "react";
-import { LoadingLines } from "@/components/LoadingRows";
+import { LoadingLines } from "@/components/loading-rows";
 import { fetchCreateTokenEvents } from "@/lib/fetch"; // Import the modified function
 
 export default function TokenDetail() {
