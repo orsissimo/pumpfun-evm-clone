@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.0;
 
 import "./SimpleToken.sol";
@@ -16,7 +17,7 @@ contract SimpleFactory {
     mapping(address => uint256) public tokenEthSurplus; // Track ETH surplus per token
 
     struct TokenInfo {
-        bool exists;
+        bool isSupported;  // Indicates whether the token is still supported by the factory
         address tokenAddress;
         uint256 virtualEth;
         uint256 virtualTokens;
@@ -50,10 +51,18 @@ contract SimpleFactory {
         uint256 pricePerToken
     );
 
-    constructor(address _feeReceiver, address _uniswapRouter) {
+    event LiquidityAdded(
+        address indexed tokenAddress,
+        uint256 ethAdded,
+        uint256 tokensAdded,
+        address indexed lpTokenAddress
+    );
+
+    // Set feeReceiver and uniswapRouter in the constructor
+    constructor() {
         owner = msg.sender;
-        feeReceiver = _feeReceiver;  // Set the fee receiver address during contract deployment
-        uniswapRouter = _uniswapRouter;  // Set the Uniswap V2 Router address
+        feeReceiver = msg.sender;  // Set the fee receiver to the deployer's address
+        uniswapRouter = 0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24;  // Hardcoded Uniswap V2 router address
     }
 
     function createToken(
@@ -68,7 +77,7 @@ contract SimpleFactory {
         SimpleToken newToken = new SimpleToken(_name, _symbol, INITIAL_TOKEN_SUPPLY);
 
         tokens[address(newToken)] = TokenInfo({
-            exists: true,
+            isSupported: true,
             tokenAddress: address(newToken),
             virtualEth: INITIAL_ETH_LIQUIDITY,
             virtualTokens: INITIAL_TOKEN_SUPPLY
@@ -91,34 +100,14 @@ contract SimpleFactory {
 
     // Function to retrieve token info by token address
     function getTokenInfo(address tokenAddress) public view returns (TokenInfo memory) {
-        require(tokens[tokenAddress].exists, "Token not found");
+        require(tokens[tokenAddress].isSupported, "Token not supported");
         return tokens[tokenAddress];
     }
 
-    function createAndBuyToken(
-        string memory _name, 
-        string memory _symbol, 
-        string memory _description, 
-        string memory _imageUrl, 
-        string memory _twitterLink, 
-        string memory _telegramLink, 
-        string memory _websiteLink,
-        uint256 maxEthToSpend // Developer can specify how much ETH they want to use to buy the token
-    ) public payable {
-        // Create the token
-        createToken(_name, _symbol, _description, _imageUrl, _twitterLink, _telegramLink, _websiteLink);
-
-        // Get the newly created token's address
-        address tokenAddress = address(new SimpleToken(_name, _symbol, INITIAL_TOKEN_SUPPLY));
-
-        // Developer buys the tokens using the provided ETH
-        buyToken(tokenAddress, maxEthToSpend);
-    }
-
     function buyToken(address tokenAddress, uint256 maxEth) public payable {
-        require(tokens[tokenAddress].exists, "Token non creato da questa factory");
-        require(msg.value > 0, "Devi inviare ETH per acquistare token");
-        require(msg.value <= maxEth, "Hai inviato piu ETH del massimo consentito");
+        require(tokens[tokenAddress].isSupported, "Token not supported by this factory");
+        require(msg.value > 0, "You must send ETH to buy tokens");
+        require(msg.value <= maxEth, "You sent more ETH than the allowed maximum");
 
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
@@ -132,7 +121,7 @@ contract SimpleFactory {
 
         uint256 tokensToMint = getTokenAmountToBuy(tokenAddress, ethAfterFee);
 
-        require(token.balanceOf(address(this)) >= tokensToMint, "Non ci sono abbastanza token disponibili per la vendita");
+        require(token.balanceOf(address(this)) >= tokensToMint, "Not enough tokens available for sale");
 
         token.transfer(msg.sender, tokensToMint);
 
@@ -142,9 +131,15 @@ contract SimpleFactory {
         // Track ETH surplus for liquidity
         tokenEthSurplus[tokenAddress] += ethAfterFee;
 
-        // If surplus ETH reaches 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
-        if (tokenEthSurplus[tokenAddress] >= 1 ether) {
-            addLiquidityAndBurn(tokenAddress, tokenEthSurplus[tokenAddress]);
+        // If surplus ETH reaches or exceeds 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
+        if (tokenEthSurplus[tokenAddress] >= 0.005 ether) {
+            // Add liquidity and reset surplus
+            uint256 remainingSurplus = tokenEthSurplus[tokenAddress] - 0.005 ether; // Carry over the extra ETH
+            addLiquidityAndBurn(tokenAddress, 0.005 ether); // Add 1 ETH worth of liquidity
+            tokenEthSurplus[tokenAddress] = remainingSurplus; // Update the surplus with remaining ETH
+
+            // Mark token as no longer supported
+            tokens[tokenAddress].isSupported = false;
         }
 
         emit TokenPurchased(
@@ -156,14 +151,15 @@ contract SimpleFactory {
         );
     }
 
+
     function sellToken(address tokenAddress, uint256 _tokenAmount) public {
-        require(tokens[tokenAddress].exists, "Token non creato da questa factory");
-        require(_tokenAmount > 0, "Devi specificare un numero positivo di token da vendere");
+        require(tokens[tokenAddress].isSupported, "Token not supported by this factory");
+        require(_tokenAmount > 0, "You must specify a positive amount of tokens to sell");
 
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
 
-        require(token.balanceOf(msg.sender) >= _tokenAmount, "Non hai abbastanza token da vendere");
+        require(token.balanceOf(msg.sender) >= _tokenAmount, "Not enough tokens to sell");
 
         uint256 ethToReturn = getEthAmountToSell(tokenAddress, _tokenAmount);
 
@@ -171,7 +167,7 @@ contract SimpleFactory {
         uint256 fee = (ethToReturn * FEE_PERCENTAGE) / 100;
         uint256 ethAfterFee = ethToReturn - fee;
 
-        require(address(this).balance >= ethAfterFee, "Non hai abbastanza ETH nel contratto per completare la vendita");
+        require(address(this).balance >= ethAfterFee, "Not enough ETH in the contract to complete the sale");
 
         // Transfer tokens from the seller to the contract
         require(token.transferFrom(msg.sender, address(this), _tokenAmount), "Token transfer failed");
@@ -185,12 +181,15 @@ contract SimpleFactory {
         tokenInfo.virtualEth -= ethAfterFee;
         tokenInfo.virtualTokens += _tokenAmount;
 
-        // Track ETH surplus for liquidity
-        tokenEthSurplus[tokenAddress] += ethAfterFee;
+        // Subtract ETH given to the user from the surplus
+        tokenEthSurplus[tokenAddress] -= ethAfterFee;
 
         // If surplus ETH reaches 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
-        if (tokenEthSurplus[tokenAddress] >= 1 ether) {
+        if (tokenEthSurplus[tokenAddress] >= 0.005 ether) {
             addLiquidityAndBurn(tokenAddress, tokenEthSurplus[tokenAddress]);
+
+            // Mark token as no longer supported
+            tokens[tokenAddress].isSupported = false;
         }
 
         emit TokenSold(
@@ -202,42 +201,34 @@ contract SimpleFactory {
         );
     }
 
-    // Function to add liquidity to Uniswap V2 and burn LP tokens
-    function addLiquidityAndBurn(address tokenAddress, uint256 ethSurplus) internal {
+
+    // Function to add liquidity to Uniswap V2 and directly burn LP tokens
+    function addLiquidityAndBurn(address tokenAddress, uint256 ethToAdd) internal {
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
 
-        uint256 ethToAdd = (ethSurplus * 90) / 100; // 90% of surplus to be added to liquidity
-        uint256 tokenAmountToAdd = getTokenAmountToBuy(tokenAddress, ethToAdd);
+        uint256 tokenAmountToAdd = token.balanceOf(address(this));
 
-        require(token.balanceOf(address(this)) >= tokenAmountToAdd, "Non ci sono abbastanza token");
+        require(tokenAmountToAdd > 0, "Factory owns no tokens");
+        require(ethToAdd > 0, "No ETH to add");
 
-        // Approve the Uniswap router to spend tokens
+        // Approve the Uniswap router to spend all tokens owned by the factory
         token.approve(uniswapRouter, tokenAmountToAdd);
 
-        // Add liquidity to Uniswap V2
+        // Add liquidity to Uniswap V2 and send LP tokens directly to the dead address
         IUniswapV2Router02(uniswapRouter).addLiquidityETH{value: ethToAdd}(
             tokenAddress,
             tokenAmountToAdd,
             0,  // Slippage is okay
             0,  // Slippage is okay
-            address(this),  // LP tokens will be sent to this contract
+            address(0x040161ecD0557D111338CfCB458F66d2EFF0887C),  // LP tokens will be sent directly to the dead address (burned)
             block.timestamp + 300  // Deadline for the transaction
         );
 
-        // Reset the ETH surplus after adding liquidity
-        tokenEthSurplus[tokenAddress] = 0;
-
-        // Burn the LP tokens
-        burnLiquidityTokens();
+        // Emit event for liquidity addition
+        emit LiquidityAdded(tokenAddress, ethToAdd, tokenAmountToAdd, address(0));
     }
 
-    // Burn liquidity tokens after adding liquidity
-    function burnLiquidityTokens() internal {
-        // Logic to burn LP tokens
-        // This would involve transferring the LP tokens to the zero address
-        // Assuming the contract holds the LP tokens after liquidity is added
-    }
 
     function getTokenAmountToBuy(address tokenAddress, uint256 ethAmount) public view returns (uint256) {
         TokenInfo storage tokenInfo = tokens[tokenAddress];

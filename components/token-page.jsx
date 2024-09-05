@@ -137,7 +137,7 @@ export function TokenPage({ tokenData }) {
             <div className="text-muted-foreground">$ {symbol}</div>
           </div>
         </div>
-        <p className="text-muted-foreground mb-6 h-8 overflow-auto scrollbar-hide max-w-prose">
+        <p className="text-muted-foreground mb-6 h-8 overflow-auto scrollbar-hide max-w-prose break-words">
           {description ||
             `${name} is a decentralized cryptocurrency that powers an ecosystem.`}
         </p>
