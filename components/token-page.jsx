@@ -32,6 +32,8 @@ import {
   getTokenBalance,
 } from "@/lib/fetch";
 import CandlestickChart from "./chart";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaTelegramPlane } from "react-icons/fa";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -158,7 +160,7 @@ export function TokenPage({ tokenData }) {
                 className="text-muted-foreground hover:text-primary transition"
                 prefetch={false}
               >
-                <TwitterIcon className="h-5 w-5" />
+                <FaXTwitter className="h-5 w-5" />
               </Link>
             )}
             {telegramLink && (
@@ -167,7 +169,7 @@ export function TokenPage({ tokenData }) {
                 className="text-muted-foreground hover:text-primary transition"
                 prefetch={false}
               >
-                <TextIcon className="h-5 w-5" />
+                <FaTelegramPlane className="h-5 w-5" />
               </Link>
             )}
           </div>
@@ -562,46 +564,6 @@ function GlobeIcon(props) {
       <circle cx="12" cy="12" r="10" />
       <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
       <path d="M2 12h20" />
-    </svg>
-  );
-}
-
-function TextIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M17 6.1H3" />
-      <path d="M21 12.1H3" />
-      <path d="M15.1 18H3" />
-    </svg>
-  );
-}
-
-function TwitterIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
     </svg>
   );
 }
