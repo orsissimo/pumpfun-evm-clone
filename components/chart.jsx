@@ -5,6 +5,7 @@ import { createChart, ColorType } from "lightweight-charts";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Card, CardContent } from "./ui/card";
+import Link from "next/link";
 
 export default function CandlestickChart({ transactions }) {
   const [timeframe, setTimeframe] = useState("1m");
@@ -131,10 +132,25 @@ export default function CandlestickChart({ transactions }) {
     setTimeframe(newTimeframe);
   };
 
+  const address = "0xdfedBfaeEdaA8b005F3c18E33843948b3D50bCc5"; // Hardcoded, to change
+  // Format the token address for display (e.g., "0x1234...5678")
+  const formattedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
+
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="text-md">Creator: 0x1234...5678</Label>
+        <Label className="text-sm flex items-end space-x-1">
+          <span>Creator : </span>
+          <Link
+            className="text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
+            href={`https://basescan.org/address//${address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            prefetch={false}
+          >
+            {formattedAddress}
+          </Link>
+        </Label>
         <div className="flex space-x-2">
           {["1s", "1m", "5m", "15m", "1H", "4H", "1D"].map((tf) => (
             <Button
