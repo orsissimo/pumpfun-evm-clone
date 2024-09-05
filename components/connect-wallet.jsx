@@ -1,11 +1,19 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ethers } from "ethers"; // Import ethers correctly
 import { Button } from "./ui/button";
 
 const ConnectWallet = () => {
   const [account, setAccount] = useState(null);
+
+  // Load account from localStorage on component mount
+  useEffect(() => {
+    const savedAccount = localStorage.getItem("connectedAccount");
+    if (savedAccount) {
+      setAccount(savedAccount);
+    }
+  }, []);
 
   const connectWallet = async () => {
     if (typeof window.ethereum !== "undefined") {
@@ -16,6 +24,9 @@ const ConnectWallet = () => {
         const signer = provider.getSigner();
         const signerAddress = await signer.getAddress();
         setAccount(signerAddress);
+
+        // Save the connected account in localStorage
+        localStorage.setItem("connectedAccount", signerAddress);
       } catch (error) {
         console.error("User rejected account access", error);
       }
@@ -29,13 +40,18 @@ const ConnectWallet = () => {
     return address.slice(0, 6) + "..." + address.slice(-4);
   };
 
+  /* const disconnectWallet = () => {
+    setAccount(null);
+    localStorage.removeItem("connectedAccount");
+  }; */
+
   return (
     <div className="flex items-center gap-4">
       <Button
         variant="outline"
         size="sm"
         className="sm:inline-flex hover:bg-primary hover:text-primary-foreground transition-colors"
-        onClick={connectWallet}
+        onClick={/* account ? disconnectWallet :  */ connectWallet}
       >
         {account ? shortenAddress(account) : "Connect Wallet"}
       </Button>
