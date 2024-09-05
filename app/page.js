@@ -10,7 +10,7 @@ import { LoadingLines } from "@/components/loading-rows"; // Import the loading 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [tokens, setTokens] = useState([]);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true);
 
   // Fetch recent tokens and CreateToken events on component mount
   useEffect(() => {
@@ -28,6 +28,102 @@ export default function Home() {
     fetchTokens();
   }, []);
 
+  useEffect(() => {
+    /* const checkDbStatus = async () => {
+      try {
+        const response = await fetch("/api/db-connection");
+        const data = await response.json();
+        console.log(
+          "Database connection status:",
+          data.isConnected ? "Connected" : "Disconnected"
+        );
+      } catch (error) {
+        console.error("Error checking DB status:", error);
+        console.log("Database connection status: Disconnected");
+      }
+    }; */
+
+    // Function to perform dummy database operations
+    const performDummyDbOperations = async () => {
+      try {
+        // Create a dummy object
+        const createResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "TokenEvent",
+            operation: "create",
+            modelName: "TokenEvent",
+            data: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+              name: "DummyToken",
+              symbol: "DUMMY",
+              initialSupply: "1000000",
+              description: "A dummy token for testing",
+            },
+          }),
+        });
+        const createResult = await createResponse.json();
+        console.log("Created dummy object:", createResult);
+
+        // Read the created object
+        const readResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "TokenEvent",
+            operation: "findOne",
+            modelName: "TokenEvent",
+            criteria: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+            },
+          }),
+        });
+        const readResult = await readResponse.json();
+        console.log("Read dummy object:", readResult);
+
+        // Update the object with random values
+        const updateResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "TokenEvent",
+            operation: "findOneAndUpdate",
+            modelName: "TokenEvent",
+            criteria: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+            },
+            data: {
+              name: `UpdatedToken${Math.floor(Math.random() * 1000)}`,
+              initialSupply: (
+                Math.floor(Math.random() * 1000000) + 1000000
+              ).toString(),
+            },
+          }),
+        });
+        const updateResult = await updateResponse.json();
+        console.log("Updated dummy object:", updateResult);
+
+        // Delete the object
+        const deleteResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "TokenEvent",
+            operation: "findOneAndDelete",
+            modelName: "TokenEvent",
+            criteria: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+            },
+          }),
+        });
+        const deleteResult = await deleteResponse.json();
+        console.log("Deleted dummy object:", deleteResult);
+      } catch (error) {
+        console.error("Error performing dummy DB operations:", error);
+      }
+    };
+  }, []);
   // Filter tokens based on the search query (name or symbol)
   const filteredTokens = tokens.filter(
     (token) =>
