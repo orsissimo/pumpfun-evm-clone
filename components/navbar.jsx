@@ -9,7 +9,8 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
 import ConnectWallet from "./connect-wallet";
-import { FaWandMagicSparkles } from "react-icons/fa6";
+import { FaWandMagicSparkles, FaXTwitter } from "react-icons/fa6";
+import { FaTelegramPlane } from "react-icons/fa";
 import { Menu } from "lucide-react";
 
 export function Navbar() {
@@ -22,10 +23,25 @@ export function Navbar() {
           prefetch={false}
         >
           <FaWandMagicSparkles className="h-8 w-8" />
-          <span className="text-lg font-semibold">pump.store</span>
+          <span className="text-lg font-semibold">pump.style</span>
         </Link>
       </div>
       <div className="flex items-center gap-4">
+        <Link
+          href="https://t.me/pumpdotstyle"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-flex"
+          prefetch={false}
+        >
+          <FaTelegramPlane className="h-5 w-5 mx-1" />
+        </Link>
+        <Link
+          href="https://x.com/pumpdotstore"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-flex"
+          prefetch={false}
+        >
+          <FaXTwitter className="h-5 w-5 mx-1" />
+        </Link>
+
         <Link
           href="/create"
           className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -88,6 +104,27 @@ export function Navbar() {
                 </Button>
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <div className="flex align-middle justify-center">
+              <DropdownMenuItem className="hover:bg-muted transition-colors">
+                <Link
+                  href="https://t.me/pumpdotstyle"
+                  className="flex items-center gap-2 w-full"
+                  prefetch={false}
+                >
+                  <FaTelegramPlane className="h-6 w-6 mx-1" />
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="hover:bg-muted transition-colors">
+                <Link
+                  href="https://x.com/pumpdotstore"
+                  className="flex items-center gap-2 w-full"
+                  prefetch={false}
+                >
+                  <FaXTwitter className="h-6 w-6 mx-1" />
+                </Link>
+              </DropdownMenuItem>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
