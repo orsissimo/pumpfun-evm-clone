@@ -132,10 +132,10 @@ contract SimpleFactory {
         tokenEthSurplus[tokenAddress] += ethAfterFee;
 
         // If surplus ETH reaches or exceeds 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
-        if (tokenEthSurplus[tokenAddress] >= 0.005 ether) {
+        if (tokenEthSurplus[tokenAddress] >= 1 ether) {
             // Add liquidity and reset surplus
-            uint256 remainingSurplus = tokenEthSurplus[tokenAddress] - 0.005 ether; // Carry over the extra ETH
-            addLiquidityAndBurn(tokenAddress, 0.005 ether); // Add 1 ETH worth of liquidity
+            uint256 remainingSurplus = tokenEthSurplus[tokenAddress] - 1 ether; // Carry over the extra ETH
+            addLiquidityAndBurn(tokenAddress, 1 ether); // Add 1 ETH worth of liquidity
             tokenEthSurplus[tokenAddress] = remainingSurplus; // Update the surplus with remaining ETH
 
             // Mark token as no longer supported
@@ -185,7 +185,7 @@ contract SimpleFactory {
         tokenEthSurplus[tokenAddress] -= ethAfterFee;
 
         // If surplus ETH reaches 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
-        if (tokenEthSurplus[tokenAddress] >= 0.005 ether) {
+        if (tokenEthSurplus[tokenAddress] >= 1 ether) {
             addLiquidityAndBurn(tokenAddress, tokenEthSurplus[tokenAddress]);
 
             // Mark token as no longer supported
@@ -221,7 +221,7 @@ contract SimpleFactory {
             tokenAmountToAdd,
             0,  // Slippage is okay
             0,  // Slippage is okay
-            address(0x040161ecD0557D111338CfCB458F66d2EFF0887C),  // LP tokens will be sent directly to the dead address (burned)
+            address(0),  // LP tokens will be sent directly to the dead address (burned)
             block.timestamp + 300  // Deadline for the transaction
         );
 
