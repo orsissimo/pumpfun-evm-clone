@@ -310,22 +310,23 @@ export function TokenPage({ tokenData }) {
                     </div>
                   </div>
                   <div className="font-bold">
-                    {transactions.length > 0
+                    {/* {transactions.length > 0
                       ? (transactions[0].pricePerToken / 10 ** 18) * 1000000000
-                      : 0}
+                      : 0} */}
+                    -
                   </div>
                 </div>
                 <div>
                   <div className="text-muted-foreground">Liquidity</div>
-                  <div className="font-bold">$45.6M</div>
+                  <div className="font-bold">-</div>
                 </div>
                 <div>
                   <div className="text-muted-foreground">Jailbreak %</div>
-                  <div className="font-bold">$78.9M</div>
+                  <div className="font-bold">-</div>
                 </div>
                 <div>
                   <div className="text-muted-foreground">1D Volume</div>
-                  <div className="font-bold">$1.2M</div>
+                  <div className="font-bold">-</div>
                 </div>
               </div>
             </div>
@@ -422,7 +423,8 @@ export function TokenPage({ tokenData }) {
         </Card>
       </div>
 
-      <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
+      {/* Chat */}
+      {/* <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
         <Card className="flex flex-col h-[600px]">
           <CardHeader className="border-b">
             <CardTitle>Chat</CardTitle>
@@ -490,9 +492,10 @@ export function TokenPage({ tokenData }) {
             </div>
           </CardFooter>
         </Card>
-      </div>
+      </div> */}
 
-      <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
+      {/* Holder Distribution */}
+      {/* <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
         <Card className="flex flex-col h-[600px]">
           <CardHeader className="border-b">
             <CardTitle>Holder Distribution</CardTitle>
@@ -526,7 +529,7 @@ export function TokenPage({ tokenData }) {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
     </div>
   );
 }
