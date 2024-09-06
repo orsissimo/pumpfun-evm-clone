@@ -26,7 +26,7 @@ export function Footer() {
     <footer className="bg-background py-8 w-full border-t">
       <div className="container mx-auto flex flex-col items-center justify-between gap-4 sm:flex-row">
         <div className="text-sm text-muted-foreground">
-          &copy; pump.style - 2024
+          &copy; pump.style 2024
         </div>
         <div className="flex items-center gap-4 text-sm font-medium text-muted-foreground">
           {/* <Link
