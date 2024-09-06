@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { createToken, createAndBuyToken } from "@/lib/factory"; // Import both functions
 import { Checkbox } from "./ui/checkbox";
 import { toast } from "react-toastify";
+import { pinFileToIPFS } from "@/lib/pinata";
 
 export function CreateToken() {
   const [name, setName] = useState("");
@@ -21,47 +22,76 @@ export function CreateToken() {
   const [devBuyEnabled, setDevBuyEnabled] = useState(false); // State for dev buy checkbox
   const [devBuyAmount, setDevBuyAmount] = useState(""); // State for dev buy amount
 
-  const handleCreateToken = () => {
-    // Validate required fields
-    if (!name || !ticker || !description || !image) {
-      setErrorMessage("Name, Ticker, Description, and Image are required.");
-      return;
-    }
+  const handleCreateToken = async () => {
+    try {
+      // Validate required fields
+      if (!name || !ticker || !description || !image) {
+        setErrorMessage("Name, Ticker, Description, and Image are required.");
+        return;
+      }
 
-    // Reset error message
-    setErrorMessage("");
+      // Reset error message
+      setErrorMessage("");
 
-    // Check if the "Dev Buy" is enabled
-    if (devBuyEnabled) {
-      if (devBuyAmount > 0) {
-        // Call createTokenAndBuy function if conditions are met
-        createAndBuyToken(
+      // Continue with token creation after successful image upload
+      if (devBuyEnabled) {
+        if (devBuyAmount > 0) {
+          // Upload the image to IPFS
+          const cid = await pinFileToIPFS(image);
+          createAndBuyToken(
+            name,
+            ticker,
+            description,
+            cid, // Use CID from IPFS as the image reference
+            twitter,
+            telegram,
+            website,
+            devBuyAmount
+          );
+        } else {
+          toast.error(
+            "Dev Buy is enabled, but the amount must be greater than 0."
+          );
+          return;
+        }
+      } else {
+        // Upload the image to IPFS
+        const cid = await pinFileToIPFS(image);
+        createToken(
           name,
           ticker,
           description,
-          image,
+          cid, // Use CID from IPFS
           twitter,
           telegram,
-          website,
-          devBuyAmount
+          website
         );
-      } else {
-        // Show a toast error if devBuyEnabled is true but devBuyAmount is not greater than 0
-        toast.error(
-          "Dev Buy is enabled, but the amount must be greater than 0."
-        );
-        return;
       }
-    } else {
-      // Call the original createToken function if devBuy is not enabled
-      createToken(name, ticker, description, image, twitter, telegram, website);
+    } catch (error) {
+      setErrorMessage("Failed to create token. Please try again.");
+      console.error(error);
     }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file);
+      // Validate file type
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+      if (!validTypes.includes(file.type)) {
+        toast.error(
+          "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed."
+        );
+        return;
+      }
+
+      // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File is too large. Maximum size is 5MB.");
+        return;
+      }
+
+      setImage(file); // Set the image if valid
     }
   };
 
@@ -69,7 +99,22 @@ export function CreateToken() {
     e.preventDefault();
     const file = e.dataTransfer.files[0];
     if (file) {
-      setImage(file);
+      // Validate file type
+      const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif"];
+      if (!validTypes.includes(file.type)) {
+        toast.error(
+          "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed."
+        );
+        return;
+      }
+
+      // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("File is too large. Maximum size is 5MB.");
+        return;
+      }
+
+      setImage(file); // Set the image if valid
     }
   };
 

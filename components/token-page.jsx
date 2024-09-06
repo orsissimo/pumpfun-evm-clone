@@ -55,6 +55,10 @@ export function TokenPage({ tokenData }) {
 
   //console.log(tokenData);
 
+  const displayedImageUrl =
+    `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
+    "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
+
   const handleBuyToken = () => {
     // Validate required fields
     if (!amount || amount <= 0) {
@@ -125,9 +129,9 @@ export function TokenPage({ tokenData }) {
       <div className="">
         <div className="flex items-center gap-4 mb-6">
           <img
-            src={imageUrl || "/placeholder.svg"} // Use imageUrl if provided, otherwise use placeholder
-            width={48}
-            height={48}
+            src={displayedImageUrl || "/placeholder.svg"}
+            width={60}
+            height={60}
             alt={`${name} Logo`}
             className="rounded-full"
             style={{ aspectRatio: "48/48", objectFit: "cover" }}
@@ -205,7 +209,7 @@ export function TokenPage({ tokenData }) {
         {loading ? (
           <Card>
             <CardContent>
-              <div className="w-full h-[456px]">
+              <div className="w-full h-[453px]">
                 <LoadingSpinner />
               </div>
             </CardContent>

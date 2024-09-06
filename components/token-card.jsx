@@ -21,8 +21,9 @@ export function TokenCard({
     -4
   )}`;
 
-  // Use a default placeholder image if the image URL is not available
-  const displayedImageUrl = /* imageUrl || */ "/placeholder.svg";
+  const displayedImageUrl =
+    `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
+    "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
 
   return (
     <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full max-w-lg">

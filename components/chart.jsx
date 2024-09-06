@@ -168,7 +168,7 @@ export default function CandlestickChart({ transactions }) {
           <div
             id="chart"
             ref={chartContainerRef}
-            className="w-full h-[400px]"
+            className="w-full h-[397px]"
           ></div>
         </CardContent>
       </Card>
