@@ -1,5 +1,9 @@
 // SPDX-License-Identifier: MIT
 
+/*
+Created on Pump.Style
+*/
+
 pragma solidity ^0.8.0;
 
 contract SimpleToken {

@@ -7,17 +7,17 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 
 contract SimpleFactory {
     address owner;
-    address feeReceiver;  // Address to receive the 1% fee
-    address uniswapRouter;  // Uniswap V2 Router address
-    uint256 constant FEE_PERCENTAGE = 1; // 1% fee
+    address feeReceiver;
+    address uniswapRouter;
+    uint256 constant FEE_PERCENTAGE = 1;
     uint256 constant INITIAL_ETH_LIQUIDITY = 1 ether;
-    uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18; // 1 billion tokens with 18 decimals
+    uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18;
 
-    mapping(address => TokenInfo) public tokens; // Public mapping of tokens created
-    mapping(address => uint256) public tokenEthSurplus; // Track ETH surplus per token
+    mapping(address => TokenInfo) public tokens;
+    mapping(address => uint256) public tokenEthSurplus;
 
     struct TokenInfo {
-        bool isSupported;  // Indicates whether the token is still supported by the factory
+        bool isSupported;
         address tokenAddress;
         uint256 virtualEth;
         uint256 virtualTokens;
@@ -58,11 +58,10 @@ contract SimpleFactory {
         address indexed lpTokenAddress
     );
 
-    // Set feeReceiver and uniswapRouter in the constructor
     constructor() {
         owner = msg.sender;
-        feeReceiver = msg.sender;  // Set the fee receiver to the deployer's address
-        uniswapRouter = 0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24;  // Hardcoded Uniswap V2 router address
+        feeReceiver = msg.sender;
+        uniswapRouter = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
     }
 
     function createToken(
@@ -98,7 +97,94 @@ contract SimpleFactory {
         );
     }
 
-    // Function to retrieve token info by token address
+    function createAndBuyToken(
+        string memory _name, 
+        string memory _symbol, 
+        string memory _description, 
+        string memory _imageUrl, 
+        string memory _twitterLink, 
+        string memory _telegramLink, 
+        string memory _websiteLink
+    ) public payable {
+        require(msg.value > 0, "You must send ETH to buy tokens");
+
+        // Create the token
+        SimpleToken newToken = new SimpleToken(_name, _symbol, INITIAL_TOKEN_SUPPLY);
+
+        // Add the token to the mapping
+        tokens[address(newToken)] = TokenInfo({
+            isSupported: true,
+            tokenAddress: address(newToken),
+            virtualEth: INITIAL_ETH_LIQUIDITY,
+            virtualTokens: INITIAL_TOKEN_SUPPLY
+        });
+
+        // Calculate the 1% fee
+        uint256 fee = (msg.value * FEE_PERCENTAGE) / 100;
+        uint256 ethAfterFee = msg.value - fee;
+
+        // Send the fee to the feeReceiver
+        payable(feeReceiver).transfer(fee);
+
+        // Calculate how many tokens the buyer will receive
+        uint256 tokensToTransfer = getTokenAmountToBuy(address(newToken), ethAfterFee);
+
+        // Ensure there are enough tokens to transfer
+        require(INITIAL_TOKEN_SUPPLY >= tokensToTransfer, "Not enough tokens available to buy");
+
+        // Transfer the calculated tokens to the buyer
+        newToken.transfer(msg.sender, tokensToTransfer);
+
+        // Transfer the remaining tokens to the contract
+        uint256 remainingTokens = INITIAL_TOKEN_SUPPLY - tokensToTransfer;
+        newToken.transfer(address(this), remainingTokens);
+
+        // Update token information
+        tokens[address(newToken)].virtualEth += ethAfterFee;
+        tokens[address(newToken)].virtualTokens -= tokensToTransfer;
+
+        // Add the ETH from this transaction to the ETH surplus for this token
+        tokenEthSurplus[address(newToken)] += ethAfterFee;
+
+        // If the total ETH surplus is >= 1 ETH, add liquidity on Uniswap V2
+        if (tokenEthSurplus[address(newToken)] >= 1 ether) {
+            uint256 ethSurplus = tokenEthSurplus[address(newToken)];
+
+            // Add 90% of the total ETH surplus to liquidity
+            uint256 ethToAdd = (ethSurplus * 99) / 100;
+
+            // Call the liquidity function
+            addLiquidityAndBurn(address(newToken), ethToAdd);
+
+            // Update the remaining 10% surplus after liquidity is added
+            tokenEthSurplus[address(newToken)] = ethSurplus - ethToAdd;
+
+            // Optionally mark token as no longer supported if needed
+            tokens[address(newToken)].isSupported = false;
+        }
+
+        // Emit token creation and purchase events
+        emit TokenCreated(
+            address(newToken), 
+            _name, 
+            _symbol, 
+            INITIAL_TOKEN_SUPPLY, 
+            _description, 
+            _imageUrl, 
+            _twitterLink, 
+            _telegramLink, 
+            _websiteLink
+        );
+
+        emit TokenPurchased(
+            msg.sender, 
+            address(newToken), 
+            msg.value, 
+            tokensToTransfer, 
+            getCurrentPrice(address(newToken))
+        );
+    }
+
     function getTokenInfo(address tokenAddress) public view returns (TokenInfo memory) {
         require(tokens[tokenAddress].isSupported, "Token not supported");
         return tokens[tokenAddress];
@@ -128,18 +214,21 @@ contract SimpleFactory {
         tokenInfo.virtualEth += ethAfterFee;
         tokenInfo.virtualTokens -= tokensToMint;
 
-        // Track ETH surplus for liquidity
+        // Add the ETH from this transaction to the ETH surplus for this token
         tokenEthSurplus[tokenAddress] += ethAfterFee;
 
-        // If surplus ETH reaches or exceeds 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
+        // If the total ETH surplus is >= 1 ETH, add liquidity
         if (tokenEthSurplus[tokenAddress] >= 1 ether) {
-            // Add liquidity and reset surplus
-            uint256 remainingSurplus = tokenEthSurplus[tokenAddress] - 1 ether; // Carry over the extra ETH
-            addLiquidityAndBurn(tokenAddress, 1 ether); // Add 1 ETH worth of liquidity
-            tokenEthSurplus[tokenAddress] = remainingSurplus; // Update the surplus with remaining ETH
+            uint256 ethSurplus = tokenEthSurplus[tokenAddress];
 
-            // Mark token as no longer supported
-            tokens[tokenAddress].isSupported = false;
+            // Add 90% of the total ETH surplus to liquidity
+            uint256 ethToAdd = (ethSurplus * 99) / 100;
+
+            // Call the liquidity function
+            addLiquidityAndBurn(tokenAddress, ethToAdd);
+
+            // Update the remaining 10% surplus after liquidity is added
+            tokenEthSurplus[tokenAddress] = ethSurplus - ethToAdd;
         }
 
         emit TokenPurchased(
@@ -147,10 +236,9 @@ contract SimpleFactory {
             tokenAddress, 
             msg.value, 
             tokensToMint, 
-            getCurrentPrice(tokenAddress)  // Include price per token in the event
+            getCurrentPrice(tokenAddress)
         );
     }
-
 
     function sellToken(address tokenAddress, uint256 _tokenAmount) public {
         require(tokens[tokenAddress].isSupported, "Token not supported by this factory");
@@ -181,15 +269,21 @@ contract SimpleFactory {
         tokenInfo.virtualEth -= ethAfterFee;
         tokenInfo.virtualTokens += _tokenAmount;
 
-        // Subtract ETH given to the user from the surplus
-        tokenEthSurplus[tokenAddress] -= ethAfterFee;
+        // Add the ETH from this transaction to the ETH surplus for this token
+        tokenEthSurplus[tokenAddress] += ethAfterFee;
 
-        // If surplus ETH reaches 1 ETH, add liquidity to Uniswap V2 and burn LP tokens
+        // If the total ETH surplus is >= 1 ETH, add liquidity
         if (tokenEthSurplus[tokenAddress] >= 1 ether) {
-            addLiquidityAndBurn(tokenAddress, tokenEthSurplus[tokenAddress]);
+            uint256 ethSurplus = tokenEthSurplus[tokenAddress];
 
-            // Mark token as no longer supported
-            tokens[tokenAddress].isSupported = false;
+            // Add 90% of the total ETH surplus to liquidity
+            uint256 ethToAdd = (ethSurplus * 99) / 100;
+
+            // Call the liquidity function
+            addLiquidityAndBurn(tokenAddress, ethToAdd);
+
+            // Update the remaining 10% surplus after liquidity is added
+            tokenEthSurplus[tokenAddress] = ethSurplus - ethToAdd;
         }
 
         emit TokenSold(
@@ -201,8 +295,7 @@ contract SimpleFactory {
         );
     }
 
-
-    // Function to add liquidity to Uniswap V2 and directly burn LP tokens
+    // Function to add liquidity to Uniswap V2 and directly burn LP tokens, and then remove the token from the mapping
     function addLiquidityAndBurn(address tokenAddress, uint256 ethToAdd) internal {
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
@@ -212,23 +305,40 @@ contract SimpleFactory {
         require(tokenAmountToAdd > 0, "Factory owns no tokens");
         require(ethToAdd > 0, "No ETH to add");
 
-        // Approve the Uniswap router to spend all tokens owned by the factory
+        // Calculate 90% of the ETH surplus to be added as liquidity
+        uint256 ethToAddLiquidity = (ethToAdd * 90) / 100;
+
+        // Calculate 9.9% of the ETH surplus to be sent to the feeReceiver
+        uint256 ethToFeeReceiver = (ethToAdd * 99) / 1000;
+
+        // 0.1% of the surplus remains in the contract as the new surplus
+        uint256 remainingSurplus = ethToAdd - ethToAddLiquidity - ethToFeeReceiver;
+
+        // Approve the Uniswap router to spend the token amount
         token.approve(uniswapRouter, tokenAmountToAdd);
 
-        // Add liquidity to Uniswap V2 and send LP tokens directly to the dead address
-        IUniswapV2Router02(uniswapRouter).addLiquidityETH{value: ethToAdd}(
+        // Add liquidity to Uniswap V2 using the calculated 90% of ETH surplus
+        IUniswapV2Router02(uniswapRouter).addLiquidityETH{value: ethToAddLiquidity}(
             tokenAddress,
             tokenAmountToAdd,
             0,  // Slippage is okay
             0,  // Slippage is okay
-            address(0),  // LP tokens will be sent directly to the dead address (burned)
+            address(0),  // Burn LP tokens (send to the dead address)
             block.timestamp + 300  // Deadline for the transaction
         );
 
-        // Emit event for liquidity addition
-        emit LiquidityAdded(tokenAddress, ethToAdd, tokenAmountToAdd, address(0));
-    }
+        // Send 9.9% of the ETH surplus to the feeReceiver
+        payable(feeReceiver).transfer(ethToFeeReceiver);
 
+        // Emit event for liquidity addition
+        emit LiquidityAdded(tokenAddress, ethToAddLiquidity, tokenAmountToAdd, address(0));
+        
+        // Update the remaining 0.1% surplus for the token
+        tokenEthSurplus[tokenAddress] = remainingSurplus;
+
+        // Remove the token from the mapping after liquidity is added
+        delete tokens[tokenAddress];  // This will remove the token's info from the mapping
+    }
 
     function getTokenAmountToBuy(address tokenAddress, uint256 ethAmount) public view returns (uint256) {
         TokenInfo storage tokenInfo = tokens[tokenAddress];
@@ -247,8 +357,19 @@ contract SimpleFactory {
         return (tokenInfo.virtualEth * 1 ether) / tokenInfo.virtualTokens;
     }
 
-    function withdraw() public {
+    function withdraw(uint256 amount) public {
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+        require(address(this).balance >= amount, "Not enough ETH in the contract");
+        payable(owner).transfer(amount);
+    }
+
+    function withdrawAll() public {
         require(msg.sender == owner, "Only the owner can withdraw funds");
         payable(owner).transfer(address(this).balance);
+    }
+
+    function removeToken(address tokenAddress) public {
+        require(msg.sender == owner, "Only the owner can remove tokens");
+        delete tokens[tokenAddress];  // This will remove the token's info from the mapping
     }
 }
