@@ -5,7 +5,9 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { createToken } from "@/lib/factory";
+import { createToken, createAndBuyToken } from "@/lib/factory"; // Import both functions
+import { Checkbox } from "./ui/checkbox";
+import { toast } from "react-toastify";
 
 export function CreateToken() {
   const [name, setName] = useState("");
@@ -16,19 +18,44 @@ export function CreateToken() {
   const [website, setWebsite] = useState("");
   const [image, setImage] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [devBuyEnabled, setDevBuyEnabled] = useState(false); // State for dev buy checkbox
+  const [devBuyAmount, setDevBuyAmount] = useState(""); // State for dev buy amount
 
   const handleCreateToken = () => {
     // Validate required fields
     if (!name || !ticker || !description || !image) {
-      setErrorMessage("Name, Ticker, Description and Image are required.");
+      setErrorMessage("Name, Ticker, Description, and Image are required.");
       return;
     }
 
     // Reset error message
     setErrorMessage("");
 
-    // Call createToken function from your factory
-    createToken(name, ticker, description, image, twitter, telegram, website);
+    // Check if the "Dev Buy" is enabled
+    if (devBuyEnabled) {
+      if (devBuyAmount > 0) {
+        // Call createTokenAndBuy function if conditions are met
+        createAndBuyToken(
+          name,
+          ticker,
+          description,
+          image,
+          twitter,
+          telegram,
+          website,
+          devBuyAmount
+        );
+      } else {
+        // Show a toast error if devBuyEnabled is true but devBuyAmount is not greater than 0
+        toast.error(
+          "Dev Buy is enabled, but the amount must be greater than 0."
+        );
+        return;
+      }
+    } else {
+      // Call the original createToken function if devBuy is not enabled
+      createToken(name, ticker, description, image, twitter, telegram, website);
+    }
   };
 
   const handleImageChange = (e) => {
@@ -188,6 +215,35 @@ export function CreateToken() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+        <div>
+          <div className="flex items-center justify-between">
+            <Label className="mb-4">Dev Buy</Label>
+            <div className="flex items-center">
+              {/* Use state to handle checkbox change */}
+              <Checkbox
+                id="dev-buy"
+                className="mr-2"
+                checked={devBuyEnabled}
+                onCheckedChange={(checked) => setDevBuyEnabled(checked)}
+              />
+              <Label htmlFor="dev-buy" className="text-sm font-medium">
+                Enable Dev Buy
+              </Label>
+            </div>
+          </div>
+          <div className="mt-2 flex items-center">
+            <Input
+              id="dev-buy-amount"
+              type="number"
+              min="0"
+              placeholder="Enter amount"
+              className="mt-1 block w-full"
+              disabled={!devBuyEnabled} // Disable input if devBuy is not enabled
+              value={devBuyAmount}
+              onChange={(e) => setDevBuyAmount(e.target.value)}
+            />
           </div>
         </div>
         <div className="flex justify-end">
