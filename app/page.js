@@ -124,6 +124,7 @@ export default function Home() {
       }
     };
   }, []);
+
   // Filter tokens based on the search query (name or symbol)
   const filteredTokens = tokens.filter(
     (token) =>

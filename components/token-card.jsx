@@ -22,7 +22,7 @@ export function TokenCard({
   )}`;
 
   // Use a default placeholder image if the image URL is not available
-  const displayedImageUrl = imageUrl || "/placeholder.svg";
+  const displayedImageUrl = /* imageUrl || */ "/placeholder.svg";
 
   return (
     <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full max-w-lg">
