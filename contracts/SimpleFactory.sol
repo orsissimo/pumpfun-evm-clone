@@ -372,6 +372,7 @@ contract SimpleFactory is ReentrancyGuard {
     }
 
     function setFeeReceiver(address _feeReceiver) external onlyOwner {
+        require(_feeReceiver != address(0), "Fee receiver cannot be the zero address");
         feeReceiver = _feeReceiver;
     }
 
