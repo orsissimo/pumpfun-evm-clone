@@ -154,7 +154,7 @@ contract SimpleFactory {
             uint256 ethToAdd = (ethSurplus * 99) / 100;
 
             // Call the liquidity function
-            addLiquidityAndBurn(address(newToken), ethToAdd);
+            addLiquidityAndBurn(address(newToken), ethToAdd, 400);
 
             // Update the remaining 10% surplus after liquidity is added
             tokenEthSurplus[address(newToken)] = ethSurplus - ethToAdd;
@@ -193,7 +193,7 @@ contract SimpleFactory {
     function buyToken(address tokenAddress, uint256 maxEth) public payable {
         require(tokens[tokenAddress].isSupported, "Token not supported by this factory");
         require(msg.value > 0, "You must send ETH to buy tokens");
-        require(msg.value <= maxEth, "You sent more ETH than the allowed maximum");
+        require(msg.value <= maxEth, "You sent more ETH than the maximum allowed");
 
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
@@ -220,14 +220,12 @@ contract SimpleFactory {
         // If the total ETH surplus is >= 1 ETH, add liquidity
         if (tokenEthSurplus[tokenAddress] >= 1 ether) {
             uint256 ethSurplus = tokenEthSurplus[tokenAddress];
-
-            // Add 90% of the total ETH surplus to liquidity
             uint256 ethToAdd = (ethSurplus * 99) / 100;
 
             // Call the liquidity function
-            addLiquidityAndBurn(tokenAddress, ethToAdd);
+            addLiquidityAndBurn(tokenAddress, ethToAdd, 400);
 
-            // Update the remaining 10% surplus after liquidity is added
+            // Update the remaining surplus after liquidity is added
             tokenEthSurplus[tokenAddress] = ethSurplus - ethToAdd;
         }
 
@@ -275,14 +273,12 @@ contract SimpleFactory {
         // If the total ETH surplus is >= 1 ETH, add liquidity
         if (tokenEthSurplus[tokenAddress] >= 1 ether) {
             uint256 ethSurplus = tokenEthSurplus[tokenAddress];
-
-            // Add 90% of the total ETH surplus to liquidity
             uint256 ethToAdd = (ethSurplus * 99) / 100;
 
             // Call the liquidity function
-            addLiquidityAndBurn(tokenAddress, ethToAdd);
+            addLiquidityAndBurn(tokenAddress, ethToAdd, 400);
 
-            // Update the remaining 10% surplus after liquidity is added
+            // Update the remaining surplus after liquidity is added
             tokenEthSurplus[tokenAddress] = ethSurplus - ethToAdd;
         }
 
@@ -291,12 +287,16 @@ contract SimpleFactory {
             tokenAddress, 
             ethAfterFee, 
             _tokenAmount, 
-            getCurrentPrice(tokenAddress)  // Include price per token in the event
+            getCurrentPrice(tokenAddress)
         );
     }
 
     // Function to add liquidity to Uniswap V2 and directly burn LP tokens, and then remove the token from the mapping
-    function addLiquidityAndBurn(address tokenAddress, uint256 ethToAdd) internal {
+    function addLiquidityAndBurn(
+        address tokenAddress, 
+        uint256 ethToAdd, 
+        uint256 slippageTolerance  // slippage tolerance in basis points (100 = 1%)
+    ) internal {
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
 
@@ -314,16 +314,26 @@ contract SimpleFactory {
         // 0.1% of the surplus remains in the contract as the new surplus
         uint256 remainingSurplus = ethToAdd - ethToAddLiquidity - ethToFeeReceiver;
 
+        // Get the current price ratio of token to ETH from Uniswap pool
+        (uint256 reserveToken, uint256 reserveETH) = getReservesFromUniswap(tokenAddress);
+        
+        // Calculate the expected amount of tokens based on the current price ratio
+        uint256 expectedTokenAmount = (ethToAddLiquidity * reserveToken) / reserveETH;
+
+        // Calculate the minimum amounts to account for slippage tolerance
+        uint256 minTokenAmount = (expectedTokenAmount * (10000 - slippageTolerance)) / 10000;  // 10000 basis points = 100%
+        uint256 minEthAmount = (ethToAddLiquidity * (10000 - slippageTolerance)) / 10000;
+
         // Approve the Uniswap router to spend the token amount
         token.approve(uniswapRouter, tokenAmountToAdd);
 
-        // Add liquidity to Uniswap V2 using the calculated 90% of ETH surplus
+        // Add liquidity to Uniswap V2 with slippage control
         IUniswapV2Router02(uniswapRouter).addLiquidityETH{value: ethToAddLiquidity}(
             tokenAddress,
             tokenAmountToAdd,
-            0,  // Slippage is okay
-            0,  // Slippage is okay
-            address(0),  // Burn LP tokens (send to the dead address)
+            minTokenAmount,  // Minimum token amount with slippage tolerance
+            minEthAmount,    // Minimum ETH amount with slippage tolerance
+            address(0),      // Burn LP tokens (send to the dead address)
             block.timestamp + 300  // Deadline for the transaction
         );
 
@@ -337,7 +347,13 @@ contract SimpleFactory {
         tokenEthSurplus[tokenAddress] = remainingSurplus;
 
         // Remove the token from the mapping after liquidity is added
-        delete tokens[tokenAddress];  // This will remove the token's info from the mapping
+        delete tokens[tokenAddress];
+    }
+
+    // Helper function to get reserves from Uniswap pair contract
+    function getReservesFromUniswap(address tokenAddress) internal view returns (uint256 reserveToken, uint256 reserveETH) {
+        address pair = IUniswapV2Factory(uniswapFactory).getPair(tokenAddress, uniswapRouter.WETH());
+        (reserveToken, reserveETH,) = IUniswapV2Pair(pair).getReserves();
     }
 
     function getTokenAmountToBuy(address tokenAddress, uint256 ethAmount) public view returns (uint256) {
