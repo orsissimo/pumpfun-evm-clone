@@ -8,7 +8,7 @@ import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
 contract SimpleFactory {
     address owner;
     address feeReceiver;
-    address uniswapRouter;
+    address public uniswapRouter;
     uint256 constant FEE_PERCENTAGE = 1;
     uint256 constant INITIAL_ETH_LIQUIDITY = 1 ether;
     uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18;
@@ -58,10 +58,18 @@ contract SimpleFactory {
         address indexed lpTokenAddress
     );
 
-    constructor() {
+    // Modified constructor to accept router address
+    constructor(address _uniswapRouter) {
         owner = msg.sender;
         feeReceiver = msg.sender;
-        uniswapRouter = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D;
+        uniswapRouter = _uniswapRouter == address(0) ? 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D : _uniswapRouter;
+    }
+
+    // Function to allow the owner to update the Uniswap router address
+    function setUniswapRouter(address _uniswapRouter) external {
+        require(msg.sender == owner, "Only owner can set the router");
+        require(_uniswapRouter != address(0), "Router address cannot be zero");
+        uniswapRouter = _uniswapRouter;
     }
 
     function createToken(
