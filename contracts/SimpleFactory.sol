@@ -4,14 +4,15 @@ pragma solidity ^0.8.0;
 
 import "./SimpleToken.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IUniswapV2Router02.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract SimpleFactory {
+contract SimpleFactory is ReentrancyGuard {
     address owner;
     address feeReceiver;
     address public uniswapRouter;
     uint256 constant FEE_PERCENTAGE = 1;
-    uint256 constant INITIAL_ETH_LIQUIDITY = 1 ether;
-    uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18;
+    uint256 constant INITIAL_ETH_LIQUIDITY = 1 ether;               // 1%
+    uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18;    // 1 billion
 
     mapping(address => TokenInfo) public tokens;
     mapping(address => uint256) public tokenEthSurplus;
@@ -198,7 +199,7 @@ contract SimpleFactory {
         return tokens[tokenAddress];
     }
 
-    function buyToken(address tokenAddress, uint256 maxEth) public payable {
+    function buyToken(address tokenAddress, uint256 maxEth) public payable nonReentrant {
         require(tokens[tokenAddress].isSupported, "Token not supported by this factory");
         require(msg.value > 0, "You must send ETH to buy tokens");
         require(msg.value <= maxEth, "You sent more ETH than the maximum allowed");
@@ -246,7 +247,7 @@ contract SimpleFactory {
         );
     }
 
-    function sellToken(address tokenAddress, uint256 _tokenAmount) public {
+    function sellToken(address tokenAddress, uint256 _tokenAmount) public nonReentrant {
         require(tokens[tokenAddress].isSupported, "Token not supported by this factory");
         require(_tokenAmount > 0, "You must specify a positive amount of tokens to sell");
 
@@ -304,7 +305,7 @@ contract SimpleFactory {
         address tokenAddress, 
         uint256 ethToAdd, 
         uint256 slippageTolerance  // slippage tolerance in basis points (100 = 1%)
-    ) internal {
+    ) internal nonReentrant {
         TokenInfo storage tokenInfo = tokens[tokenAddress];
         SimpleToken token = SimpleToken(tokenAddress);
 
