@@ -35,7 +35,7 @@ export function Navbar() {
           <FaTelegramPlane className="h-5 w-5 mx-1" />
         </Link>
         <Link
-          href="https://x.com/pumpdotstore"
+          href="https://x.com/pumpdotstyle"
           className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-flex"
           prefetch={false}
         >
@@ -117,7 +117,7 @@ export function Navbar() {
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-muted transition-colors">
                 <Link
-                  href="https://x.com/pumpdotstore"
+                  href="https://x.com/pumpdotstyle"
                   className="flex items-center gap-2 w-full"
                   prefetch={false}
                 >
