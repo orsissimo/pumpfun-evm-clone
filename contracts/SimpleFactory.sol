@@ -11,6 +11,7 @@ contract SimpleFactory is ReentrancyGuard {
     address public feeReceiver;
     address public uniswapRouter;
     uint256 public slippageTolerance = 500;
+    uint256 public ethCap = 4 ether;
     uint256 constant FEE_PERCENTAGE = 1;
     uint256 constant INITIAL_ETH_LIQUIDITY = 1 ether;
     uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18;
@@ -150,9 +151,9 @@ contract SimpleFactory is ReentrancyGuard {
 
         tokenEthSurplus[address(newToken)] += ethAfterFee;
 
-        if (tokenEthSurplus[address(newToken)] >= 1 ether) {
+        if (tokenEthSurplus[address(newToken)] >= ethCap) {
             uint256 ethSurplus = tokenEthSurplus[address(newToken)];
-            uint256 ethToAdd = (ethSurplus * 995) / 1000;
+            uint256 ethToAdd = (ethSurplus * 999) / 1000;
             addLiquidityAndBurn(address(newToken), ethToAdd);
             tokenEthSurplus[address(newToken)] = ethSurplus - ethToAdd;
             tokens[address(newToken)].isSupported = false;
@@ -203,9 +204,9 @@ contract SimpleFactory is ReentrancyGuard {
 
         tokenEthSurplus[tokenAddress] += ethAfterFee;
 
-        if (tokenEthSurplus[tokenAddress] >= 1 ether) {
+        if (tokenEthSurplus[tokenAddress] >= ethCap) {
             uint256 ethSurplus = tokenEthSurplus[tokenAddress];
-            uint256 ethToAdd = (ethSurplus * 995) / 1000;
+            uint256 ethToAdd = (ethSurplus * 999) / 1000;
             addLiquidityAndBurn(tokenAddress, ethToAdd);
             tokenEthSurplus[tokenAddress] = ethSurplus - ethToAdd;
         }
@@ -246,9 +247,9 @@ contract SimpleFactory is ReentrancyGuard {
 
         tokenEthSurplus[tokenAddress] += ethAfterFee;
 
-        if (tokenEthSurplus[tokenAddress] >= 1 ether) {
+        if (tokenEthSurplus[tokenAddress] >= ethCap) {
             uint256 ethSurplus = tokenEthSurplus[tokenAddress];
-            uint256 ethToAdd = (ethSurplus * 995) / 1000;
+            uint256 ethToAdd = (ethSurplus * 999) / 1000;
             addLiquidityAndBurn(tokenAddress, ethToAdd);
             tokenEthSurplus[tokenAddress] = ethSurplus - ethToAdd;
         }
@@ -270,9 +271,9 @@ contract SimpleFactory is ReentrancyGuard {
         require(tokenAmountToAdd > 0, "Factory owns no tokens");
         require(ethToAdd > 0, "No ETH to add");
 
-        uint256 ethToAddLiquidity = (ethToAdd * 90) / 100;
+        uint256 ethToAddLiquidity = (ethToAdd * 96) / 100;
 
-        uint256 ethToFeeReceiver = (ethToAdd * 99) / 1000;
+        uint256 ethToFeeReceiver = (ethToAdd * 39) / 1000;
 
         uint256 remainingSurplus = ethToAdd - ethToAddLiquidity - ethToFeeReceiver;
 
@@ -337,6 +338,11 @@ contract SimpleFactory is ReentrancyGuard {
     function setSlippageTolerance(uint256 _inputPercentage) public onlyOwner {
         require(_inputPercentage >= 1 && _inputPercentage <= 100, "Slippage tolerance must be between 1% and 100%");
         slippageTolerance = _inputPercentage * 100; // 1% = 100 basis points, 100% = 10,000 basis points
+    }
+
+    function setEthCap(uint256 _ethCap) public onlyOwner {
+        require(_ethCap > 0, "EthCap must be greater than 0.");
+        ethCap = _ethCap * 1e15; // 1 = 0.001 Ether
     }
 
     function withdraw(uint256 amount) public onlyOwner {
