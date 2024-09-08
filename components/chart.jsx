@@ -139,7 +139,8 @@ export default function CandlestickChart({ transactions }) {
   return (
     <div className="flex flex-col space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="text-sm flex items-end space-x-1">
+        <Label />
+        {/* <Label className="text-sm flex items-end space-x-1">
           <span>Creator : </span>
           <Link
             className="text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
@@ -150,7 +151,7 @@ export default function CandlestickChart({ transactions }) {
           >
             {formattedAddress}
           </Link>
-        </Label>
+        </Label> */}
         <div className="flex space-x-2">
           {["1s", "1m", "5m", "15m", "1H", "4H", "1D"].map((tf) => (
             <Button
