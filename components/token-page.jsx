@@ -295,6 +295,7 @@ export function TokenPage({ tokenData }) {
             </div>
           </CardContent>
         </Card>
+
         <Card className="flex flex-col h-[250px]">
           <CardHeader className="border-b">
             <CardTitle>Token Stats</CardTitle>
@@ -375,16 +376,27 @@ export function TokenPage({ tokenData }) {
                         className={
                           tx.eventType === "TokenPurchased"
                             ? "text-green-500"
-                            : "text-red-500"
+                            : tx.eventType === "TokenSold"
+                            ? "text-red-500"
+                            : "text-gray-500" // For "Create" and other unspecified events
                         }
                       >
-                        {tx.eventType === "TokenPurchased" ? "Buy" : "Sell"}
+                        {tx.eventType === "TokenPurchased"
+                          ? "Buy"
+                          : tx.eventType === "TokenSold"
+                          ? "Sell"
+                          : "Create"}{" "}
+                        {/* Display "Create" for the Create event */}
                       </TableCell>
+
                       <TableCell>
-                        {(
-                          Number(tx.tokensBought || tx.tokensSold) /
-                          10 ** 18
-                        ).toFixed(2)}
+                        {Number(
+                          Number(
+                            Number(tx.tokensBought || tx.tokensSold) / 10 ** 18
+                          ).toFixed(4)
+                        )
+                          .toLocaleString("en-US")
+                          .replace(/,/g, "'")}{" "}
                       </TableCell>
                       <TableCell>
                         {(
