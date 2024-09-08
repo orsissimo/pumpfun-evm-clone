@@ -143,7 +143,7 @@ export default function CandlestickChart({ transactions }) {
           <span>Creator : </span>
           <Link
             className="text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
-            href={`https://basescan.org/address//${address}`}
+            href={`https://etherscan.io/address//${address}`}
             target="_blank"
             rel="noopener noreferrer"
             prefetch={false}
