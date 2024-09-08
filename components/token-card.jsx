@@ -99,7 +99,7 @@ export function TokenCard({
           <div className="flex items-center gap-2">
             <Link
               className="text-sm text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
-              href={`https://basescan.org/address//${tokenAddress}`}
+              href={`https://etherscan.io/address//${tokenAddress}`}
               target="_blank"
               rel="noopener noreferrer"
               prefetch={false}

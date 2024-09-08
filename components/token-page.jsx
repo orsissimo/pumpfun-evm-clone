@@ -182,7 +182,7 @@ export function TokenPage({ tokenData }) {
           <div className="flex items-center gap-2">
             <Link
               className="text-sm text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
-              href={`https://basescan.org/address/${address}`}
+              href={`https://etherscan.io/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
               prefetch={false}
@@ -398,7 +398,7 @@ export function TokenPage({ tokenData }) {
                       </TableCell>
                       <TableCell>
                         <a
-                          href={`https://basescan.org/address/${
+                          href={`https://etherscan.io/address/${
                             tx.buyer || tx.seller
                           }`}
                           target="_blank"
