@@ -2,7 +2,7 @@
 
 /* eslint-disable react/no-unescaped-entities */
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { IoExitOutline } from "react-icons/io5";
@@ -18,6 +18,8 @@ import { Label } from "./ui/label";
 export function Docs() {
   const [currentSection, setCurrentSection] = useState("Introduction");
   const [isOpen, setIsOpen] = useState(false);
+  const sidebarRef = useRef(null); // Reference to sidebar
+  const toggleButtonRef = useRef(null);
 
   // Sidebar section configuration
   const sections = [
@@ -72,10 +74,30 @@ export function Docs() {
     }
   };
 
+  // Close sidebar when clicking outside of it
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
+        !toggleButtonRef.current.contains(event.target) // Ignore toggle button clicks
+      ) {
+        setIsOpen(false); // Close sidebar when clicking outside
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [sidebarRef, toggleButtonRef]);
+
   return (
     <div className="flex min-h-screen w-full">
       {/* Sidebar */}
       <aside
+        ref={sidebarRef}
         className={`fixed inset-y-0 left-0 z-10 flex w-64 flex-col border-r bg-background p-4 transition-all duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         } sm:translate-x-0 sm:flex`}
@@ -103,10 +125,11 @@ export function Docs() {
       <div className="flex-1 p-8 sm:pl-64 space-y-4">
         {/* Button to toggle the sidebar */}
         <Button
+          ref={toggleButtonRef} // Attach ref here
           variant="outline"
           size="icon"
           className="mx-auto max-w-3xl sm:hidden w-full"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => setIsOpen(!isOpen)} // Toggle sidebar on button click
         >
           <BookIcon className="h-5 w-5 mr-2" />
           <Label>Click to toggle the document index</Label>
@@ -155,7 +178,7 @@ function HowItWorks(props) {
           How it works?
         </h1>
         <Image
-          src="/placeholder.svg"
+          src="/docs-2.png"
           alt="How it works"
           width={1200}
           height={400}
@@ -215,7 +238,7 @@ function HowToCreate(props) {
           </li>
         </ol>
         <Image
-          src="/placeholder.svg"
+          src="/docs-3.png"
           alt="How it works"
           width={1200}
           height={400}
