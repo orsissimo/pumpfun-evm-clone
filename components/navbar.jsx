@@ -104,6 +104,17 @@ export function Navbar() {
                 </Button>
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuItem className="hover:bg-muted transition-colors">
+              <Link href="/docs" className="flex w-full" prefetch={false}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="sm:inline-flex hover:bg-primary hover:text-primary-foreground transition-colors w-full"
+                >
+                  Docs
+                </Button>
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <div className="flex align-middle justify-center">
               <DropdownMenuItem className="hover:bg-muted transition-colors">
