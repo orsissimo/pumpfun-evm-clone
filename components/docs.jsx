@@ -122,7 +122,7 @@ function Introduction(props) {
     <div className="flex flex-col items-start justify-center bg-background text-foreground">
       <div className="max-w-3xl space-y-6 text-left">
         <Image
-          src="/placeholder.svg"
+          src="/docs-1.jpg"
           alt="How it works"
           width={1200}
           height={400}
