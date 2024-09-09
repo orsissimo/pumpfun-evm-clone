@@ -13,6 +13,7 @@ import { GiMagicLamp, GiMagicHat, GiBoltSpellCast } from "react-icons/gi";
 import { IoExit } from "react-icons/io5";
 import { LuLink } from "react-icons/lu";
 import { GiVortex } from "react-icons/gi";
+import { Label } from "./ui/label";
 
 export function Docs() {
   const [currentSection, setCurrentSection] = useState("Introduction");
@@ -99,20 +100,19 @@ export function Docs() {
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 sm:pl-64">
+      <div className="flex-1 p-8 sm:pl-64 space-y-4">
+        {/* Button to toggle the sidebar */}
+        <Button
+          variant="outline"
+          size="icon"
+          className="mx-auto max-w-3xl sm:hidden w-full"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <BookIcon className="h-5 w-5 mr-2" />
+          <Label>Click to toggle the document index</Label>
+        </Button>
         <div className="mx-auto max-w-3xl">{renderContent()}</div>
       </div>
-
-      {/* Button to toggle the sidebar */}
-      <Button
-        variant="outline"
-        size="icon"
-        className="fixed top-4 left-4 z-20 sm:hidden"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <VolumeXIcon className="h-6 w-6" />
-        <span className="sr-only">Toggle sidebar</span>
-      </Button>
     </div>
   );
 }
