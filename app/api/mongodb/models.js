@@ -15,8 +15,6 @@ const tokenSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
-// Schema for Token Buy and Sell Events
 const tokenTransactionSchema = new mongoose.Schema(
   {
     eventType: {
@@ -32,19 +30,20 @@ const tokenTransactionSchema = new mongoose.Schema(
     tokensBought: { type: String }, // Only applicable for TokenPurchased events
     tokensSold: { type: String }, // Only applicable for TokenSold events
     pricePerToken: { type: String, required: true },
+    ethPriceAtTime: { type: String, required: true }, // New field for ETH price at the time of the transaction
+    transactionHash: { type: String, required: true }, // New field for the transaction hash
     timestamp: { type: Date, required: true },
   },
   { timestamps: true }
 );
 
 // Check if the model already exists before creating it
-const TokenEvent =
-  mongoose.models.TokenEvent || mongoose.model("TokenEvent", tokenSchema);
-const TokenTransactionEvent =
+const Token = mongoose.models.Token || mongoose.model("Token", tokenSchema);
+const TokenTransaction =
   mongoose.models.TokenTransaction ||
   mongoose.model("TokenTransaction", tokenTransactionSchema);
 
 module.exports = {
-  TokenEvent,
-  TokenTransactionEvent,
+  Token,
+  TokenTransaction,
 };
