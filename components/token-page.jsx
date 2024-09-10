@@ -174,12 +174,13 @@ export function TokenPage({ tokenData }) {
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {
-    setAmount(Number(tokenBalance).toFixed(0));
+    setAmount(String(Math.floor(Number(tokenBalance)))); // Rounds down to the nearest integer
   };
 
   // Handler to set the max ETH balance to the input field
   const handleMaxEth = () => {
-    setAmount(Number(ethBalance).toFixed(4));
+    const ethAmount = Math.floor(Number(ethBalance) * 10000) / 10000; // Rounds down to 4 decimal places
+    setAmount(String(ethAmount));
   };
 
   // Format the token address for display (e.g., "0x1234...5678")
