@@ -40,20 +40,28 @@ export default function CandlestickChart({ transactions }) {
     const interval = timeframes[timeframe];
     const ohlc = [];
 
+    // Sort transactions by timestamp in ascending order
+    const sortedTransactions = transactions.sort((a, b) => {
+      return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime();
+    });
+
     let currentCandle = null;
 
-    transactions.forEach((tx) => {
-      const timestamp = Math.floor(new Date(tx.timestamp).getTime() / 1000);
-      const price = Number(tx.pricePerToken) / 10 ** 18;
+    sortedTransactions.forEach((tx) => {
+      const timestamp = Math.floor(new Date(tx.timestamp).getTime() / 1000); // Using seconds
+      const price = Number(tx.pricePerToken) / 10 ** 9; // Adjusted price precision
       const volume = Number(tx.tokensBought || tx.tokensSold) / 10 ** 18;
 
-      if (!currentCandle || timestamp - currentCandle.time >= interval) {
+      // Handle timeframe bucketing
+      const candleStartTime = timestamp - (timestamp % interval);
+
+      if (!currentCandle || currentCandle.time !== candleStartTime) {
         if (currentCandle) {
-          ohlc.push(currentCandle);
+          ohlc.push(currentCandle); // Push the previous candle when the new one starts
         }
 
         currentCandle = {
-          time: timestamp - (timestamp % interval),
+          time: candleStartTime,
           open: price,
           high: price,
           low: price,
@@ -62,6 +70,7 @@ export default function CandlestickChart({ transactions }) {
         };
       }
 
+      // Update the current candle with new transaction data
       currentCandle.high = Math.max(currentCandle.high, price);
       currentCandle.low = Math.min(currentCandle.low, price);
       currentCandle.close = price;
@@ -102,6 +111,8 @@ export default function CandlestickChart({ transactions }) {
       },
       timeScale: {
         borderColor: "#303036",
+        timeVisible: true, // Ensure time scale is visible
+        secondsVisible: timeframe === "1s", // Show seconds only when necessary
       },
     });
 
@@ -121,6 +132,7 @@ export default function CandlestickChart({ transactions }) {
     chartInstanceRef.current = newChart; // Store chart instance in ref
     candlestickSeriesRef.current = candlestick; // Store series instance in ref
 
+    // Handle chart resizing
     window.addEventListener("resize", () => {
       newChart.applyOptions({ width: chartContainer.clientWidth });
     });
