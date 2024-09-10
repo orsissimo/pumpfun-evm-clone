@@ -26,7 +26,7 @@ export async function POST(request) {
       model,
       operation,
       criteria,
-      data
+      data // Pass 'data' as options
     );
 
     return NextResponse.json({ success: true, result });
@@ -41,22 +41,83 @@ export async function POST(request) {
 
 /*
 -----------Usage in client side-----------------
+const performDummyDbOperations = async () => {
+      try {
+        // Create a dummy object
+        const createResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "Token",
+            operation: "create",
+            modelName: "Token",
+            data: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+              name: "DummyToken",
+              symbol: "DUMMY",
+              initialSupply: "1000000",
+              description: "A dummy token for testing",
+            },
+          }),
+        });
+        const createResult = await createResponse.json();
+        console.log("Created dummy object:", createResult);
 
-async function performOperation() {
-  const response = await fetch('/api/dbOperation', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'User',  // Replace with your actual model name
-      operation: 'find',
-      criteria: { age: { $gte: 18 } },
-      data: {}  // Additional data if needed for create or update operations
-    }),
-  });
+        // Read the created object
+        const readResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "Token",
+            operation: "findOne",
+            modelName: "Token",
+            criteria: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+            },
+          }),
+        });
+        const readResult = await readResponse.json();
+        console.log("Read dummy object:", readResult);
 
-  const result = await response.json();
-  console.log(result);
-}
-*/
+        // Update the object with random values
+        const updateResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "Token",
+            operation: "findOneAndUpdate",
+            modelName: "Token",
+            criteria: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+            },
+            data: {
+              name: `UpdatedToken${Math.floor(Math.random() * 1000)}`,
+              initialSupply: (
+                Math.floor(Math.random() * 1000000) + 1000000
+              ).toString(),
+            },
+          }),
+        });
+        const updateResult = await updateResponse.json();
+        console.log("Updated dummy object:", updateResult);
+
+        // Delete the object
+        const deleteResponse = await fetch("/api/db-operation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "Token",
+            operation: "findOneAndDelete",
+            modelName: "Token",
+            criteria: {
+              tokenAddress: "0x1234567890123456789012345678901234567890",
+            },
+          }),
+        });
+        const deleteResult = await deleteResponse.json();
+        console.log("Deleted dummy object:", deleteResult);
+      } catch (error) {
+        console.error("Error performing dummy DB operations:", error);
+      }
+    };
+  }, []); */
