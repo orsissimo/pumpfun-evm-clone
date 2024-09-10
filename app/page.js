@@ -30,9 +30,12 @@ export default function Home() {
             sort: { timestamp: -1 },
           }
         );
+        console.log(dbData);
         const dbTokens = dbData.result || [];
-        console.log("Database tokens", dbTokens);
-        setTokens(dbTokens.dbData.result);
+        if (dbTokens.length > 0) {
+          console.log("Database tokens", dbTokens);
+          setTokens(dbTokens);
+        }
       } catch (err) {
         console.error(
           "Error fetching recent tokens or events from database:",
