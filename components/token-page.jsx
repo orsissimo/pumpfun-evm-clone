@@ -25,7 +25,12 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
-import { buyToken, sellToken } from "@/lib/factory";
+import {
+  buyToken,
+  getEthSurplus,
+  getFactoryCap,
+  sellToken,
+} from "@/lib/factory";
 import {
   fetchTokenBuysAndSells,
   getEtherBalance,
@@ -34,15 +39,20 @@ import {
 import CandlestickChart from "./chart";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
+import { FaDollarSign } from "react-icons/fa";
 import { getData } from "@/lib/mongodb";
+import { formatLargeNumber, formatPrice } from "@/lib/utils";
+import { Progress } from "./ui/progress";
+import { LoadingLines } from "./loading-rows";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
   const [tokenBalance, setTokenBalance] = useState(0);
   const [ethBalance, setEthBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
-  const [loading, setLoading] = useState(true); // For chart and transactions loading state
   const [needUpdate, setNeedUpdate] = useState(false);
+  const [tokenEthSurplus, setTokenEthSurplus] = useState(0);
+  const [tokenEthCap, setTokenEthCap] = useState(0);
 
   const {
     name,
@@ -80,7 +90,6 @@ export function TokenPage({ tokenData }) {
           err
         );
       } finally {
-        setLoading(false);
         setNeedUpdate(false);
       }
     }
@@ -117,6 +126,27 @@ export function TokenPage({ tokenData }) {
 
     fetchBalances();
   }, [tokenAddress]);
+
+  // Fetch token ETH surplus and ETH cap
+  useEffect(() => {
+    async function fetchEthData() {
+      try {
+        const surplus = await getEthSurplus(tokenAddress); // Fetch surplus as a BigInt
+        const cap = await getFactoryCap(); // Fetch cap as a BigInt
+
+        // Divide both by 10**18 to get ETH values
+        setTokenEthSurplus(Number(surplus) / 10 ** 18);
+        setTokenEthCap(Number(cap) / 10 ** 18);
+      } catch (error) {
+        console.error("Failed to fetch ETH surplus or cap:", error);
+      }
+    }
+
+    fetchEthData();
+  }, [tokenAddress]);
+
+  const jailbreakPercentage =
+    tokenEthCap > 0 ? ((tokenEthSurplus / tokenEthCap) * 100).toFixed(2) : 0;
 
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
@@ -156,6 +186,29 @@ export function TokenPage({ tokenData }) {
   const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
     -4
   )}`;
+
+  // 1D Volume calculations
+  // Get the current time and subtract 24 hours (in milliseconds)
+  const now = Date.now();
+  const oneDayAgo = now - 24 * 60 * 60 * 1000;
+
+  // Filter transactions that occurred within the last day
+  const lastDayTransactions = transactions.filter(
+    (tx) => new Date(tx.timestamp).getTime() > oneDayAgo
+  );
+
+  // Sum up the ethSpent and ethReceived, each multiplied by ethPriceAtTime in the last day
+  const totalEthVolumeInUsd = lastDayTransactions
+    .reduce((sum, tx) => {
+      const ethValueSpent = tx.ethSpent
+        ? (Number(tx.ethSpent) / 10 ** 18) * tx.ethPriceAtTime
+        : 0;
+      const ethValueReceived = tx.ethReceived
+        ? (Number(tx.ethReceived) / 10 ** 18) * tx.ethPriceAtTime
+        : 0;
+      return sum + ethValueSpent + ethValueReceived;
+    }, 0)
+    .toFixed(2); // Keeping it to 2 decimal places for USD
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -239,7 +292,7 @@ export function TokenPage({ tokenData }) {
         {/* <div className="h-[400px] bg-muted rounded-lg overflow-hidden">
           <div />
         </div> */}
-        {loading ? (
+        {transactions.length == 0 ? (
           <Card>
             <CardContent>
               <div className="w-full h-[453px]">
@@ -252,7 +305,7 @@ export function TokenPage({ tokenData }) {
         )}
       </div>
       <div className="flex flex-col gap-8 h-full">
-        <Card className="flex flex-col h-[400px]">
+        <Card className="flex flex-col h-[390px]">
           <CardHeader className="border-b">
             <CardTitle>Buy / Sell</CardTitle>
           </CardHeader>
@@ -261,6 +314,11 @@ export function TokenPage({ tokenData }) {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="amount">Amount</Label>
+                  <span className="text-xs opacity-20">
+                    Enter the amount in ETH to perform a Buy.
+                    <br />
+                    Enter the amount in {symbol} to perform a Sell.
+                  </span>
                   <Input
                     id="amount"
                     type="number"
@@ -271,26 +329,6 @@ export function TokenPage({ tokenData }) {
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-2">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="balance">{symbol} Balance</Label>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleMaxToken}
-                      >
-                        <ArrowUpIcon className="h-4 w-4" />
-                        <span className="sr-only">Use max</span>
-                      </Button>
-                    </div>
-                    {/* Display fetched token balance */}
-                    <div className="font-bold">
-                      {Number(Number(tokenBalance).toFixed(2))
-                        .toLocaleString("en-US")
-                        .replace(/,/g, "'")}{" "}
-                      {symbol}
-                    </div>
-                  </div>
                   <div className="grid gap-2">
                     <div className="flex items-center justify-between">
                       <Label htmlFor="eth-balance">ETH Balance</Label>
@@ -311,6 +349,26 @@ export function TokenPage({ tokenData }) {
                       ETH
                     </div>
                   </div>
+                  <div className="grid gap-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="balance">{symbol} Balance</Label>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleMaxToken}
+                      >
+                        <ArrowUpIcon className="h-4 w-4" />
+                        <span className="sr-only">Use max</span>
+                      </Button>
+                    </div>
+                    {/* Display fetched token balance */}
+                    <div className="font-bold">
+                      {Number(Number(tokenBalance).toFixed(2))
+                        .toLocaleString("en-US")
+                        .replace(/,/g, "'")}{" "}
+                      {symbol}
+                    </div>
+                  </div>
                 </div>
                 <div className="flex gap-4 w-full">
                   <Button className="flex-1" onClick={handleBuyToken}>
@@ -329,7 +387,7 @@ export function TokenPage({ tokenData }) {
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col h-[250px]">
+        <Card className="flex flex-col h-[260px]">
           <CardHeader className="border-b">
             <CardTitle>Token Stats</CardTitle>
           </CardHeader>
@@ -339,29 +397,44 @@ export function TokenPage({ tokenData }) {
                 <div>
                   <div className="text-muted-foreground">
                     <div className="flex items-center space-x-1">
-                      <span>Market Cap in</span>{" "}
-                      <FaEthereum className="h-4 w-4" />
+                      <span>Market Cap</span>
                     </div>
                   </div>
                   <div className="font-bold">
-                    {/* {transactions.length > 0
-                      ? (transactions[0].pricePerToken / 10 ** 18) * 1000000000
-                      : 0} */}
-                    -
+                    {transactions.length > 0
+                      ? formatLargeNumber(
+                          (transactions[0].pricePerToken / 10 ** 18) *
+                            10 ** 9 *
+                            transactions[0].ethPriceAtTime
+                        )
+                      : "-"}
                   </div>
                 </div>
-                <div>
-                  <div className="text-muted-foreground">Liquidity</div>
-                  <div className="font-bold">-</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Jailbreak %</div>
-                  <div className="font-bold">-</div>
-                </div>
+
                 <div>
                   <div className="text-muted-foreground">1D Volume</div>
-                  <div className="font-bold">-</div>
+                  <div className="font-bold">
+                    {lastDayTransactions.length > 0
+                      ? formatLargeNumber(totalEthVolumeInUsd)
+                      : "-"}
+                  </div>
                 </div>
+              </div>
+              <div>
+                <div className="text-muted-foreground">Jailbreak %</div>
+                <div className="font-bold mb-2">
+                  {tokenEthCap > 0 ? (
+                    <div className="flex justify-between">
+                      <span>{jailbreakPercentage}%</span>
+                      {/* <span className="text-[#3F3F44]">
+                        {(tokenEthCap - tokenEthSurplus).toFixed(2)} ETH Left
+                      </span> */}
+                    </div>
+                  ) : (
+                    "-"
+                  )}
+                </div>
+                <Progress value={jailbreakPercentage} />
               </div>
             </div>
           </CardContent>
@@ -383,14 +456,14 @@ export function TokenPage({ tokenData }) {
                   <TableHead>For</TableHead>
                   <TableHead>
                     <div className="flex items-center space-x-1">
-                      <span>Price in</span> <FaEthereum className="h-4 w-4" />
+                      <span>Price in</span> <FaDollarSign className="h-4 w-4" />
                     </div>
                   </TableHead>
                   <TableHead>Wallet</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading ? (
+                {transactions.length == 0 ? (
                   <TableRow>
                     <TableCell colSpan={6}>
                       <div className="flex items-center h-full">
@@ -435,11 +508,26 @@ export function TokenPage({ tokenData }) {
                         {(
                           Number(tx.ethSpent || tx.ethReceived) /
                           10 ** 18
-                        ).toFixed(4)}{" "}
+                        ).toFixed(6)}{" "}
                         ETH
                       </TableCell>
                       <TableCell>
-                        {Number(tx.pricePerToken / 10 ** 18)}
+                        <span>
+                          0.0
+                          <span className="text-xs align-sub">
+                            {
+                              formatPrice(
+                                (tx.pricePerToken * tx.ethPriceAtTime) /
+                                  10 ** 18
+                              ).leadingZeros
+                            }
+                          </span>
+                          {
+                            formatPrice(
+                              (tx.pricePerToken * tx.ethPriceAtTime) / 10 ** 18
+                            ).remainingFraction
+                          }
+                        </span>
                       </TableCell>
                       <TableCell>
                         <a
