@@ -137,11 +137,10 @@ export default function CandlestickChart({ transactions }) {
   )}`;
 
   return (
-    <div className="flex flex-col space-y-4">
-      <div className="flex items-center justify-between">
-        <Label />
-        {/* <Label className="text-sm flex items-end space-x-1">
-          <span>Creator : </span>
+    <div className="flex flex-col space-y-4 w-full max-w-3xl mx-auto">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full space-y-2 sm:space-y-0">
+        <Label className="text-lg font-semibold mb-2 sm:mb-0">
+          {/* <span>Creator : </span>
           <Link
             className="text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
             href={`https://etherscan.io/address/${tokenAddress}`}
@@ -150,21 +149,22 @@ export default function CandlestickChart({ transactions }) {
             prefetch={false}
           >
             {formattedAddress}
-          </Link>
-        </Label> */}
-        <div className="flex space-x-2">
+          </Link> */}
+        </Label>
+        <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
           {["1s", "1m", "5m", "15m", "1H", "4H", "1D"].map((tf) => (
             <Button
               key={tf}
               variant={timeframe === tf ? "secondary" : "outline"}
               onClick={() => handleTimeframeChange(tf)}
+              className="px-2 py-1 text-sm"
             >
               {tf}
             </Button>
           ))}
         </div>
       </div>
-      <Card>
+      <Card className="w-full">
         <CardContent>
           <div
             id="chart"

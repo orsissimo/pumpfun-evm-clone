@@ -314,10 +314,10 @@ export function TokenPage({ tokenData }) {
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
                   <Label htmlFor="amount">Amount</Label>
-                  <span className="text-xs opacity-20">
-                    Enter the amount in ETH to perform a Buy.
+                  <span className="text-sm opacity-20">
+                    Enter the amount in ETH to Buy
                     <br />
-                    Enter the amount in {symbol} to perform a Sell.
+                    Enter the amount in {symbol} to Sell
                   </span>
                   <Input
                     id="amount"
