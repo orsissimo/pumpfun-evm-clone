@@ -234,6 +234,9 @@ contract SimpleFactory is ReentrancyGuard {
         uint256 fee = (ethToReturn * FEE_PERCENTAGE) / 100;
         uint256 ethAfterFee = ethToReturn - fee;
 
+        require(tokenInfo.virtualEth >= ethAfterFee, "Insufficient virtual ETH");
+        require(tokenEthSurplus[tokenAddress] >= ethAfterFee, "Insufficient token ETH surplus");
+
         require(address(this).balance >= ethAfterFee, "Not enough ETH in the contract to complete the sale");
 
         require(token.transferFrom(msg.sender, address(this), _tokenAmount), "Token transfer failed");
@@ -245,7 +248,7 @@ contract SimpleFactory is ReentrancyGuard {
         tokenInfo.virtualEth -= ethAfterFee;
         tokenInfo.virtualTokens += _tokenAmount;
 
-        tokenEthSurplus[tokenAddress] += ethAfterFee;
+        tokenEthSurplus[tokenAddress] -= ethAfterFee;
 
         if (tokenEthSurplus[tokenAddress] >= ethCap) {
             uint256 ethSurplus = tokenEthSurplus[tokenAddress];
