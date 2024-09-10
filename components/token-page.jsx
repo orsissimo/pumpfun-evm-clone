@@ -69,10 +69,16 @@ export function TokenPage({ tokenData }) {
           }
         );
 
-        const dbTrasactions = dbData.result || [];
-        if (dbTrasactions.length > 0) {
-          console.log("Database transactions", dbTrasactions);
-          setTransactions(dbTrasactions);
+        const dbTransactions = dbData.result || [];
+        if (dbTransactions.length > 0) {
+          console.log("Database transactions", dbTransactions);
+
+          const orderedDbTransactions = dbTransactions.sort((a, b) => {
+            console.log(a.timestamp + " | " + b.timestamp);
+            return a.timestamp - b.timestamp;
+          });
+
+          setTransactions(orderedDbTransactions);
         }
       } catch (err) {
         console.error(
