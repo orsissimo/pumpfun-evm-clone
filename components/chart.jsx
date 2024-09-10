@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createChart, ColorType } from "lightweight-charts";
+import {
+  createChart,
+  ColorType,
+  CrosshairMode,
+  LineStyle,
+} from "lightweight-charts";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { Card, CardContent } from "./ui/card";
@@ -113,12 +118,18 @@ export default function CandlestickChart({ transactions }) {
       rightPriceScale: {
         borderColor: "#303036",
         priceFormat: {
-          type: "custom", // Set price formatting to custom
-          formatter: (price) => price.toFixed(8), // Format the price to 8 digits
+          type: "custom",
+          formatter: (price) => {
+            const fixedPrice = price.toFixed(8);
+            return fixedPrice.replace(/\.?0+$/, "");
+          },
         },
       },
       timeScale: {
         borderColor: "#303036",
+      },
+      crosshair: {
+        mode: CrosshairMode.Normal,
       },
     });
 
@@ -131,28 +142,70 @@ export default function CandlestickChart({ transactions }) {
       wickDownColor: "#ef4444",
     });
 
-    candlestick.setData(
-      formatTransactionsForCandlestick(transactions, timeframe)
+    const formattedData = formatTransactionsForCandlestick(
+      transactions,
+      timeframe
     );
+    candlestick.setData(formattedData);
+
+    // Add horizontal price lines
+    const prices = formattedData.map((candle) => candle.close);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    const priceRange = maxPrice - minPrice;
+
+    // Create 5 evenly spaced price lines
+    for (let i = 0; i <= 4; i++) {
+      const linePrice = minPrice + (priceRange * i) / 4;
+      const priceLine = {
+        price: linePrice,
+        color: "#303036",
+        lineWidth: 1,
+        lineStyle: LineStyle.Dashed,
+        axisLabelVisible: false,
+        title: "",
+      };
+      candlestick.createPriceLine(priceLine);
+    }
+
+    newChart.applyOptions({
+      width: chartContainer.clientWidth,
+      localization: {
+        priceFormatter: (price) => {
+          const fixedPrice = price.toFixed(8);
+          return fixedPrice.replace(/\.?0+$/, "");
+        },
+      },
+    });
 
     chartInstanceRef.current = newChart; // Store chart instance in ref
     candlestickSeriesRef.current = candlestick; // Store series instance in ref
 
     // Handle chart resizing
-    window.addEventListener("resize", () => {
-      newChart.applyOptions({ width: chartContainer.clientWidth });
-    });
+    const handleResize = () => {
+      newChart.applyOptions({
+        width: chartContainer.clientWidth,
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      newChart.remove();
+    };
   }
 
   const handleTimeframeChange = (newTimeframe) => {
     setTimeframe(newTimeframe);
   };
 
-  const tokenAddress = "0xdfedBfaeEdaA8b005F3c18E33843948b3D50bCc5"; // Hardcoded, to change
+  /* const tokenAddress = "0xdfedBfaeEdaA8b005F3c18E33843948b3D50bCc5"; // Hardcoded, to change
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
     -4
-  )}`;
+  )}`; */
 
   return (
     <div className="flex flex-col space-y-4 w-full max-w-3xl mx-auto">

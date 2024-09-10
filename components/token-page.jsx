@@ -319,7 +319,7 @@ export function TokenPage({ tokenData }) {
                     className="flex justify-between items-center"
                   >
                     <span>Amount</span>
-                    <span className="opacity-20">
+                    <span className="text-muted">
                       ETH to Buy / {symbol} to Sell
                     </span>
                   </Label>

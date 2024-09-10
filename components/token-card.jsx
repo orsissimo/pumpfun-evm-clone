@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import Image from "next/image"; // For optimized image loading with Next.js
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
+import { Label } from "./ui/label";
 
 export function TokenCard({
   tokenAddress,
@@ -47,9 +48,9 @@ export function TokenCard({
               <p className="text-sm text-muted-foreground">{symbol}</p>
             </div>
           </div>
-          <div className="text-md opacity-60 text-muted-foreground mt-2">
+          {/* <div className="text-md opacity-60 text-muted-foreground mt-2">
             - MCAP
-          </div>
+          </div> */}
         </div>
         <div className="p-6 h-16 overflow-auto scrollbar-hide">
           <p className="text-muted-foreground break-words">
@@ -94,6 +95,9 @@ export function TokenCard({
               >
                 <FaTelegramPlane className="w-5 h-5" />
               </Link>
+            )}
+            {!websiteLink && !twitterLink && !telegramLink && (
+              <Label className="opacity-50">No social links</Label>
             )}
           </div>
           <div className="flex items-center gap-2">
