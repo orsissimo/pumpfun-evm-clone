@@ -467,7 +467,8 @@ export function TokenPage({ tokenData }) {
                   <TableRow>
                     <TableCell colSpan={6}>
                       <div className="flex items-center h-full">
-                        <LoadingSpinner />
+                        {/* <LoadingSpinner /> */}
+                        No transactions found.
                       </div>
                     </TableCell>
                   </TableRow>
