@@ -50,7 +50,7 @@ export function TokenPage({ tokenData }) {
     twitterLink,
     telegramLink,
     websiteLink,
-    address,
+    tokenAddress,
   } = tokenData;
 
   //console.log(tokenData);
@@ -66,7 +66,7 @@ export function TokenPage({ tokenData }) {
       return;
     }
     // Call createToken function from your factory
-    buyToken(amount, address);
+    buyToken(amount, tokenAddress);
   };
 
   const handleSellToken = () => {
@@ -76,14 +76,14 @@ export function TokenPage({ tokenData }) {
       return;
     }
     // Call createToken function from your factory
-    sellToken(amount, address);
+    sellToken(amount, tokenAddress);
   };
 
   // Fetch balances when component mounts
   useEffect(() => {
     const fetchBalances = async () => {
       try {
-        const fetchedTokenBalance = await getTokenBalance(address); // Fetch token balance
+        const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
         const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
 
         setTokenBalance(fetchedTokenBalance);
@@ -94,13 +94,13 @@ export function TokenPage({ tokenData }) {
     };
 
     fetchBalances();
-  }, [address]);
+  }, [tokenAddress]);
 
   useEffect(() => {
     const fetchTransactions = async () => {
       setLoading(true); // Start loading
       try {
-        const fetchedTransactions = await fetchTokenBuysAndSells(address); // Replace with your function to fetch transactions
+        const fetchedTransactions = await fetchTokenBuysAndSells(tokenAddress); // Replace with your function to fetch transactions
         setTransactions(fetchedTransactions);
       } catch (error) {
         console.error("Failed to fetch transactions", error);
@@ -109,7 +109,7 @@ export function TokenPage({ tokenData }) {
     };
 
     fetchTransactions();
-  }, [address]);
+  }, [tokenAddress]);
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {
@@ -122,7 +122,9 @@ export function TokenPage({ tokenData }) {
   };
 
   // Format the token address for display (e.g., "0x1234...5678")
-  const formattedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
+  const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
+    -4
+  )}`;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
@@ -182,7 +184,7 @@ export function TokenPage({ tokenData }) {
           <div className="flex items-center gap-2">
             <Link
               className="text-sm text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
-              href={`https://etherscan.io/address/${address}`}
+              href={`https://etherscan.io/address/${tokenAddress}`}
               target="_blank"
               rel="noopener noreferrer"
               prefetch={false}
@@ -193,7 +195,7 @@ export function TokenPage({ tokenData }) {
               variant="ghost"
               size="icon"
               onClick={() => {
-                navigator.clipboard.writeText(address);
+                navigator.clipboard.writeText(tokenAddress);
                 toast("Token address copied to clipboard!");
               }}
             >

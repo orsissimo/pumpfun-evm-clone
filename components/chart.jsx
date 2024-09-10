@@ -132,9 +132,11 @@ export default function CandlestickChart({ transactions }) {
     setTimeframe(newTimeframe);
   };
 
-  const address = "0xdfedBfaeEdaA8b005F3c18E33843948b3D50bCc5"; // Hardcoded, to change
+  const tokenAddress = "0xdfedBfaeEdaA8b005F3c18E33843948b3D50bCc5"; // Hardcoded, to change
   // Format the token address for display (e.g., "0x1234...5678")
-  const formattedAddress = `${address.slice(0, 6)}...${address.slice(-4)}`;
+  const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
+    -4
+  )}`;
 
   return (
     <div className="flex flex-col space-y-4">
@@ -144,7 +146,7 @@ export default function CandlestickChart({ transactions }) {
           <span>Creator : </span>
           <Link
             className="text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
-            href={`https://etherscan.io/address//${address}`}
+            href={`https://etherscan.io/address/${tokenAddress}`}
             target="_blank"
             rel="noopener noreferrer"
             prefetch={false}

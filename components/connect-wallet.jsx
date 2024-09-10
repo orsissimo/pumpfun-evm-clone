@@ -35,9 +35,9 @@ const ConnectWallet = () => {
     }
   };
 
-  const shortenAddress = (address) => {
-    if (!address) return "";
-    return address.slice(0, 6) + "..." + address.slice(-4);
+  const shortenAddress = (tokenAddress) => {
+    if (!tokenAddress) return "";
+    return tokenAddress.slice(0, 6) + "..." + tokenAddress.slice(-4);
   };
 
   /* const disconnectWallet = () => {
