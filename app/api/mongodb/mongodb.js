@@ -67,7 +67,7 @@ export async function performDatabaseOperation(
         console.log(`Found documents: ${JSON.stringify(result)}`);
         break;
       case "findAll":
-        result = await model.find(); // Find all documents without criteria
+        result = await model.find().sort(options.sort || {}); // Find all documents without criteria
         console.log(`Found all documents: ${JSON.stringify(result)}`);
         break;
       case "findOne":
