@@ -40,8 +40,6 @@ export default function CandlestickChart({ transactions }) {
     const interval = timeframes[timeframe];
     const ohlc = [];
 
-    transactions.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
     let currentCandle = null;
 
     transactions.forEach((tx) => {

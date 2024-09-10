@@ -69,16 +69,10 @@ export function TokenPage({ tokenData }) {
           }
         );
 
-        const dbTransactions = dbData.result || [];
-        if (dbTransactions.length > 0) {
-          console.log("Database transactions", dbTransactions);
-
-          const orderedDbTransactions = dbTransactions.sort((a, b) => {
-            console.log(a.timestamp + " | " + b.timestamp);
-            return a.timestamp - b.timestamp;
-          });
-
-          setTransactions(orderedDbTransactions);
+        const dbTrasactions = dbData.result || [];
+        if (dbTrasactions.length > 0) {
+          console.log("Database transactions", dbTrasactions);
+          setTransactions(dbTrasactions);
         }
       } catch (err) {
         console.error(
@@ -92,7 +86,37 @@ export function TokenPage({ tokenData }) {
     }
     fetchTransactionsFromDb();
   }, [needUpdate, tokenAddress]);
-  //console.log(tokenData);
+
+  useEffect(() => {
+    async function fetchTransactionsFromBlockchain() {
+      try {
+        const fetchedTransactions = await fetchTokenBuysAndSells(tokenAddress);
+        console.log("Fetched transactions", fetchedTransactions);
+      } catch (error) {
+        console.error("Failed to fetch transactions", error);
+      } finally {
+        setNeedUpdate(true);
+      }
+    }
+    fetchTransactionsFromBlockchain();
+  }, [tokenAddress]);
+
+  // Fetch balances when component mounts
+  useEffect(() => {
+    const fetchBalances = async () => {
+      try {
+        const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
+        const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
+
+        setTokenBalance(fetchedTokenBalance);
+        setEthBalance(fetchedEthBalance);
+      } catch (error) {
+        console.error("Failed to fetch balances", error);
+      }
+    };
+
+    fetchBalances();
+  }, [tokenAddress]);
 
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
@@ -117,37 +141,6 @@ export function TokenPage({ tokenData }) {
     // Call createToken function from your factory
     sellToken(amount, tokenAddress);
   };
-
-  // Fetch balances when component mounts
-  useEffect(() => {
-    const fetchBalances = async () => {
-      try {
-        const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
-        const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
-
-        setTokenBalance(fetchedTokenBalance);
-        setEthBalance(fetchedEthBalance);
-      } catch (error) {
-        console.error("Failed to fetch balances", error);
-      }
-    };
-
-    fetchBalances();
-  }, [tokenAddress]);
-
-  const fetchTransactionsFromBlockchain = async () => {
-    try {
-      const fetchedTransactions = await fetchTokenBuysAndSells(tokenAddress); // Replace with your function to fetch transactions
-      console.log(fetchedTransactions);
-    } catch (error) {
-      console.error("Failed to fetch transactions", error);
-    } finally {
-      setNeedUpdate(true);
-    }
-  };
-
-  fetchTransactionsFromBlockchain();
-  useEffect(() => {}, [tokenAddress]);
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {
@@ -646,7 +639,6 @@ function CopyIcon(props) {
     </svg>
   );
 }
-
 function LoadingSpinner() {
   return (
     <div className="flex justify-center items-center h-full">
