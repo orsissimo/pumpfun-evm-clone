@@ -12,13 +12,13 @@ export default function TokenDetail() {
   const [error, setError] = useState(null);
 
   const pathname = usePathname();
-  const address = pathname.split("/")[1]; // Extract token address from the URL
+  const tokenAddress = pathname.split("/")[1]; // Extract token address from the URL
 
   useEffect(() => {
     async function fetchTokenData() {
       try {
         // Fetch token details based on the address
-        const data = await fetchCreateTokenEvents(address);
+        const data = await fetchCreateTokenEvents(tokenAddress);
 
         // If no data found, handle it gracefully
         if (!data) {
@@ -34,7 +34,7 @@ export default function TokenDetail() {
     }
 
     fetchTokenData();
-  }, [address]);
+  }, [tokenAddress]);
 
   if (loading) {
     return (
