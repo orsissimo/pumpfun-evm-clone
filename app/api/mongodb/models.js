@@ -12,6 +12,7 @@ const tokenSchema = new mongoose.Schema(
     twitterLink: { type: String },
     telegramLink: { type: String },
     websiteLink: { type: String },
+    timestamp: { type: Date, required: true },
   },
   { timestamps: true }
 );
