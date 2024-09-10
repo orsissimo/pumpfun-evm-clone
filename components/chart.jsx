@@ -8,7 +8,7 @@ import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 
 export default function CandlestickChart({ transactions }) {
-  const [timeframe, setTimeframe] = useState("1m");
+  const [timeframe, setTimeframe] = useState("1H");
   const chartContainerRef = useRef();
   const chartInstanceRef = useRef(); // Use a ref to store the chart instance
   const candlestickSeriesRef = useRef(); // Use a ref to store the candlestick series
@@ -49,12 +49,16 @@ export default function CandlestickChart({ transactions }) {
 
     sortedTransactions.forEach((tx) => {
       const timestamp = Math.floor(new Date(tx.timestamp).getTime() / 1000); // Using seconds
-      const price = Number(tx.pricePerToken) / 10 ** 9; // Adjusted price precision
-      const volume = Number(tx.tokensBought || tx.tokensSold) / 10 ** 18;
+      const ethPriceAtTime = Number(tx.ethPriceAtTime);
+      const pricePerToken = Number(tx.pricePerToken);
+      const price = (pricePerToken * ethPriceAtTime) / 10 ** 18; // Price calculation formula
+
+      const volume = Number(tx.tokensBought || tx.tokensSold) / 10 ** 18; // Adjust volume for precision
 
       // Handle timeframe bucketing
       const candleStartTime = timestamp - (timestamp % interval);
 
+      // If new candle timeframe begins or no candle exists yet
       if (!currentCandle || currentCandle.time !== candleStartTime) {
         if (currentCandle) {
           ohlc.push(currentCandle); // Push the previous candle when the new one starts
@@ -62,7 +66,7 @@ export default function CandlestickChart({ transactions }) {
 
         currentCandle = {
           time: candleStartTime,
-          open: price,
+          open: currentCandle ? currentCandle.close : price, // Open is the previous candle's close, or current price if no previous candle
           high: price,
           low: price,
           close: price,
@@ -108,11 +112,13 @@ export default function CandlestickChart({ transactions }) {
       },
       rightPriceScale: {
         borderColor: "#303036",
+        priceFormat: {
+          type: "custom", // Set price formatting to custom
+          formatter: (price) => price.toFixed(8), // Format the price to 8 digits
+        },
       },
       timeScale: {
         borderColor: "#303036",
-        timeVisible: true, // Ensure time scale is visible
-        secondsVisible: timeframe === "1s", // Show seconds only when necessary
       },
     });
 

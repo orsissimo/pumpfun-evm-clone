@@ -476,79 +476,87 @@ export function TokenPage({ tokenData }) {
                     </TableCell>
                   </TableRow>
                 ) : transactions.length > 0 ? (
-                  transactions.map((tx, index) => (
-                    <TableRow key={index}>
-                      {/* Render transaction rows */}
-                      <TableCell>
-                        {new Date(tx.timestamp).toLocaleString()}
-                      </TableCell>
-                      <TableCell
-                        className={
-                          tx.eventType === "TokenPurchased"
-                            ? "text-green-500"
+                  transactions
+                    .sort(
+                      (a, b) =>
+                        new Date(b.timestamp).getTime() -
+                        new Date(a.timestamp).getTime()
+                    ) // Sort by timestamp descending
+                    .map((tx, index) => (
+                      <TableRow key={index}>
+                        {/* Render transaction rows */}
+                        <TableCell>
+                          {new Date(tx.timestamp).toLocaleString()}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            tx.eventType === "TokenPurchased"
+                              ? "text-green-500"
+                              : tx.eventType === "TokenSold"
+                              ? "text-red-500"
+                              : "text-gray-500" // For "Create" and other unspecified events
+                          }
+                        >
+                          {tx.eventType === "TokenPurchased"
+                            ? "Buy"
                             : tx.eventType === "TokenSold"
-                            ? "text-red-500"
-                            : "text-gray-500" // For "Create" and other unspecified events
-                        }
-                      >
-                        {tx.eventType === "TokenPurchased"
-                          ? "Buy"
-                          : tx.eventType === "TokenSold"
-                          ? "Sell"
-                          : "Create"}{" "}
-                        {/* Display "Create" for the Create event */}
-                      </TableCell>
+                            ? "Sell"
+                            : "Create"}{" "}
+                          {/* Display "Create" for the Create event */}
+                        </TableCell>
 
-                      <TableCell>
-                        {Number(
-                          Number(
-                            Number(tx.tokensBought || tx.tokensSold) / 10 ** 18
-                          ).toFixed(4)
-                        )
-                          .toLocaleString("en-US")
-                          .replace(/,/g, "'")}{" "}
-                      </TableCell>
-                      <TableCell>
-                        {(
-                          Number(tx.ethSpent || tx.ethReceived) /
-                          10 ** 18
-                        ).toFixed(6)}{" "}
-                        ETH
-                      </TableCell>
-                      <TableCell>
-                        <span>
-                          0.0
-                          <span className="text-xs align-sub">
+                        <TableCell>
+                          {Number(
+                            Number(
+                              Number(tx.tokensBought || tx.tokensSold) /
+                                10 ** 18
+                            ).toFixed(4)
+                          )
+                            .toLocaleString("en-US")
+                            .replace(/,/g, "'")}{" "}
+                        </TableCell>
+                        <TableCell>
+                          {(
+                            Number(tx.ethSpent || tx.ethReceived) /
+                            10 ** 18
+                          ).toFixed(6)}{" "}
+                          ETH
+                        </TableCell>
+                        <TableCell>
+                          <span>
+                            0.0
+                            <span className="text-xs align-sub">
+                              {
+                                formatPrice(
+                                  (tx.pricePerToken * tx.ethPriceAtTime) /
+                                    10 ** 18
+                                ).leadingZeros
+                              }
+                            </span>
                             {
                               formatPrice(
                                 (tx.pricePerToken * tx.ethPriceAtTime) /
                                   10 ** 18
-                              ).leadingZeros
+                              ).remainingFraction
                             }
                           </span>
-                          {
-                            formatPrice(
-                              (tx.pricePerToken * tx.ethPriceAtTime) / 10 ** 18
-                            ).remainingFraction
-                          }
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <a
-                          href={`https://etherscan.io/address/${
-                            tx.buyer || tx.seller
-                          }`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="!text-blue-500 hover:underline"
-                        >
-                          {`${(tx.buyer || tx.seller).slice(0, 6)}...${(
-                            tx.buyer || tx.seller
-                          ).slice(-4)}`}
-                        </a>
-                      </TableCell>
-                    </TableRow>
-                  ))
+                        </TableCell>
+                        <TableCell>
+                          <a
+                            href={`https://etherscan.io/address/${
+                              tx.buyer || tx.seller
+                            }`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="!text-blue-500 hover:underline"
+                          >
+                            {`${(tx.buyer || tx.seller).slice(0, 6)}...${(
+                              tx.buyer || tx.seller
+                            ).slice(-4)}`}
+                          </a>
+                        </TableCell>
+                      </TableRow>
+                    ))
                 ) : (
                   <TableRow>
                     <TableCell colSpan={6}>No transactions found.</TableCell>
