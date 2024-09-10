@@ -34,6 +34,7 @@ import {
 import CandlestickChart from "./chart";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
+import { getData } from "@/lib/mongodb";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -41,6 +42,7 @@ export function TokenPage({ tokenData }) {
   const [ethBalance, setEthBalance] = useState(0);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true); // For chart and transactions loading state
+  const [needUpdate, setNeedUpdate] = useState(false);
 
   const {
     name,
@@ -53,6 +55,37 @@ export function TokenPage({ tokenData }) {
     tokenAddress,
   } = tokenData;
 
+  useEffect(() => {
+    console.log("Database transactions call");
+    async function fetchTransactionsFromDb() {
+      try {
+        console.log("Database transactions");
+        const dbData = await getData(
+          "TokenTransaction",
+          "find",
+          { tokenAddress: tokenAddress },
+          {
+            sort: { timestamp: -1 },
+          }
+        );
+
+        const dbTrasactions = dbData.result || [];
+        if (dbTrasactions.length > 0) {
+          console.log("Database transactions", dbTrasactions);
+          setTransactions(dbTrasactions);
+        }
+      } catch (err) {
+        console.error(
+          "Error fetching recent tokens or events from database:",
+          err
+        );
+      } finally {
+        setLoading(false);
+        setNeedUpdate(false);
+      }
+    }
+    fetchTransactionsFromDb();
+  }, [needUpdate, tokenAddress]);
   //console.log(tokenData);
 
   const displayedImageUrl =
@@ -96,20 +129,19 @@ export function TokenPage({ tokenData }) {
     fetchBalances();
   }, [tokenAddress]);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
-      setLoading(true); // Start loading
-      try {
-        const fetchedTransactions = await fetchTokenBuysAndSells(tokenAddress); // Replace with your function to fetch transactions
-        setTransactions(fetchedTransactions);
-      } catch (error) {
-        console.error("Failed to fetch transactions", error);
-      }
-      setLoading(false); // Stop loading
-    };
+  const fetchTransactionsFromBlockchain = async () => {
+    try {
+      const fetchedTransactions = await fetchTokenBuysAndSells(tokenAddress); // Replace with your function to fetch transactions
+      console.log(fetchedTransactions);
+    } catch (error) {
+      console.error("Failed to fetch transactions", error);
+    } finally {
+      setNeedUpdate(true);
+    }
+  };
 
-    fetchTransactions();
-  }, [tokenAddress]);
+  fetchTransactionsFromBlockchain();
+  useEffect(() => {}, [tokenAddress]);
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {

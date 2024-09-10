@@ -5,7 +5,24 @@ import { TokenPage } from "@/components/token-page";
 import { useEffect, useState } from "react";
 import { LoadingLines } from "@/components/loading-rows";
 import { fetchCreateTokenEvents } from "@/lib/fetch"; // Import the modified function
+import { getData } from "@/lib/mongodb";
 
+async function fetchTokensFromBlockchain(tokenAddress) {
+  try {
+    const data = await fetchCreateTokenEvents(tokenAddress);
+    // If no data found, handle it gracefully
+    if (!data) {
+      setError("No token found for this address.");
+    }
+  } catch (err) {
+    console.error(
+      "Error fetching recent tokens or events from the Blockchain:",
+      err
+    );
+  } finally {
+    setNeedUpdate(true);
+  }
+}
 export default function TokenDetail() {
   const [tokenData, setTokenData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +30,39 @@ export default function TokenDetail() {
 
   const pathname = usePathname();
   const tokenAddress = pathname.split("/")[1]; // Extract token address from the URL
+  const [needUpdate, setNeedUpdate] = useState(false);
 
+  useEffect(() => {
+    async function fetchTokenFromDb() {
+      try {
+        const dbData = await getData("Token", "find", {
+          tokenAddress: tokenAddress,
+        });
+        console.log(dbData);
+        const dbTokens = dbData.result || [];
+        if (dbTokens.length > 0) {
+          console.log("Database token", dbTokens);
+          setTokenData(dbTokens[0]);
+        }
+      } catch (err) {
+        console.error(
+          "Error fetching recent tokens or events from database:",
+          err
+        );
+      } finally {
+        setLoading(false);
+        setNeedUpdate(false);
+
+        fetchTokensFromBlockchain(tokenAddress);
+      }
+    }
+    fetchTokenFromDb();
+  }, [needUpdate, tokenAddress, tokenData]);
+  /* 
+  useEffect(() => {
+  }, [tokenAddress]); */
+
+  /* 
   useEffect(() => {
     async function fetchTokenData() {
       try {
@@ -34,7 +83,7 @@ export default function TokenDetail() {
     }
 
     fetchTokenData();
-  }, [tokenAddress]);
+  }, [tokenAddress]); */
 
   if (loading) {
     return (
