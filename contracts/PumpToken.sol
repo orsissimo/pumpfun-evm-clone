@@ -2,12 +2,12 @@
 
 /*
 Created on Pump.Style
-https://pump.style
+https://pump.style - https://t.me/pumpdotstyle - https://x.com/pumpdotstyle
 */
 
 pragma solidity ^0.8.0;
 
-contract SimpleToken {
+contract PumpToken {
     string public name;
     string public symbol;
     uint8 public decimals = 18;
