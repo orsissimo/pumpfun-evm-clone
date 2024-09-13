@@ -9,6 +9,8 @@ import { createToken, createAndBuyToken } from "@/lib/factory"; // Import both f
 import { Checkbox } from "./ui/checkbox";
 import { toast } from "react-toastify";
 import { pinFileToIPFS } from "@/lib/pinata";
+import { FaXTwitter } from "react-icons/fa6";
+import { FaTelegramPlane } from "react-icons/fa";
 
 export function CreateToken() {
   const [name, setName] = useState("");
@@ -33,6 +35,18 @@ export function CreateToken() {
       // Reset error message
       setErrorMessage("");
 
+      // Ensure social links start with https://
+      const formatLink = (link) => {
+        if (!link) return "";
+        return link.startsWith("https://") || link.startsWith("http://")
+          ? link
+          : `https://${link}`;
+      };
+
+      const formattedTwitter = formatLink(twitter);
+      const formattedTelegram = formatLink(telegram);
+      const formattedWebsite = formatLink(website);
+
       // Continue with token creation after successful image upload
       if (devBuyEnabled) {
         if (devBuyAmount > 0) {
@@ -43,9 +57,9 @@ export function CreateToken() {
             ticker,
             description,
             cid, // Use CID from IPFS as the image reference
-            twitter,
-            telegram,
-            website,
+            formattedTwitter,
+            formattedTelegram,
+            formattedWebsite,
             devBuyAmount
           );
         } else {
@@ -62,9 +76,9 @@ export function CreateToken() {
           ticker,
           description,
           cid, // Use CID from IPFS
-          twitter,
-          telegram,
-          website
+          formattedTwitter,
+          formattedTelegram,
+          formattedWebsite
         );
       }
     } catch (error) {
@@ -120,6 +134,14 @@ export function CreateToken() {
 
   const handleDragOver = (e) => {
     e.preventDefault();
+  };
+
+  // Ensure social links start with https://
+  const formatLink = (link) => {
+    if (!link) return "";
+    return link.startsWith("https://") || link.startsWith("http://")
+      ? link
+      : `https://${link}`;
   };
 
   return (
@@ -214,7 +236,7 @@ export function CreateToken() {
               <div>
                 <Label htmlFor="twitter">
                   <div className="flex items-center">
-                    <TwitterIcon className="h-5 w-5 mr-2" />
+                    <FaXTwitter className="h-5 w-5 mr-2" />
                     Twitter
                   </div>
                 </Label>
@@ -230,7 +252,7 @@ export function CreateToken() {
               <div>
                 <Label htmlFor="telegram">
                   <div className="flex items-center">
-                    <TextIcon className="h-5 w-5 mr-2" />
+                    <FaTelegramPlane className="h-5 w-5 mr-2" />
                     Telegram
                   </div>
                 </Label>
@@ -253,7 +275,7 @@ export function CreateToken() {
                 <Input
                   id="website"
                   type="text"
-                  placeholder="Enter website link"
+                  placeholder="Enter Website link"
                   className="mt-2 block w-full placeholder:opacity-20"
                   value={website}
                   onChange={(e) => setWebsite(e.target.value)}
