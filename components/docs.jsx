@@ -184,7 +184,7 @@ function HowItWorks(props) {
         </p>
         <p className="text-muted-foreground text-lg md:text-xl">
           At launch, the initial virtual liquidity is 1ETH and tokens typically
-          have an initial market cap between $2,500 and $3,000, depending on the
+          have an initial market cap between $2,000 and $3,000, depending on the
           current price of ETH.
         </p>
         <Image
@@ -196,9 +196,9 @@ function HowItWorks(props) {
           style={{ aspectRatio: "1200/400", objectFit: "cover" }}
         />
         <p className="text-muted-foreground text-lg md:text-xl">
-          Once the token's market cap reaches approximately $50,000 (with slight
+          Once the token's market cap reaches approximately $10,000 (with slight
           variations based on ETH price fluctuations), it is automatically
-          listed on Uniswap with 4ETH in liquidity. In the same transaction, the
+          listed on Uniswap with 1ETH in liquidity. In the same transaction, the
           liquidity pool (LP) is burned, and the Smart Contract is renounced,
           ensuring transparency and decentralization. Following this, the token
           becomes visible to trading bots for users who employ them.
