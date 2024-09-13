@@ -13,7 +13,7 @@ import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 
 export default function CandlestickChart({ transactions }) {
-  const [timeframe, setTimeframe] = useState("1H");
+  const [timeframe, setTimeframe] = useState("1m");
   const chartContainerRef = useRef();
   const chartInstanceRef = useRef(); // Use a ref to store the chart instance
   const candlestickSeriesRef = useRef(); // Use a ref to store the candlestick series
