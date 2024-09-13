@@ -224,7 +224,7 @@ export function TokenPage({ tokenData }) {
               width={180}
               height={180}
               alt={`${name} Logo`}
-              className="rounded-[48px]"
+              className="rounded-3xl"
               style={{ aspectRatio: "1/1", objectFit: "cover" }}
             />
           </div>
