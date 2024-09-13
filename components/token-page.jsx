@@ -303,7 +303,7 @@ export function TokenPage({ tokenData }) {
           </div>
         </div>
 
-        <div className="mb-6">
+        <div className="mb-6 mt-6">
           {transactions.length == 0 ? (
             <Card>
               <CardContent>
@@ -319,7 +319,7 @@ export function TokenPage({ tokenData }) {
       </div>
 
       <div className="flex flex-col gap-8 h-full">
-        <Card className="flex flex-col h-[360px] w-full">
+        <Card className="flex flex-col h-[375px] w-full">
           <CardHeader className="border-b">
             <CardTitle>
               <div className="flex gap-4 w-full">
@@ -440,7 +440,7 @@ export function TokenPage({ tokenData }) {
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col h-[267px]">
+        <Card className="flex flex-col h-[275px]">
           <CardHeader className="border-b">
             <CardTitle>Token Stats</CardTitle>
           </CardHeader>
