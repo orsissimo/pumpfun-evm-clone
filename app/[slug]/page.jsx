@@ -63,12 +63,20 @@ export default function TokenDetail() {
     );
   }
 
-  if (error) {
-    return <div>{error}</div>;
-  }
-
-  if (!tokenData) {
-    return <div>No token data available</div>;
+  if (error || !tokenData) {
+    return (
+      <div className="container mx-auto px-8 py-16">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground text-center">
+            No token found
+          </h1>
+          <p className="mt-4 text-center">
+            We&apos;re unable to retrieve any information for{" "}
+            <span className="font-semibold">{tokenAddress}</span> at this time.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return <TokenPage tokenData={tokenData} />;

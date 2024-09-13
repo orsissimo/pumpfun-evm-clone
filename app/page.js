@@ -88,14 +88,17 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-foreground text-center">
-          Latest Tokens
-        </h1>
-        <p className="mt-4 text-center">
-          Explore the latest tokens deployed with our Factory.
-        </p>
-      </div>
+      {filteredTokens.length <= 0 && (
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground text-center">
+            No token found
+          </h1>
+          <p className="mt-4 text-center">
+            We&apos;re unable to retrieve any information about deployed tokens
+            at this time.
+          </p>
+        </div>
+      )}
 
       {/* Display loading indicator if data is still being fetched */}
       {loading ? (
@@ -104,7 +107,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-10 justify-items-center">
-          {filteredTokens.length > 0 ? (
+          {filteredTokens.length > 0 &&
             filteredTokens.map((token, index) => (
               <div key={index} className="w-full max-w-lg">
                 {/* Pass all relevant token data to TokenCard */}
@@ -119,10 +122,7 @@ export default function Home() {
                   websiteLink={token.websiteLink} // Website link
                 />
               </div>
-            ))
-          ) : (
-            <p>No tokens found matching your search.</p>
-          )}
+            ))}
         </div>
       )}
     </div>

@@ -44,6 +44,7 @@ import { getData } from "@/lib/mongodb";
 import { formatLargeNumber, formatPrice } from "@/lib/utils";
 import { Progress } from "./ui/progress";
 import { LoadingLines } from "./loading-rows";
+import Image from "next/image";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -53,6 +54,7 @@ export function TokenPage({ tokenData }) {
   const [needUpdate, setNeedUpdate] = useState(false);
   const [tokenEthSurplus, setTokenEthSurplus] = useState(0);
   const [tokenEthCap, setTokenEthCap] = useState(0);
+  const [isBuySelected, setIsBuySelected] = useState(true);
 
   const {
     name,
@@ -213,127 +215,158 @@ export function TokenPage({ tokenData }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div className="">
-        <div className="flex items-center gap-4 mb-6">
-          <img
-            src={displayedImageUrl || "/placeholder.svg"}
-            width={60}
-            height={60}
-            alt={`${name} Logo`}
-            className="rounded-full"
-            style={{ aspectRatio: "48/48", objectFit: "cover" }}
-          />
-          <div>
-            <h1 className="text-2xl font-bold">{name}</h1>
-            <div className="text-muted-foreground">$ {symbol}</div>
-          </div>
-        </div>
-        <p className="text-muted-foreground mb-6 h-8 overflow-auto scrollbar-hide max-w-prose break-words">
-          {description ||
-            `${name} is a decentralized cryptocurrency that powers an ecosystem.`}
-        </p>
-
-        <div className="flex items-center justify-between mb-6">
-          {/* Left side with icons */}
-          <div className="flex items-center gap-4">
-            {websiteLink && (
-              <Link
-                href={websiteLink}
-                className="text-muted-foreground hover:text-primary transition"
-                prefetch={false}
-              >
-                <GlobeIcon className="h-5 w-5" />
-              </Link>
-            )}
-            {twitterLink && (
-              <Link
-                href={twitterLink}
-                className="text-muted-foreground hover:text-primary transition"
-                prefetch={false}
-              >
-                <FaXTwitter className="h-5 w-5" />
-              </Link>
-            )}
-            {telegramLink && (
-              <Link
-                href={telegramLink}
-                className="text-muted-foreground hover:text-primary transition"
-                prefetch={false}
-              >
-                <FaTelegramPlane className="h-5 w-5" />
-              </Link>
-            )}
+      <div>
+        <div className="flex flex-col md:flex-row w-full max-w-3xl mx-auto gap-6">
+          {/* Left Column - Image */}
+          <div className="flex-shrink-0">
+            <Image
+              src={displayedImageUrl}
+              width={180}
+              height={180}
+              alt={`${name} Logo`}
+              className="rounded-[48px]"
+              style={{ aspectRatio: "1/1", objectFit: "cover" }}
+            />
           </div>
 
-          {/* Right side with token address and copy button */}
-          <div className="flex items-center gap-2">
-            <Link
-              className="text-sm text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
-              href={`https://etherscan.io/address/${tokenAddress}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              prefetch={false}
-            >
-              {formattedAddress}
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                navigator.clipboard.writeText(tokenAddress);
-                toast("Token address copied to clipboard!");
-              }}
-            >
-              <CopyIcon className="w-5 h-5 !text-blue-500" />
-              <span className="sr-only">Copy token address</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* <div className="h-[400px] bg-muted rounded-lg overflow-hidden">
-          <div />
-        </div> */}
-        {transactions.length == 0 ? (
-          <Card>
-            <CardContent>
-              <div className="w-full h-[453px]">
-                <LoadingSpinner />
-              </div>
-            </CardContent>
-          </Card>
-        ) : (
-          <CandlestickChart transactions={transactions} />
-        )}
-      </div>
-      <div className="flex flex-col gap-8 h-full">
-        <Card className="flex flex-col h-[390px]">
-          <CardHeader className="border-b">
-            <CardTitle>Buy / Sell</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow overflow-hidden">
-            <div className="h-full overflow-y-auto scrollbar-hide pr-4">
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label
-                    htmlFor="amount"
-                    className="flex justify-between items-center"
-                  >
-                    <span>Amount</span>
-                    <span className="text-muted">
-                      ETH to Buy / {symbol} to Sell
-                    </span>
-                  </Label>
-                  <Input
-                    id="amount"
-                    type="number"
-                    placeholder="Enter amount"
-                    className="mt-1 block w-full placeholder:opacity-20 focus-visible:ring-0 focus-visible:ring-offset-0"
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                  />
+          {/* Right Column - Text content */}
+          <div className="flex-grow flex flex-col min-w-0 space-y-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <h1 className="text-2xl font-bold truncate">{name}</h1>
+                <div className="text-2xl font-bold text-muted-foreground">
+                  ({symbol})
                 </div>
-                <div className="grid grid-cols-2 gap-4">
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Link
+                  className="text-sm text-blue-500 hover:underline truncate"
+                  href={`https://etherscan.io/address/${tokenAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  prefetch={false}
+                >
+                  {formattedAddress}
+                </Link>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(tokenAddress);
+                    // Assuming you have a toast function defined
+                    // toast("Token address copied to clipboard!");
+                  }}
+                >
+                  <CopyIcon className="w-5 h-5 text-blue-500" />
+                  <span className="sr-only">Copy token address</span>
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-muted-foreground mb-2 break-words overflow-y-auto h-24 scrollbar-hide">
+                {"dfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfsdfs" ||
+                  `${name} is a decentralized cryptocurrency that powers an ecosystem.`}
+              </p>
+            </div>
+
+            <div className="flex items-center gap-4 mt-auto">
+              {websiteLink && (
+                <Link
+                  href={websiteLink}
+                  className="text-muted-foreground hover:text-primary transition"
+                  prefetch={false}
+                >
+                  <GlobeIcon className="h-5 w-5" />
+                </Link>
+              )}
+              {twitterLink && (
+                <Link
+                  href={twitterLink}
+                  className="text-muted-foreground hover:text-primary transition"
+                  prefetch={false}
+                >
+                  <FaXTwitter className="h-5 w-5" />
+                </Link>
+              )}
+              {telegramLink && (
+                <Link
+                  href={telegramLink}
+                  className="text-muted-foreground hover:text-primary transition"
+                  prefetch={false}
+                >
+                  <FaTelegramPlane className="h-5 w-5" />
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          {transactions.length == 0 ? (
+            <Card>
+              <CardContent>
+                <div className="w-full h-[453px]">
+                  <LoadingSpinner />
+                </div>
+              </CardContent>
+            </Card>
+          ) : (
+            <CandlestickChart transactions={transactions} />
+          )}
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-8 h-full">
+        <Card className="flex flex-col h-[360px] w-full">
+          <CardHeader className="border-b">
+            <CardTitle>
+              <div className="flex gap-4 w-full">
+                {/* Buy and Sell Switcher */}
+                <Button
+                  className={`flex-1 ${
+                    isBuySelected
+                      ? "bg-[#33CC90] hover:bg-[#33CC90]"
+                      : "bg-secondary hover:bg-muted text-white"
+                  }`}
+                  onClick={() => setIsBuySelected(true)}
+                >
+                  Buy
+                </Button>
+                <Button
+                  className={`flex-1 ${
+                    !isBuySelected
+                      ? "bg-[#FF007A] hover:bg-[#FF007A] text-white"
+                      : "bg-secondary hover:bg-muted text-white"
+                  }`}
+                  onClick={() => setIsBuySelected(false)}
+                >
+                  Sell
+                </Button>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex-grow overflow-hidden w-full">
+            <div className="h-full scrollbar-hide">
+              <div className="grid gap-4 py-4">
+                {/* Conditionally display ETH amount input if Buy is selected */}
+                {isBuySelected && (
                   <div className="grid gap-2">
+                    <Label
+                      htmlFor="amount"
+                      className="flex justify-between items-center"
+                    >
+                      <span>Amount</span>
+                    </Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      placeholder="Enter ETH amount"
+                      className="mt-1 block w-full placeholder:opacity-20 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
                     <div className="flex items-center justify-between">
                       <Label htmlFor="eth-balance">ETH Balance</Label>
                       <Button
@@ -345,7 +378,6 @@ export function TokenPage({ tokenData }) {
                         <span className="sr-only">Use max</span>
                       </Button>
                     </div>
-                    {/* Display fetched ETH balance */}
                     <div className="font-bold">
                       {Number(Number(ethBalance).toFixed(4))
                         .toLocaleString("en-US")
@@ -353,7 +385,25 @@ export function TokenPage({ tokenData }) {
                       ETH
                     </div>
                   </div>
+                )}
+
+                {/* Conditionally display Token amount input if Sell is selected */}
+                {!isBuySelected && (
                   <div className="grid gap-2">
+                    <Label
+                      htmlFor="amount"
+                      className="flex justify-between items-center"
+                    >
+                      <span>Amount</span>
+                    </Label>
+                    <Input
+                      id="amount"
+                      type="number"
+                      placeholder={`Enter ${symbol} amount`}
+                      className="mt-1 block w-full placeholder:opacity-20 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      value={amount}
+                      onChange={(e) => setAmount(e.target.value)}
+                    />
                     <div className="flex items-center justify-between">
                       <Label htmlFor="balance">{symbol} Balance</Label>
                       <Button
@@ -365,7 +415,6 @@ export function TokenPage({ tokenData }) {
                         <span className="sr-only">Use max</span>
                       </Button>
                     </div>
-                    {/* Display fetched token balance */}
                     <div className="font-bold">
                       {Number(Number(tokenBalance).toFixed(2))
                         .toLocaleString("en-US")
@@ -373,30 +422,30 @@ export function TokenPage({ tokenData }) {
                       {symbol}
                     </div>
                   </div>
-                </div>
-                <div className="flex gap-4 w-full">
-                  <Button className="flex-1" onClick={handleBuyToken}>
-                    Buy
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="flex-1"
-                    onClick={handleSellToken}
-                  >
-                    Sell
-                  </Button>
-                </div>
+                )}
+
+                {/* Execute Button */}
+                <Button
+                  className={`w-full mt-4 ${
+                    isBuySelected
+                      ? "bg-[#33CC90] hover:bg-[#33CC90]"
+                      : "bg-[#FF007A] hover:bg-[#FF007A] text-white"
+                  }`}
+                  onClick={isBuySelected ? handleBuyToken : handleSellToken}
+                >
+                  {isBuySelected ? "Execute Buy" : "Execute Sell"}
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="flex flex-col h-[260px]">
+        <Card className="flex flex-col h-[267px]">
           <CardHeader className="border-b">
             <CardTitle>Token Stats</CardTitle>
           </CardHeader>
           <CardContent className="flex-grow overflow-hidden">
-            <div className="h-full overflow-y-auto scrollbar-hide pr-4">
+            <div className="h-full scrollbar-hide pr-4">
               <div className="grid grid-cols-2 gap-4 py-4">
                 <div>
                   <div className="text-muted-foreground">
@@ -426,13 +475,10 @@ export function TokenPage({ tokenData }) {
               </div>
               <div>
                 <div className="text-muted-foreground">Jailbreak %</div>
-                <div className="font-bold mb-2">
+                <div className="font-bold mb-3">
                   {tokenEthCap > 0 ? (
                     <div className="flex justify-between">
-                      <span>{jailbreakPercentage}%</span>
-                      {/* <span className="text-[#3F3F44]">
-                        {(tokenEthCap - tokenEthSurplus).toFixed(2)} ETH Left
-                      </span> */}
+                      <span>{jailbreakPercentage}</span>
                     </div>
                   ) : (
                     "-"
@@ -492,9 +538,9 @@ export function TokenPage({ tokenData }) {
                         <TableCell
                           className={
                             tx.eventType === "TokenPurchased"
-                              ? "text-green-500"
+                              ? "text-[#33CC90]"
                               : tx.eventType === "TokenSold"
-                              ? "text-red-500"
+                              ? "text-[#FF007A]"
                               : "text-gray-500" // For "Create" and other unspecified events
                           }
                         >
