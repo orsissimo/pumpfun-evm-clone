@@ -6,6 +6,7 @@ import Image from "next/image"; // For optimized image loading with Next.js
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
 import { Label } from "./ui/label";
+import { useRouter } from "next/navigation";
 
 export function TokenCard({
   tokenAddress,
@@ -17,6 +18,7 @@ export function TokenCard({
   telegramLink,
   websiteLink,
 }) {
+  const router = useRouter();
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
     -4
@@ -26,101 +28,106 @@ export function TokenCard({
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
     "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
 
+  const handleCardClick = (e) => {
+    // Check if the click target is not one of the interactive elements
+    if (!e.defaultPrevented && !e.target.closest("a, button")) {
+      router.push(`/${tokenAddress}`);
+    }
+  };
+
   return (
-    <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full max-w-lg">
-      <Link href={`/${tokenAddress}`} prefetch={false}>
-        <div className="flex items-center justify-between px-6 py-4 border-b">
-          <div className="flex items-center gap-4">
+    <Card
+      className="bg-background rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer"
+      onClick={handleCardClick}
+    >
+      <div className="flex p-6">
+        {/* Left Column - Image */}
+        <div className="flex-shrink-0 mr-6">
+          <div className="w-[120px] h-[120px] relative">
             <Image
-              src={displayedImageUrl} // Use provided image or fallback
-              alt="Token Logo"
-              className="w-[80px] h-[80px] rounded-full"
-              width="70"
-              height="70"
-              style={{ objectFit: "cover" }}
+              src={displayedImageUrl}
+              alt={`${name} Logo`}
+              layout="fill"
+              objectFit="cover"
+              className="rounded-xl"
             />
-            <div className="overflow-hidden">
-              {/* Token Name */}
-              <h3 className="text-lg font-semibold whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300">
-                {name}
-              </h3>
-              {/* Token Symbol */}
-              <p className="text-sm text-muted-foreground">{symbol}</p>
+          </div>
+        </div>
+
+        {/* Right Column - Text content */}
+        <div className="flex-grow flex flex-col min-w-0">
+          <div className="flex items-center space-x-2">
+            <h1 className="text-2xl font-bold truncate">{name}</h1>
+            <div className="text-2xl font-bold text-muted-foreground whitespace-nowrap">
+              ({symbol})
             </div>
           </div>
-          {/* <div className="text-md opacity-60 text-muted-foreground mt-2">
-            - MCAP
-          </div> */}
-        </div>
-        <div className="p-6 h-16 overflow-auto scrollbar-hide">
-          <p className="text-muted-foreground break-words">
-            {description
-              ? description
-              : `This is a decentralized token named ${name} with the symbol ${symbol}.`}
-          </p>
-        </div>
-      </Link>
-      <div className="p-6">
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center gap-4">
-            {websiteLink && (
-              <Link
-                href={websiteLink}
-                className="text-primary hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-                prefetch={false}
-              >
-                <GlobeIcon className="w-5 h-5" />
-              </Link>
-            )}
-            {twitterLink && (
-              <Link
-                href={twitterLink}
-                className="text-primary hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-                prefetch={false}
-              >
-                <FaXTwitter className="w-5 h-5" />
-              </Link>
-            )}
-            {telegramLink && (
-              <Link
-                href={telegramLink}
-                className="text-primary hover:underline"
-                target="_blank"
-                rel="noopener noreferrer"
-                prefetch={false}
-              >
-                <FaTelegramPlane className="w-5 h-5" />
-              </Link>
-            )}
-            {!websiteLink && !twitterLink && !telegramLink && (
-              <Label className="opacity-50">No social links</Label>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 mt-2">
             <Link
-              className="text-sm text-muted-foreground cursor-pointer !text-blue-500 hover:underline"
+              className="text-sm text-blue-500 hover:underline truncate"
               href={`https://etherscan.io/address/${tokenAddress}`}
               target="_blank"
               rel="noopener noreferrer"
               prefetch={false}
+              onClick={(e) => e.stopPropagation()}
             >
               {formattedAddress}
             </Link>
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 navigator.clipboard.writeText(tokenAddress);
-                toast("Token address copied to clipboard!");
+                toast("Token address copied to clipboard");
               }}
             >
-              <CopyIcon className="w-5 h-5 !text-blue-500" />
+              <CopyIcon className="w-5 h-5 text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
+          </div>
+
+          <div className="flex items-center gap-4 mt-auto">
+            {websiteLink && (
+              <Link
+                href={websiteLink}
+                className="text-primary hover:text-blue-500 transition"
+                target="_blank"
+                rel="noopener noreferrer"
+                prefetch={false}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GlobeIcon className="h-5 w-5" />
+              </Link>
+            )}
+            {twitterLink && (
+              <Link
+                href={twitterLink}
+                className="text-primary hover:text-blue-500 transition"
+                target="_blank"
+                rel="noopener noreferrer"
+                prefetch={false}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <FaXTwitter className="h-5 w-5" />
+              </Link>
+            )}
+            {telegramLink && (
+              <Link
+                href={telegramLink}
+                className="text-primary hover:text-blue-500 transition"
+                target="_blank"
+                rel="noopener noreferrer"
+                prefetch={false}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <FaTelegramPlane className="h-5 w-5" />
+              </Link>
+            )}
+            {!websiteLink && !twitterLink && !telegramLink && (
+              <Label className="text-muted-foreground">No social links</Label>
+            )}
           </div>
         </div>
       </div>
