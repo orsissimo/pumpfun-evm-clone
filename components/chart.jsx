@@ -134,12 +134,12 @@ export default function CandlestickChart({ transactions }) {
     });
 
     const candlestick = newChart.addCandlestickSeries({
-      upColor: "#22c55e",
-      downColor: "#ef4444",
-      borderUpColor: "#22c55e",
-      borderDownColor: "#ef4444",
-      wickUpColor: "#22c55e",
-      wickDownColor: "#ef4444",
+      upColor: "#33CC90",
+      downColor: "#FF007A",
+      borderUpColor: "#33CC90",
+      borderDownColor: "#FF007A",
+      wickUpColor: "#33CC90",
+      wickDownColor: "#FF007A",
     });
 
     const formattedData = formatTransactionsForCandlestick(
