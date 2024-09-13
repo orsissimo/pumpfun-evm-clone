@@ -428,8 +428,8 @@ export function TokenPage({ tokenData }) {
                 <Button
                   className={`w-full mt-4 ${
                     isBuySelected
-                      ? "bg-[#33CC90] hover:bg-[#33CC90]"
-                      : "bg-[#FF007A] hover:bg-[#FF007A] text-white"
+                      ? "bg-[#33CC90] hover:bg-[#33cc8fbc]"
+                      : "bg-[#FF007A] hover:bg-[#ff007bc0] text-white"
                   }`}
                   onClick={isBuySelected ? handleBuyToken : handleSellToken}
                 >
