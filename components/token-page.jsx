@@ -473,11 +473,11 @@ export function TokenPage({ tokenData }) {
                 </div>
               </div>
               <div>
-                <div className="text-muted-foreground">Jailbreak %</div>
+                <div className="text-muted-foreground">Jailbreak</div>
                 <div className="font-bold mb-3">
                   {tokenEthCap > 0 ? (
                     <div className="flex justify-between">
-                      <span>{jailbreakPercentage}</span>
+                      <span>{jailbreakPercentage}%</span>
                     </div>
                   ) : (
                     "-"
