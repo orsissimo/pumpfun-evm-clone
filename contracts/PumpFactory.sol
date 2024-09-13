@@ -11,7 +11,7 @@ contract PumpFactory is ReentrancyGuard {
     address public feeReceiver;
     address public uniswapRouter;
     uint256 public slippageTolerance = 500;
-    uint256 public ethCap = 2 ether;
+    uint256 public ethCap = 1 ether;
     uint256 constant FEE_PERCENTAGE = 1;
     uint256 constant INITIAL_ETH_LIQUIDITY = 1 ether;
     uint256 constant INITIAL_TOKEN_SUPPLY = 1000000000 * 10**18;
@@ -309,7 +309,7 @@ contract PumpFactory is ReentrancyGuard {
 
         uint256 ethToAddLiquidity = (ethToAdd * 96) / 100;
         uint256 ethToFeeReceiver = (ethToAdd * 39) / 1000;
-        uint256 remainingSurplus = ethToAdd - ethToAddLiquidity - ethToFeeReceiver;
+        // uint256 remainingSurplus = ethToAdd - ethToAddLiquidity - ethToFeeReceiver;
 
         token.approve(uniswapRouter, tokenFactoryBalance);
 
@@ -375,8 +375,8 @@ contract PumpFactory is ReentrancyGuard {
     }
 
     function setEthCap(uint256 _ethCapInFinney) public onlyOwner {
-        require(_ethCap > 0);
-        ethCap = _ethCap * 1e15; // 1 = 0.001 Ether
+        require(_ethCapInFinney > 0);
+        ethCap = _ethCapInFinney * 1e15; // 1 = 0.001 Ether
     }
 
     function withdraw(uint256 amount) public onlyOwner {
