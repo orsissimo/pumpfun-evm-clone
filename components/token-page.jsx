@@ -254,8 +254,7 @@ export function TokenPage({ tokenData }) {
                   size="icon"
                   onClick={() => {
                     navigator.clipboard.writeText(tokenAddress);
-                    // Assuming you have a toast function defined
-                    // toast("Token address copied to clipboard!");
+                    toast("Token address copied to clipboard");
                   }}
                 >
                   <CopyIcon className="w-5 h-5 text-blue-500" />
