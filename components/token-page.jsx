@@ -275,7 +275,7 @@ export function TokenPage({ tokenData }) {
               {websiteLink && (
                 <Link
                   href={websiteLink}
-                  className="text-muted-foreground hover:text-primary transition"
+                  className="text-muted-foreground hover:text-blue-500 transition"
                   prefetch={false}
                 >
                   <GlobeIcon className="h-5 w-5" />
@@ -284,7 +284,7 @@ export function TokenPage({ tokenData }) {
               {twitterLink && (
                 <Link
                   href={twitterLink}
-                  className="text-muted-foreground hover:text-primary transition"
+                  className="text-muted-foreground hover:text-blue-500 transition"
                   prefetch={false}
                 >
                   <FaXTwitter className="h-5 w-5" />
@@ -293,7 +293,7 @@ export function TokenPage({ tokenData }) {
               {telegramLink && (
                 <Link
                   href={telegramLink}
-                  className="text-muted-foreground hover:text-primary transition"
+                  className="text-muted-foreground hover:text-blue-500 transition"
                   prefetch={false}
                 >
                   <FaTelegramPlane className="h-5 w-5" />
