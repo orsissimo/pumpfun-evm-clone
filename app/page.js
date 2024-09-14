@@ -75,14 +75,14 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-8 py-16">
-      <div className="mb-12 max-w-3xl mx-auto">
+      <div className="mb-8 max-w-3xl mx-auto">
         <div className="relative">
           <Input
             type="text"
             placeholder="Search tokens..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 pr-4 py-6 text-lg rounded-full shadow-lg"
+            className="pl-14 pr-4 py-6 text-sm rounded-full shadow-lg"
           />
           <Search className="absolute left-5 top-1/2 transform -translate-y-1/2 text-muted-foreground h-6 w-6" />
         </div>
@@ -106,7 +106,7 @@ export default function Home() {
           <LoadingLines />
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-3 gap-10 justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 justify-items-center">
           {filteredTokens.length > 0 &&
             filteredTokens.map((token, index) => (
               <div key={index} className="w-full max-w-lg">

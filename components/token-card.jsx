@@ -40,10 +40,10 @@ export function TokenCard({
       className="bg-background rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="flex p-6">
+      <div className="flex p-3 md:p-5">
         {/* Left Column - Image */}
         <div className="flex-shrink-0 mr-6">
-          <div className="w-[120px] h-[120px] relative">
+          <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] relative">
             <Image
               src={displayedImageUrl}
               alt={`${name} Logo`}
@@ -56,16 +56,16 @@ export function TokenCard({
 
         {/* Right Column - Text content */}
         <div className="flex-grow flex flex-col min-w-0">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold truncate">{name}</h1>
-            <div className="text-2xl font-bold text-muted-foreground whitespace-nowrap">
-              (${symbol})
-            </div>
+          {/* <div className="flex items-center space-x-2"> */}
+          <h1 className="text-md md:text-xl font-bold truncate">{name}</h1>
+          <div className=" text-sm md:text-lg font-bold text-muted-foreground whitespace-nowrap">
+            [ ${symbol} ]
           </div>
+          {/* </div> */}
 
-          <div className="flex items-center gap-2 mt-2">
+          <div className="flex items-center gap-2">
             <Link
-              className="text-sm text-blue-500 hover:underline truncate"
+              className="text-xs text-blue-500 hover:underline truncate"
               href={`https://etherscan.io/address/${tokenAddress}`}
               target="_blank"
               rel="noopener noreferrer"
@@ -83,7 +83,7 @@ export function TokenCard({
                 toast("Token address copied to clipboard");
               }}
             >
-              <CopyIcon className="w-5 h-5 text-blue-500" />
+              <CopyIcon className="w-4 h-4 text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
           </div>
@@ -98,7 +98,7 @@ export function TokenCard({
                 prefetch={false}
                 onClick={(e) => e.stopPropagation()}
               >
-                <GlobeIcon className="h-5 w-5" />
+                <GlobeIcon className="h-4 w-4" />
               </Link>
             )}
             {twitterLink && (
@@ -110,7 +110,7 @@ export function TokenCard({
                 prefetch={false}
                 onClick={(e) => e.stopPropagation()}
               >
-                <FaXTwitter className="h-5 w-5" />
+                <FaXTwitter className="h-4 w-4" />
               </Link>
             )}
             {telegramLink && (
@@ -122,7 +122,7 @@ export function TokenCard({
                 prefetch={false}
                 onClick={(e) => e.stopPropagation()}
               >
-                <FaTelegramPlane className="h-5 w-5" />
+                <FaTelegramPlane className="h-4 w-4" />
               </Link>
             )}
             {!websiteLink && !twitterLink && !telegramLink && (
