@@ -45,6 +45,7 @@ import { formatLargeNumber, formatPrice } from "@/lib/utils";
 import { Progress } from "./ui/progress";
 import { LoadingLines } from "./loading-rows";
 import Image from "next/image";
+import { TokenCard } from "./token-card";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -216,22 +217,21 @@ export function TokenPage({ tokenData }) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       <div>
-        <div className="flex flex-col md:flex-row w-full max-w-3xl mx-auto gap-6">
+        <div className="flex flex-col md:flex-row w-full max-w-3xl mx-auto gap-6 p-4 md:p-0">
           {/* Left Column - Image */}
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 w-full md:w-auto">
             <Image
               src={displayedImageUrl}
               width={180}
               height={180}
               alt={`${name} Logo`}
-              className="rounded-3xl"
-              style={{ aspectRatio: "1/1", objectFit: "cover" }}
+              className="rounded-3xl w-full md:w-[180px] h-auto md:h-[180px] object-cover"
             />
           </div>
 
           {/* Right Column - Text content */}
-          <div className="flex-grow flex flex-col min-w-0 space-y-2">
-            <div className="flex items-center justify-between">
+          <div className="flex-grow flex flex-col min-w-0 space-y-4 md:space-y-2">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
               <div className="flex items-center space-x-2">
                 <h1 className="text-2xl font-bold truncate">{name}</h1>
                 <div className="text-2xl font-bold text-muted-foreground">
@@ -264,7 +264,7 @@ export function TokenPage({ tokenData }) {
             </div>
 
             <div>
-              <p className="text-muted-foreground mb-2 break-words overflow-y-auto h-24 scrollbar-hide">
+              <p className="text-muted-foreground mb-2 break-words overflow-y-auto max-h-24 md:h-24 scrollbar-hide">
                 {description ||
                   `${name} is a decentralized cryptocurrency that powers an ecosystem.`}
               </p>
@@ -301,6 +301,19 @@ export function TokenPage({ tokenData }) {
             </div>
           </div>
         </div>
+
+        {/* <div key={tokenAddress} className="w-full max-w-lg">
+          <TokenCard
+            tokenAddress={tokenAddress}
+            name={name}
+            symbol={symbol}
+            description={description}
+            imageUrl={imageUrl}
+            twitterLink={twitterLink}
+            telegramLink={telegramLink}
+            websiteLink={websiteLink}
+          />
+        </div> */}
 
         <div className="mb-6 mt-6">
           {transactions.length == 0 ? (
