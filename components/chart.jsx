@@ -228,7 +228,7 @@ export default function CandlestickChart({ transactions }) {
               key={tf}
               variant={timeframe === tf ? "secondary" : "outline"}
               onClick={() => handleTimeframeChange(tf)}
-              className="px-2 py-1 text-sm"
+              className="px-2 py-1 text-sm w-[42px]"
             >
               {tf}
             </Button>
