@@ -235,7 +235,7 @@ export function TokenPage({ tokenData }) {
               <div className="flex items-center space-x-2">
                 <h1 className="text-2xl font-bold truncate">{name}</h1>
                 <div className="text-2xl font-bold text-muted-foreground">
-                  ({symbol})
+                  [ ${symbol} ]
                 </div>
               </div>
 
