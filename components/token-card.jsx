@@ -37,10 +37,10 @@ export function TokenCard({
 
   return (
     <Card
-      className="bg-background rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer"
+      className="rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer border-3"
       onClick={handleCardClick}
     >
-      <div className="flex p-3 md:p-5">
+      <div className="flex p-4 md:p-5">
         {/* Left Column - Image */}
         <div className="flex-shrink-0 mr-6">
           <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] relative">
