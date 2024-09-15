@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 // Schema for Token Creation Events
 const tokenSchema = new mongoose.Schema(
   {
+    tokenCreator: { type: String },
     tokenAddress: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     symbol: { type: String, required: true },

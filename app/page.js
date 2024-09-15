@@ -24,6 +24,12 @@ export default function Home() {
   const [tokens, setTokens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [needUpdate, setNeedUpdate] = useState(false);
+  /* 
+  useEffect(() => {
+    findTokenAddress(
+      "0xc9c22e7a43baf9b69573c6b51b38ff30488839c145a90623d9e03a37ea627335"
+    );
+  }, []); */
 
   // Fetch recent tokens and CreateToken events on component mount
   useEffect(() => {
