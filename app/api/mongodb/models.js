@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 const tokenSchema = new mongoose.Schema(
   {
     tokenCreator: { type: String },
+    tokenFactory: { type: String },
     tokenAddress: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     symbol: { type: String, required: true },
