@@ -11,8 +11,11 @@ import { toast } from "react-toastify";
 import { pinFileToIPFS } from "@/lib/pinata";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 export function CreateToken() {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [description, setDescription] = useState("");
@@ -25,6 +28,7 @@ export function CreateToken() {
   const [devBuyAmount, setDevBuyAmount] = useState(""); // State for dev buy amount
 
   const handleCreateToken = async () => {
+    let tokenAddress = undefined;
     try {
       // Validate required fields
       if (!name || !ticker || !description || !image) {
@@ -52,7 +56,7 @@ export function CreateToken() {
         if (devBuyAmount > 0) {
           // Upload the image to IPFS
           const cid = await pinFileToIPFS(image);
-          createAndBuyToken(
+          tokenAddress = await createAndBuyToken(
             name,
             ticker,
             description,
@@ -71,7 +75,7 @@ export function CreateToken() {
       } else {
         // Upload the image to IPFS
         const cid = await pinFileToIPFS(image);
-        createToken(
+        tokenAddress = await createToken(
           name,
           ticker,
           description,
@@ -84,6 +88,10 @@ export function CreateToken() {
     } catch (error) {
       setErrorMessage("Failed to create token. Please try again.");
       console.error(error);
+    } finally {
+      if (tokenAddress) {
+        router.push(`/${tokenAddress}`);
+      }
     }
   };
 
