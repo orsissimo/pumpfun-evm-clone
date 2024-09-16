@@ -22,7 +22,7 @@ export function Navbar() {
           className="flex items-center gap-2 hover:text-primary transition-colors"
           prefetch={false}
         >
-          <FaWandMagicSparkles className="h-8 w-8" />
+          <FaWandMagicSparkles className="h-7 w-7" />
           <span className="text-lg font-semibold">pump.style</span>
         </Link>
       </div>
@@ -32,14 +32,14 @@ export function Navbar() {
           className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-flex"
           prefetch={false}
         >
-          <FaTelegramPlane className="h-5 w-5 mx-1" />
+          <FaTelegramPlane className="h-5 w-5 mx-1 hover:opacity-80" />
         </Link>
         <Link
           href="https://x.com/pumpdotstyle"
           className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors hidden sm:inline-flex"
           prefetch={false}
         >
-          <FaXTwitter className="h-5 w-5 mx-1" />
+          <FaXTwitter className="h-5 w-5 mx-1 hover:opacity-80" />
         </Link>
 
         <Link
@@ -123,7 +123,7 @@ export function Navbar() {
                   className="flex items-center gap-2 w-full"
                   prefetch={false}
                 >
-                  <FaTelegramPlane className="h-6 w-6 mx-1" />
+                  <FaTelegramPlane className="h-6 w-6 mx-1 hover:text-blue-500" />
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-muted transition-colors">
@@ -132,7 +132,7 @@ export function Navbar() {
                   className="flex items-center gap-2 w-full"
                   prefetch={false}
                 >
-                  <FaXTwitter className="h-6 w-6 mx-1" />
+                  <FaXTwitter className="h-6 w-6 mx-1 hover:text-blue-500" />
                 </Link>
               </DropdownMenuItem>
             </div>
