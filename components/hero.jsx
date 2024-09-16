@@ -151,7 +151,7 @@ export function Hero({
         <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full p-6">
           <h2 className="text-xl font-bold mb-4">Token Deployer</h2>
           <Link href="/create">
-            <Button className="w-full h-auto text-lg" variant="secondary">
+            <Button className="w-full h-auto text-lg" variant="outline">
               <GiMagicHat className="mr-2 h-6 w-6" />
               Create
             </Button>
