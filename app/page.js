@@ -114,7 +114,7 @@ export default function Home() {
               .filter(
                 (token) =>
                   token.tokenAddress ===
-                  "0xF263c74e256C997157d051cDc34bedFaFAaBe4A7" // Latest jailbreak - must implement an automated function
+                  "0x46EBBB7607C01D633EE2B0442126ede331bf9E42" // Latest jailbreak - must implement an automated function
               )
               .map((token, index) => (
                 <>
