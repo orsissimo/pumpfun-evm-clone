@@ -81,7 +81,8 @@ export default function Home() {
   const filteredTokens = tokens.filter(
     (token) =>
       token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+      token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.tokenAddress.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   console.log(filteredTokens);
