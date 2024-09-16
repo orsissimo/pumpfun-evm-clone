@@ -45,7 +45,7 @@ export function Hero({
     <div className="flex flex-col lg:flex-row items-start justify-center bg-background p-4 gap-8">
       {/* Left Column - Main Card */}
       <Card
-        className="hidden md:block rounded-xl overflow-hidden shadow-lg lg:w-2/5 cursor-pointer border-blue-500 border-3 border-opacity-40"
+        className="hidden md:block rounded-xl overflow-hidden shadow-lg lg:w-2/5 cursor-pointer border-opacity-40"
         onClick={handleCardClick}
       >
         <div className="flex flex-col md:flex-row p-6 md:p-8">
@@ -69,7 +69,7 @@ export function Hero({
               [ ${symbol} ]
             </div>
 
-            <div className="flex items-center gap-2 mb-6">
+            <div className="flex items-center gap-2 mb-4">
               <Link
                 className="text-sm md:text-base text-blue-500 hover:underline"
                 href={`https://etherscan.io/address/${tokenAddress}`}
@@ -94,7 +94,7 @@ export function Hero({
               </Button>
             </div>
 
-            <div className="hidden md:block text-sm md:text-md text-muted-foreground">
+            <div className="hidden md:block text-sm md:text-md text-muted-foreground overflow-y-auto h-16 scrollbar-hide">
               {description}
             </div>
 
