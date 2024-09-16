@@ -84,6 +84,8 @@ export default function Home() {
       token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  console.log(filteredTokens);
+
   return (
     <div className="container mx-auto px-8 pt-10 pb-16">
       {filteredTokens.length <= 0 && (
@@ -106,60 +108,72 @@ export default function Home() {
       ) : (
         <>
           {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-4 gap-4 justify-items-center"> */}
-          {filteredTokens.length > 0 && (
-            <>
-              <div className="mb-10 hidden md:block">
-                {/* Pass all relevant token data to Hero */}
-                <Hero
-                  tokenAddress={filteredTokens[0].tokenAddress} // Address of the token
-                  name={filteredTokens[0].name} // Name of the token
-                  symbol={filteredTokens[0].symbol} // Symbol (ticker) of the token
-                  description={filteredTokens[0].description} // Description of the token
-                  imageUrl={filteredTokens[0].imageUrl} // Image URL (from IPFS)
-                  twitterLink={filteredTokens[0].twitterLink} // Twitter link
-                  telegramLink={filteredTokens[0].telegramLink} // Telegram link
-                  websiteLink={filteredTokens[0].websiteLink} // Website link
-                />
-              </div>
+          {filteredTokens.length > 0 &&
+            filteredTokens
+              .filter(
+                (token) =>
+                  token.tokenAddress ===
+                  "0xF263c74e256C997157d051cDc34bedFaFAaBe4A7" // Latest jailbreak - must implement an automated function
+              )
+              .map((token, index) => (
+                <>
+                  <div key={index} className="mb-10 hidden md:block">
+                    {/* Pass all relevant token data to Hero */}
+                    <Hero
+                      tokenAddress={token.tokenAddress} // Address of the token
+                      name={token.name} // Name of the token
+                      symbol={token.symbol} // Symbol (ticker) of the token
+                      description={token.description} // Description of the token
+                      imageUrl={token.imageUrl} // Image URL (from IPFS)
+                      twitterLink={token.twitterLink} // Twitter link
+                      telegramLink={token.telegramLink} // Telegram link
+                      websiteLink={token.websiteLink} // Website link
+                    />
+                  </div>
 
-              <div className="space-y-6 md:hidden mb-8">
-                {/* Pass all relevant token data to TokenCard */}
-                <TokenCard
-                  tokenAddress={filteredTokens[0].tokenAddress}
-                  name={filteredTokens[0].name}
-                  symbol={filteredTokens[0].symbol}
-                  description={filteredTokens[0].description}
-                  imageUrl={filteredTokens[0].imageUrl}
-                  twitterLink={filteredTokens[0].twitterLink}
-                  telegramLink={filteredTokens[0].telegramLink}
-                  websiteLink={filteredTokens[0].websiteLink}
-                />
+                  <div className="space-y-6 md:hidden mb-8">
+                    {/* Pass all relevant token data to TokenCard */}
+                    <TokenCard
+                      tokenAddress={token.tokenAddress}
+                      name={token.name}
+                      symbol={token.symbol}
+                      description={token.description}
+                      imageUrl={token.imageUrl}
+                      twitterLink={token.twitterLink}
+                      telegramLink={token.telegramLink}
+                      websiteLink={token.websiteLink}
+                    />
 
-                <div className="flex gap-4">
-                  <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
-                    <h2 className="text-sm font-bold mb-2">Token Deployer</h2>
-                    <Link href="/create">
-                      <Button
-                        className="w-full h-auto text-sm"
-                        variant="secondary"
-                      >
-                        <GiMagicHat className="mr-2 h-5 w-5" />
-                        Create
-                      </Button>
-                    </Link>
-                  </Card>
+                    <div className="flex gap-4">
+                      <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
+                        <h2 className="text-sm font-bold mb-2">
+                          Token Deployer
+                        </h2>
+                        <Link href="/create">
+                          <Button
+                            className="w-full h-auto text-sm"
+                            variant="outline"
+                          >
+                            <GiMagicHat className="mr-2 h-5 w-5" />
+                            Create
+                          </Button>
+                        </Link>
+                      </Card>
 
-                  <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
-                    <h2 className="text-sm font-bold mb-2">Pump Stats</h2>
-                    <Button className="w-full h-auto text-sm" variant="outline">
-                      <FaChartSimple className="mr-2 h-5 w-5" />
-                      Soon
-                    </Button>
-                  </Card>
-                </div>
-              </div>
-            </>
-          )}
+                      <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
+                        <h2 className="text-sm font-bold mb-2">Pump Stats</h2>
+                        <Button
+                          className="w-full h-auto text-sm"
+                          variant="outline"
+                        >
+                          <FaChartSimple className="mr-2 h-5 w-5" />
+                          Soon
+                        </Button>
+                      </Card>
+                    </div>
+                  </div>
+                </>
+              ))}
           <div className="mb-8 max-w-3xl mx-auto">
             <div className="relative">
               <Input

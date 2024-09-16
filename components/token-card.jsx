@@ -37,7 +37,7 @@ export function TokenCard({
 
   return (
     <Card
-      className="rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer border-3"
+      className="rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="flex p-4 md:p-5">
