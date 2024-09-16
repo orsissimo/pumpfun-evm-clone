@@ -136,7 +136,6 @@ export default function Home() {
                 />
 
                 <div className="flex gap-4">
-                  {/* Website Card */}
                   <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
                     <h2 className="text-sm font-bold mb-2">Token Deployer</h2>
                     <Link href="/create">
@@ -150,7 +149,6 @@ export default function Home() {
                     </Link>
                   </Card>
 
-                  {/* Social Media Card */}
                   <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
                     <h2 className="text-sm font-bold mb-2">Pump Stats</h2>
                     <Button className="w-full h-auto text-sm" variant="outline">
