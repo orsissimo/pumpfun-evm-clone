@@ -46,6 +46,7 @@ import { Progress } from "./ui/progress";
 import { LoadingLines } from "./loading-rows";
 import Image from "next/image";
 import { TokenCard } from "./token-card";
+import TableRowZero from "./ui/tablerowzero";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -66,7 +67,35 @@ export function TokenPage({ tokenData }) {
     telegramLink,
     websiteLink,
     tokenAddress,
+    tokenCreator,
+    ethPriceAtTime,
   } = tokenData;
+
+  const transactionZero = {
+    timestamp: tokenData.timestamp,
+    eventType: "Create",
+    empty: 1,
+    buyer: tokenData.tokenCreator,
+    pricePerToken: 0.000000001,
+    ethPriceAtTime: tokenData.ethPriceAtTime,
+  };
+
+  useEffect(() => {
+    // Check if the "empty" transaction already exists
+    const hasEmptyTransaction = transactions.some(
+      (tx) => tx.empty === 1 && tx.eventType === "Create"
+    );
+
+    // Create a new transaction list with the empty transaction at the top
+    let formattedTransactions = hasEmptyTransaction
+      ? transactions // If the empty transaction already exists, keep the current transactions
+      : [
+          ...transactions, // Add the rest of the transactions below the empty transaction
+        ];
+
+    // Update the state with the new list of transactions
+    setTransactions(formattedTransactions);
+  }, [transactions, tokenData]);
 
   useEffect(() => {
     console.log("Database transactions call");
@@ -525,6 +554,7 @@ export function TokenPage({ tokenData }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                <TableRowZero tx={transactionZero} />
                 {transactions.length == 0 ? (
                   <TableRow>
                     <TableCell colSpan={6}>
@@ -565,14 +595,16 @@ export function TokenPage({ tokenData }) {
                         </TableCell>
 
                         <TableCell>
-                          {Number(
-                            Number(
-                              Number(tx.tokensBought || tx.tokensSold) /
-                                10 ** 18
-                            ).toFixed(4)
-                          )
-                            .toLocaleString("en-US")
-                            .replace(/,/g, "'")}{" "}
+                          {tx.empty
+                            ? "-"
+                            : Number(
+                                Number(
+                                  Number(tx.tokensBought || tx.tokensSold) /
+                                    10 ** 18
+                                ).toFixed(4)
+                              )
+                                .toLocaleString("en-US")
+                                .replace(/,/g, "'")}{" "}
                         </TableCell>
                         <TableCell>
                           {(
