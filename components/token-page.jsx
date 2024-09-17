@@ -76,6 +76,19 @@ export function TokenPage({ tokenData }) {
   async function getEthPrice() {
     return await fetchEthPriceFromOracle();
   }
+
+  const fetchBalances = async (tokenAddress) => {
+    try {
+      const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
+      const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
+
+      setTokenBalance(fetchedTokenBalance);
+      setEthBalance(fetchedEthBalance);
+    } catch (error) {
+      console.error("Failed to fetch balances", error);
+    }
+  };
+
   const transactionZero = {
     timestamp: tokenData.timestamp || "0",
     eventType: "Create",
@@ -86,36 +99,37 @@ export function TokenPage({ tokenData }) {
     ethPriceAtTime: tokenData.ethPriceAtTime || getEthPrice(),
   };
 
+  const fetchTransactionsFromDb = async (tokenAddress) => {
+    try {
+      console.log("Database transactions");
+      const dbData = await getData(
+        "TokenTransaction",
+        "find",
+        { tokenAddress: tokenAddress },
+        {
+          sort: { timestamp: -1 },
+        }
+      );
+
+      const dbTrasactions = dbData.result || [];
+      if (dbTrasactions.length > 0) {
+        console.log("Database transactions", dbTrasactions);
+        setTransactions(dbTrasactions);
+      }
+    } catch (err) {
+      console.error(
+        "Error fetching recent tokens or events from database:",
+        err
+      );
+    } finally {
+      setNeedUpdate(false);
+    }
+  };
+
   useEffect(() => {
     console.log("Database transactions call");
-    async function fetchTransactionsFromDb() {
-      try {
-        console.log("Database transactions");
-        const dbData = await getData(
-          "TokenTransaction",
-          "find",
-          { tokenAddress: tokenAddress },
-          {
-            sort: { timestamp: -1 },
-          }
-        );
-
-        const dbTrasactions = dbData.result || [];
-        if (dbTrasactions.length > 0) {
-          console.log("Database transactions", dbTrasactions);
-          setTransactions(dbTrasactions);
-        }
-      } catch (err) {
-        console.error(
-          "Error fetching recent tokens or events from database:",
-          err
-        );
-      } finally {
-        setNeedUpdate(false);
-      }
-    }
-    fetchTransactionsFromDb();
-  }, [needUpdate, tokenAddress]);
+    fetchTransactionsFromDb(tokenAddress);
+  }, [tokenAddress]);
 
   useEffect(() => {
     async function fetchTransactionsFromBlockchain() {
@@ -133,19 +147,7 @@ export function TokenPage({ tokenData }) {
 
   // Fetch balances when component mounts
   useEffect(() => {
-    const fetchBalances = async () => {
-      try {
-        const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
-        const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
-
-        setTokenBalance(fetchedTokenBalance);
-        setEthBalance(fetchedEthBalance);
-      } catch (error) {
-        console.error("Failed to fetch balances", error);
-      }
-    };
-
-    fetchBalances();
+    fetchBalances(tokenAddress);
   }, [tokenAddress]);
 
   // Fetch token ETH surplus and ETH cap
@@ -172,25 +174,48 @@ export function TokenPage({ tokenData }) {
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
     "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
-
-  const handleBuyToken = () => {
+  const handleBuyToken = async () => {
     // Validate required fields
     if (!amount || amount <= 0) {
       toast.error("Insert a valid amount.");
       return;
     }
-    // Call createToken function from your factory
-    buyToken(amount, tokenAddress);
+
+    try {
+      // Call buyToken function and wait for it to complete
+      await buyToken(amount, tokenAddress);
+
+      // Fetch updated balances after the buy operation is complete
+      await fetchBalances(tokenAddress);
+      await fetchTransactionsFromDb(tokenAddress);
+
+      toast.success("Token purchase successful!");
+    } catch (error) {
+      console.error("Error buying token:", error);
+      toast.error("Failed to buy tokens.");
+    }
   };
 
-  const handleSellToken = () => {
+  const handleSellToken = async () => {
     // Validate required fields
     if (!amount || amount <= 1) {
       toast.error("Insert a valid amount.");
       return;
     }
-    // Call createToken function from your factory
-    sellToken(amount, tokenAddress);
+
+    try {
+      // Call sellToken function and wait for it to complete
+      await sellToken(amount, tokenAddress);
+
+      // Fetch updated balances after the sell operation is complete
+      await fetchBalances(tokenAddress);
+      await fetchTransactionsFromDb(tokenAddress);
+
+      toast.success("Token sale successful!");
+    } catch (error) {
+      console.error("Error selling token:", error);
+      toast.error("Failed to sell tokens.");
+    }
   };
 
   // Handler to set the max token balance to the input field
