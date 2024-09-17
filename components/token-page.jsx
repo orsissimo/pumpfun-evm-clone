@@ -51,6 +51,7 @@ import { LoadingLines } from "./loading-rows";
 import Image from "next/image";
 import { TokenCard } from "./token-card";
 import TableRowZero from "./ui/tablerowzero";
+import { HolderDistribution } from "./ui/holder-distribution";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -748,8 +749,9 @@ export function TokenPage({ tokenData }) {
       </div> */}
 
       {/* Holder Distribution */}
+      <HolderDistribution transactions={transactions} />
       {/* <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
-        <Card className="flex flex-col h-[600px]">
+        <Card className="flex flex-col">
           <CardHeader className="border-b">
             <CardTitle>Holder Distribution</CardTitle>
           </CardHeader>
