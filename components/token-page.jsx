@@ -46,6 +46,14 @@ import { Progress } from "./ui/progress";
 import { LoadingLines } from "./loading-rows";
 import Image from "next/image";
 import { TokenCard } from "./token-card";
+import { FaFire } from "react-icons/fa";
+import Confetti from "react-confetti";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -149,7 +157,21 @@ export function TokenPage({ tokenData }) {
   }, [tokenAddress]);
 
   const jailbreakPercentage =
-    tokenEthCap > 0 ? ((tokenEthSurplus / tokenEthCap) * 100).toFixed(2) : 0;
+    tokenEthCap > 0
+      ? Number(((tokenEthSurplus / tokenEthCap) * 100).toFixed(2))
+      : 0;
+
+  const [showConfetti, setShowConfetti] = useState(false);
+
+  useEffect(() => {
+    if (jailbreakPercentage >= 100) {
+      setShowConfetti(true);
+      // Hide confetti after 5 seconds
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
+    }
+  }, [jailbreakPercentage]);
 
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
@@ -216,6 +238,9 @@ export function TokenPage({ tokenData }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8 max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      {showConfetti && (
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
+      )}
       <div>
         <div className="flex flex-col md:flex-row w-full max-w-3xl mx-auto gap-6 p-4 md:p-0">
           {/* Left Column - Image */}
@@ -489,8 +514,24 @@ export function TokenPage({ tokenData }) {
                 <div className="text-muted-foreground">Jailbreak</div>
                 <div className="font-bold mb-3">
                   {tokenEthCap > 0 ? (
-                    <div className="flex justify-between">
-                      <span>{jailbreakPercentage}%</span>
+                    <div className="flex justify-between items-center">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="flex items-center cursor-pointer">
+                            <span className="flex items-center">
+                              {jailbreakPercentage}%
+                              {jailbreakPercentage >= 100 && (
+                                <FaFire className="ml-1 text-red-500 h-4 w-4" />
+                              )}
+                            </span>
+                          </div>
+                        </TooltipTrigger>
+                        {jailbreakPercentage >= 100 && (
+                          <TooltipContent className="max-w-xs bg-background text-foreground shadow-lg rounded-md p-3">
+                            <p>LP Burned</p>
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
                     </div>
                   ) : (
                     "-"
