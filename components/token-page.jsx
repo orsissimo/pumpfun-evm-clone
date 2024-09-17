@@ -41,7 +41,11 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
 import { FaDollarSign } from "react-icons/fa";
 import { getData } from "@/lib/mongodb";
-import { formatLargeNumber, formatPrice } from "@/lib/utils";
+import {
+  fetchEthPriceFromOracle,
+  formatLargeNumber,
+  formatPrice,
+} from "@/lib/utils";
 import { Progress } from "./ui/progress";
 import { LoadingLines } from "./loading-rows";
 import Image from "next/image";
@@ -67,35 +71,20 @@ export function TokenPage({ tokenData }) {
     telegramLink,
     websiteLink,
     tokenAddress,
-    tokenCreator,
-    ethPriceAtTime,
   } = tokenData;
 
+  async function getEthPrice() {
+    return await fetchEthPriceFromOracle();
+  }
   const transactionZero = {
-    timestamp: tokenData.timestamp,
+    timestamp: tokenData.timestamp || "0",
     eventType: "Create",
     empty: 1,
-    buyer: tokenData.tokenCreator,
+    buyer:
+      tokenData.tokenCreator || "0x0000000000000000000000000000000000000000", //[TODO]not available if not created from the platform
     pricePerToken: 0.000000001,
-    ethPriceAtTime: tokenData.ethPriceAtTime,
+    ethPriceAtTime: tokenData.ethPriceAtTime || getEthPrice(),
   };
-
-  useEffect(() => {
-    // Check if the "empty" transaction already exists
-    const hasEmptyTransaction = transactions.some(
-      (tx) => tx.empty === 1 && tx.eventType === "Create"
-    );
-
-    // Create a new transaction list with the empty transaction at the top
-    let formattedTransactions = hasEmptyTransaction
-      ? transactions // If the empty transaction already exists, keep the current transactions
-      : [
-          ...transactions, // Add the rest of the transactions below the empty transaction
-        ];
-
-    // Update the state with the new list of transactions
-    setTransactions(formattedTransactions);
-  }, [transactions, tokenData]);
 
   useEffect(() => {
     console.log("Database transactions call");
@@ -554,7 +543,10 @@ export function TokenPage({ tokenData }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {/* ----------------------------- */}
                 <TableRowZero tx={transactionZero} />
+                {/* ----------------------------- */}
+
                 {transactions.length == 0 ? (
                   <TableRow>
                     <TableCell colSpan={6}>
