@@ -1,5 +1,6 @@
 import { HolderDistributionChart } from "./holder-distrubution-chart";
 import { Card, CardHeader, CardTitle, CardContent } from "./card";
+import Link from "next/link";
 
 export const HolderDistribution = ({ transactions }) => {
   // Calculate the holder distribution
@@ -41,53 +42,59 @@ export const HolderDistribution = ({ transactions }) => {
   const holderDistribution = calculateHolderDistribution(transactions);
 
   return (
-    <div className="col-span-full grid grid-cols-2 gap-8">
+    <div className="col-span-full grid grid-cols-2 gap-8 h-full">
       {/* Holder Distribution Card */}
       <div className="col-span-1 flex flex-col">
-        <Card className="flex flex-col">
+        <Card className="h-[590px] flex flex-col">
           <CardHeader className="border-b">
             <CardTitle>Holder Distribution</CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow overflow-hidden">
-            <div className="h-full overflow-y-auto scrollbar-hide pr-4">
-              <div className="grid gap-2">
-                {Object.entries(holderDistribution).map(
-                  ([holder, data], index) => (
-                    <div
-                      key={`holder-${index}`}
-                      className="flex items-center justify-between mt-4"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-6 h-6 rounded-full bg-${
-                            ["primary", "secondary", "muted", "accent", "card"][
-                              index % 5
-                            ]
-                          }`}
-                        />
-                        <div>
-                          <div className="font-medium">{holder}</div>
-                          <div className="text-muted-foreground text-sm">
-                            {data.percentage.toFixed(2)}%
+          <CardContent className="flex-grow overflow-y-auto scrollbar-hide pr-4">
+            <div className="grid gap-2">
+              {Object.entries(holderDistribution).map(
+                ([holder, data], index) => (
+                  <div
+                    key={`holder-${index}`}
+                    className="flex items-center justify-between mt-4"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div
+                        className={`w-6 h-6 mr-2 text-xs text-center pt-[5px] rounded-full bg-${
+                          ["secondary", "muted"][index % 2]
+                        }`}
+                      >
+                        {index + 1}
+                      </div>
+                      <div>
+                        <Link
+                          href={`https://etherscan.io/address/${holder}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <div className="text-sm hover:underline">
+                            {holder}
                           </div>
+                        </Link>
+                        <div className="text-muted-foreground text-xs">
+                          {(data.percentage / 1000).toFixed(2)}%
                         </div>
                       </div>
                     </div>
-                  )
-                )}
-              </div>
+                  </div>
+                )
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Chart Component */}
-      <div className="col-span-1">
-        <Card className="flex flex-col">
+      <div className="col-span-1 flex flex-col">
+        <Card className="h-[590px] flex flex-col">
           <CardHeader className="border-b">
             <CardTitle>Holder Distribution Chart</CardTitle>
           </CardHeader>
-          <CardContent className="flex-grow">
+          <CardContent className="flex-grow mt-4">
             <HolderDistributionChart distributionData={holderDistribution} />
           </CardContent>
         </Card>
