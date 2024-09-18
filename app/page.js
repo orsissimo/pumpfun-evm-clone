@@ -18,12 +18,22 @@ import {
 } from "react-icons/fa6";
 import { GiMagicLamp, GiMagicHat, GiBoltSpellCast } from "react-icons/gi";
 import Link from "next/link";
+import { fetchEthPriceFromOracle } from "@/lib/utils";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [tokens, setTokens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [needUpdate, setNeedUpdate] = useState(false);
+
+  useEffect(() => {
+    async function fetch() {
+      let data = await fetchEthPriceFromOracle();
+
+      console.log(data);
+    }
+    fetch();
+  }, []);
 
   // Fetch recent tokens and CreateToken events on component mount
   useEffect(() => {

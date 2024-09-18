@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 // Schema for Token Creation Events
 const tokenSchema = new mongoose.Schema(
   {
+    tokenCreator: { type: String },
+    tokenFactory: { type: String },
     tokenAddress: { type: String, required: true, unique: true },
     name: { type: String, required: true },
     symbol: { type: String, required: true },
@@ -12,6 +14,7 @@ const tokenSchema = new mongoose.Schema(
     twitterLink: { type: String },
     telegramLink: { type: String },
     websiteLink: { type: String },
+    ethPriceAtTime: { type: String },
     timestamp: { type: Date, required: true },
   },
   { timestamps: true }

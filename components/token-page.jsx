@@ -41,7 +41,11 @@ import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
 import { FaDollarSign } from "react-icons/fa";
 import { getData } from "@/lib/mongodb";
-import { formatLargeNumber, formatPrice } from "@/lib/utils";
+import {
+  fetchEthPriceFromOracle,
+  formatLargeNumber,
+  formatPrice,
+} from "@/lib/utils";
 import { Progress } from "./ui/progress";
 import { LoadingLines } from "./loading-rows";
 import Image from "next/image";
@@ -54,6 +58,8 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import TableRowZero from "./ui/tablerowzero";
+import { HolderDistribution } from "./ui/holder-distribution";
 
 export function TokenPage({ tokenData }) {
   const [amount, setAmount] = useState(0);
@@ -76,36 +82,63 @@ export function TokenPage({ tokenData }) {
     tokenAddress,
   } = tokenData;
 
+  async function getEthPrice() {
+    return await fetchEthPriceFromOracle();
+  }
+
+  const fetchBalances = async (tokenAddress) => {
+    try {
+      const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
+      const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
+
+      setTokenBalance(fetchedTokenBalance);
+      setEthBalance(fetchedEthBalance);
+    } catch (error) {
+      console.error("Failed to fetch balances", error);
+    }
+  };
+
+  const transactionZero = {
+    timestamp: tokenData.timestamp || "0",
+    eventType: "Create",
+    empty: 1,
+    buyer:
+      tokenData.tokenCreator || "0x0000000000000000000000000000000000000000", //[TODO]not available if not created from the platform
+    pricePerToken: 0.000000001,
+    ethPriceAtTime: tokenData.ethPriceAtTime || getEthPrice(),
+  };
+
+  const fetchTransactionsFromDb = async (tokenAddress) => {
+    try {
+      console.log("Database transactions");
+      const dbData = await getData(
+        "TokenTransaction",
+        "find",
+        { tokenAddress: tokenAddress },
+        {
+          sort: { timestamp: -1 },
+        }
+      );
+
+      const dbTrasactions = dbData.result || [];
+      if (dbTrasactions.length > 0) {
+        console.log("Database transactions", dbTrasactions);
+        setTransactions(dbTrasactions);
+      }
+    } catch (err) {
+      console.error(
+        "Error fetching recent tokens or events from database:",
+        err
+      );
+    } finally {
+      setNeedUpdate(false);
+    }
+  };
+
   useEffect(() => {
     console.log("Database transactions call");
-    async function fetchTransactionsFromDb() {
-      try {
-        console.log("Database transactions");
-        const dbData = await getData(
-          "TokenTransaction",
-          "find",
-          { tokenAddress: tokenAddress },
-          {
-            sort: { timestamp: -1 },
-          }
-        );
-
-        const dbTrasactions = dbData.result || [];
-        if (dbTrasactions.length > 0) {
-          console.log("Database transactions", dbTrasactions);
-          setTransactions(dbTrasactions);
-        }
-      } catch (err) {
-        console.error(
-          "Error fetching recent tokens or events from database:",
-          err
-        );
-      } finally {
-        setNeedUpdate(false);
-      }
-    }
-    fetchTransactionsFromDb();
-  }, [needUpdate, tokenAddress]);
+    fetchTransactionsFromDb(tokenAddress);
+  }, [tokenAddress]);
 
   useEffect(() => {
     async function fetchTransactionsFromBlockchain() {
@@ -123,19 +156,7 @@ export function TokenPage({ tokenData }) {
 
   // Fetch balances when component mounts
   useEffect(() => {
-    const fetchBalances = async () => {
-      try {
-        const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
-        const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
-
-        setTokenBalance(fetchedTokenBalance);
-        setEthBalance(fetchedEthBalance);
-      } catch (error) {
-        console.error("Failed to fetch balances", error);
-      }
-    };
-
-    fetchBalances();
+    fetchBalances(tokenAddress);
   }, [tokenAddress]);
 
   // Fetch token ETH surplus and ETH cap
@@ -176,25 +197,48 @@ export function TokenPage({ tokenData }) {
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
     "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
-
-  const handleBuyToken = () => {
+  const handleBuyToken = async () => {
     // Validate required fields
     if (!amount || amount <= 0) {
       toast.error("Insert a valid amount.");
       return;
     }
-    // Call createToken function from your factory
-    buyToken(amount, tokenAddress);
+
+    try {
+      // Call buyToken function and wait for it to complete
+      await buyToken(amount, tokenAddress);
+
+      // Fetch updated balances after the buy operation is complete
+      await fetchBalances(tokenAddress);
+      await fetchTransactionsFromDb(tokenAddress);
+
+      toast.success("Token purchase successful!");
+    } catch (error) {
+      console.error("Error buying token:", error);
+      toast.error("Failed to buy tokens.");
+    }
   };
 
-  const handleSellToken = () => {
+  const handleSellToken = async () => {
     // Validate required fields
     if (!amount || amount <= 1) {
       toast.error("Insert a valid amount.");
       return;
     }
-    // Call createToken function from your factory
-    sellToken(amount, tokenAddress);
+
+    try {
+      // Call sellToken function and wait for it to complete
+      await sellToken(amount, tokenAddress);
+
+      // Fetch updated balances after the sell operation is complete
+      await fetchBalances(tokenAddress);
+      await fetchTransactionsFromDb(tokenAddress);
+
+      toast.success("Token sale successful!");
+    } catch (error) {
+      console.error("Error selling token:", error);
+      toast.error("Failed to sell tokens.");
+    }
   };
 
   // Handler to set the max token balance to the input field
@@ -566,6 +610,10 @@ export function TokenPage({ tokenData }) {
                 </TableRow>
               </TableHeader>
               <TableBody>
+                {/* ----------------------------- */}
+                <TableRowZero tx={transactionZero} />
+                {/* ----------------------------- */}
+
                 {transactions.length == 0 ? (
                   <TableRow>
                     <TableCell colSpan={6}>
@@ -606,14 +654,16 @@ export function TokenPage({ tokenData }) {
                         </TableCell>
 
                         <TableCell>
-                          {Number(
-                            Number(
-                              Number(tx.tokensBought || tx.tokensSold) /
-                                10 ** 18
-                            ).toFixed(4)
-                          )
-                            .toLocaleString("en-US")
-                            .replace(/,/g, "'")}{" "}
+                          {tx.empty
+                            ? "-"
+                            : Number(
+                                Number(
+                                  Number(tx.tokensBought || tx.tokensSold) /
+                                    10 ** 18
+                                ).toFixed(4)
+                              )
+                                .toLocaleString("en-US")
+                                .replace(/,/g, "'")}{" "}
                         </TableCell>
                         <TableCell>
                           {(
@@ -740,8 +790,9 @@ export function TokenPage({ tokenData }) {
       </div> */}
 
       {/* Holder Distribution */}
+      <HolderDistribution transactions={transactions} />
       {/* <div className="col-span-full lg:col-span-1 flex flex-col gap-8">
-        <Card className="flex flex-col h-[600px]">
+        <Card className="flex flex-col">
           <CardHeader className="border-b">
             <CardTitle>Holder Distribution</CardTitle>
           </CardHeader>
