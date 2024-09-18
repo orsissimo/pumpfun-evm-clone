@@ -3,8 +3,9 @@ import { TableCell, TableRow } from "./table";
 
 const TableRowZero = ({ tx }) => {
   const formatPrice = (price) => {
-    const priceString = price.toFixed(18); // assuming ETH prices
-    const [leadingZeros, remainingFraction] = priceString.split(".");
+    const priceString = price.toString();
+    const [leadingZeros, remainingFraction = ""] = priceString.split(".");
+
     return {
       leadingZeros,
       remainingFraction: remainingFraction.slice(0, 4), // limit to 4 decimal places
