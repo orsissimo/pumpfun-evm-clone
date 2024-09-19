@@ -77,6 +77,14 @@ export function TokenPage({ tokenData }) {
   const [tokenEthCap, setTokenEthCap] = useState(0);
   const [isBuySelected, setIsBuySelected] = useState(true);
   const [activeTab, setActiveTab] = useState("transactions");
+  const [transactionZero, setTransactionzero] = useState({
+    timestamp: "0",
+    eventType: "Create",
+    empty: 1,
+    buyer: "0x0000000000000000000000000000000000000000",
+    pricePerToken: 0.000000001,
+    ethPriceAtTime: 0,
+  });
 
   const {
     name,
@@ -90,7 +98,8 @@ export function TokenPage({ tokenData }) {
   } = tokenData;
 
   async function getEthPrice() {
-    return await fetchEthPriceFromOracle();
+    const res = await fetchEthPriceFromOracle();
+    return res;
   }
 
   const fetchBalances = async (tokenAddress) => {
@@ -103,16 +112,6 @@ export function TokenPage({ tokenData }) {
     } catch (error) {
       console.error("Failed to fetch balances", error);
     }
-  };
-
-  const transactionZero = {
-    timestamp: tokenData.timestamp || "0",
-    eventType: "Create",
-    empty: 1,
-    buyer:
-      tokenData.tokenCreator || "0x0000000000000000000000000000000000000000", //[TODO] not available if not created from the platform
-    pricePerToken: 0.000000001,
-    ethPriceAtTime: tokenData.ethPriceAtTime || getEthPrice(),
   };
 
   const fetchTransactionsFromDb = async (tokenAddress) => {
@@ -146,6 +145,24 @@ export function TokenPage({ tokenData }) {
     console.log("Database transactions call");
     fetchTransactionsFromDb(tokenAddress);
   }, [tokenAddress]);
+
+  useEffect(() => {
+    async function createTransactionZero() {
+      const ethPrice = await getEthPrice(); // Await the resolved value of the promise
+      setTransactionzero({
+        timestamp: tokenData.timestamp || "0",
+        eventType: "Create",
+        empty: 1,
+        buyer:
+          tokenData.tokenCreator ||
+          "0x0000000000000000000000000000000000000000",
+        pricePerToken: 0.000000001,
+        ethPriceAtTime: tokenData.ethPriceAtTime || ethPrice, // Use the resolved value here
+      });
+    }
+
+    createTransactionZero();
+  }, [tokenData]);
 
   useEffect(() => {
     async function fetchTransactionsFromBlockchain() {
