@@ -36,7 +36,15 @@ export const HolderDistribution = ({ transactions }) => {
         (holderDistribution[holder].tokens / 10 ** 18 / totalSupply) * 100;
     }
 
-    return holderDistribution;
+    // Convert holderDistribution object into an array of entries, sort by percentage, and return
+    const sortedDistribution = Object.entries(holderDistribution)
+      .sort(([, a], [, b]) => b.percentage - a.percentage) // Sort descending by percentage
+      .reduce((acc, [holder, data]) => {
+        acc[holder] = data;
+        return acc;
+      }, {});
+
+    return sortedDistribution;
   };
 
   const holderDistribution = calculateHolderDistribution(transactions);
