@@ -12,6 +12,7 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { Footer } from "@/components/footer";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,7 +48,7 @@ export default function RootLayout({ children }) {
         )}
       </head>
       <body className={inter.className}>
-        <Tooltip.Provider delayDuration={80}>
+        <TooltipProvider delayDuration={80}>
           <Navbar />
           <ToastContainer
             position="bottom-right"
@@ -57,7 +58,7 @@ export default function RootLayout({ children }) {
           />
           {children}
           <Footer />
-        </Tooltip.Provider>
+        </TooltipProvider>
       </body>
     </html>
   );

@@ -66,6 +66,7 @@ import { BuySellCard } from "./buy-sell";
 import { TokenStatsCard } from "./token-stats";
 import { TransactionsTable } from "./transaction-table";
 import { ChatCard } from "./chat";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 export function TokenPage({ tokenData }) {
   const [tokenBalance, setTokenBalance] = useState(0);
@@ -75,6 +76,7 @@ export function TokenPage({ tokenData }) {
   const [tokenEthSurplus, setTokenEthSurplus] = useState(0);
   const [tokenEthCap, setTokenEthCap] = useState(0);
   const [isBuySelected, setIsBuySelected] = useState(true);
+  const [activeTab, setActiveTab] = useState("transactions");
 
   const {
     name,
@@ -108,7 +110,7 @@ export function TokenPage({ tokenData }) {
     eventType: "Create",
     empty: 1,
     buyer:
-      tokenData.tokenCreator || "0x0000000000000000000000000000000000000000", //[TODO]not available if not created from the platform
+      tokenData.tokenCreator || "0x0000000000000000000000000000000000000000", //[TODO] not available if not created from the platform
     pricePerToken: 0.000000001,
     ethPriceAtTime: tokenData.ethPriceAtTime || getEthPrice(),
   };
@@ -346,21 +348,34 @@ export function TokenPage({ tokenData }) {
       </div>
 
       {/* Holder Distribution */}
-      <div className="col-span-full mb-6">
-        <HolderDistribution transactions={transactions} />
-      </div>
-
       <div className="col-span-full">
         <Card>
-          <CardHeader>
-            <CardTitle>Transactions</CardTitle>
-          </CardHeader>
+          {/* <CardHeader>
+            <CardTitle>Transactions & Holder Distribution</CardTitle>
+          </CardHeader> */}
           <CardContent>
-            <TransactionsTable
-              transactions={transactions}
-              symbol={symbol}
-              transactionZero={transactionZero}
-            />
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full mt-6"
+            >
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="transactions">Transactions</TabsTrigger>
+                <TabsTrigger value="distribution">
+                  Holder Distribution
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="transactions" className="mt-4">
+                <TransactionsTable
+                  transactions={transactions}
+                  symbol={symbol}
+                  transactionZero={transactionZero}
+                />
+              </TabsContent>
+              <TabsContent value="distribution" className="mt-4">
+                <HolderDistribution transactions={transactions} />
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>

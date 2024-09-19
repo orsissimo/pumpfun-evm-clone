@@ -14,21 +14,35 @@ export const HolderDistributionChart = ({ distributionData }) => {
           (holder) => holder.percentage
         ),
         backgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FF9F40",
+          "rgba(59, 130, 246, 1)", // Fully opaque (brightest)
+          "rgba(59, 130, 246, 0.95)",
+          "rgba(59, 130, 246, 0.9)",
+          "rgba(59, 130, 246, 0.85)",
+          "rgba(59, 130, 246, 0.8)",
+          "rgba(59, 130, 246, 0.75)",
+          "rgba(59, 130, 246, 0.7)",
+          "rgba(59, 130, 246, 0.65)",
+          "rgba(59, 130, 246, 0.6)", // Medium brightness
+          "rgba(59, 130, 246, 0.55)",
+          "rgba(59, 130, 246, 0.5)",
+          "rgba(59, 130, 246, 0.45)", // Lightest
         ],
         hoverBackgroundColor: [
-          "#FF6384",
-          "#36A2EB",
-          "#FFCE56",
-          "#4BC0C0",
-          "#9966FF",
-          "#FF9F40",
+          "rgba(59, 130, 246, 1)", // Fully opaque (brightest)
+          "rgba(59, 130, 246, 0.95)",
+          "rgba(59, 130, 246, 0.9)",
+          "rgba(59, 130, 246, 0.85)",
+          "rgba(59, 130, 246, 0.8)",
+          "rgba(59, 130, 246, 0.75)",
+          "rgba(59, 130, 246, 0.7)",
+          "rgba(59, 130, 246, 0.65)",
+          "rgba(59, 130, 246, 0.6)", // Medium brightness
+          "rgba(59, 130, 246, 0.55)",
+          "rgba(59, 130, 246, 0.5)",
+          "rgba(59, 130, 246, 0.45)", // Lightest
         ],
+        borderColor: ["#e6e6e6"],
+        borderWidth: 2, // Thin border for visibility
       },
     ],
   };
@@ -37,7 +51,8 @@ export const HolderDistributionChart = ({ distributionData }) => {
     responsive: true,
     plugins: {
       legend: {
-        position: "bottom",
+        position: "hidden",
+        display: false,
       },
       tooltip: {
         callbacks: {

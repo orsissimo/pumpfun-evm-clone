@@ -89,15 +89,12 @@ export const HolderDistribution = ({ transactions }) => {
       </div>
 
       {/* Chart Component */}
-      <div className="col-span-1 flex flex-col">
-        <Card className="h-[590px] flex flex-col">
-          <CardHeader className="border-b">
-            <CardTitle>Holder Distribution Chart</CardTitle>
-          </CardHeader>
-          <CardContent className="flex-grow mt-4">
-            <HolderDistributionChart distributionData={holderDistribution} />
-          </CardContent>
-        </Card>
+      <div className="col-span-1 flex justify-center items-center h-full">
+        <div className="h-[450px] w-[450px]">
+          {" "}
+          {/* Set fixed height/width to keep the chart responsive */}
+          <HolderDistributionChart distributionData={holderDistribution} />
+        </div>
       </div>
     </div>
   );
