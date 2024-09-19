@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CopyIcon, GlobeIcon } from "./utils";
+import { CopyIcon, GlobeIcon } from "./ui/utils";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
 import { toast } from "react-toastify";

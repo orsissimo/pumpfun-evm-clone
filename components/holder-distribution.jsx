@@ -1,5 +1,5 @@
-import { HolderDistributionChart } from "./holder-distrubution-chart";
-import { Card, CardHeader, CardTitle, CardContent } from "./card";
+import { HolderDistributionChart } from "./ui/holder-distrubution-chart";
+import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import Link from "next/link";
 
 export const HolderDistribution = ({ transactions }) => {

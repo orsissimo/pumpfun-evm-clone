@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { ArrowUpIcon } from "./utils";
+import { ArrowUpIcon } from "./ui/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export function ChatCard() {
