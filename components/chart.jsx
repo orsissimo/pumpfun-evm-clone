@@ -183,9 +183,11 @@ export default function CandlestickChart({ transactions }) {
 
     // Handle chart resizing
     const handleResize = () => {
-      newChart.applyOptions({
-        width: chartContainer.clientWidth,
-      });
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.applyOptions({
+          width: chartContainer.clientWidth,
+        });
+      }
     };
 
     window.addEventListener("resize", handleResize);
