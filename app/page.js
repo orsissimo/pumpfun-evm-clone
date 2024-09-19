@@ -5,7 +5,7 @@ import { TokenCard } from "@/components/token-card";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { fetchCreateTokenEvents } from "@/lib/fetch"; // Import the function
-import { LoadingLines } from "@/components/loading-rows"; // Import the loading component
+import { LoadingLines } from "@/components/ui/loading-rows";
 import { getData } from "@/lib/mongodb";
 import { Hero } from "@/components/hero";
 import { Card } from "@/components/ui/card";

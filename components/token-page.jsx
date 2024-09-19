@@ -47,7 +47,7 @@ import {
   formatPrice,
 } from "@/lib/utils";
 import { Progress } from "./ui/progress";
-import { LoadingLines } from "./loading-rows";
+import { LoadingLines } from "@/components/ui/loading-rows";
 import Image from "next/image";
 import { TokenCard } from "./token-card";
 import { FaFire } from "react-icons/fa";
@@ -59,8 +59,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import TableRowZero from "./ui/tablerowzero";
-import { HolderDistribution } from "./ui/holder-distribution";
-import { ArrowUpIcon, CopyIcon, GlobeIcon, LoadingSpinner } from "./utils";
+import { HolderDistribution } from "./holder-distribution";
+import { ArrowUpIcon, CopyIcon, GlobeIcon, LoadingSpinner } from "./ui/utils";
 import { TokenHeader } from "./token-header";
 import { BuySellCard } from "./buy-sell";
 import { TokenStatsCard } from "./token-stats";
