@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react/no-unescaped-entities */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -77,14 +77,6 @@ export function TokenPage({ tokenData }) {
   const [tokenEthCap, setTokenEthCap] = useState(0);
   const [isBuySelected, setIsBuySelected] = useState(true);
   const [activeTab, setActiveTab] = useState("transactions");
-  const [transactionZero, setTransactionzero] = useState({
-    timestamp: "0",
-    eventType: "Create",
-    empty: 1,
-    buyer: "0x0000000000000000000000000000000000000000",
-    pricePerToken: 0.000000001,
-    ethPriceAtTime: 0,
-  });
 
   const {
     name,
@@ -97,10 +89,72 @@ export function TokenPage({ tokenData }) {
     tokenAddress,
   } = tokenData;
 
-  async function getEthPrice() {
-    const res = await fetchEthPriceFromOracle();
-    return res;
-  }
+  const [transactionZero, setTransactionZero] = useState({
+    timestamp: new Date(0).toISOString(),
+    eventType: "Create",
+    empty: 1,
+    buyer: "0x0000000000000000000000000000000000000000",
+    pricePerToken: 1000000000,
+    ethPriceAtTime: 1,
+  });
+
+  useEffect(() => {
+    async function getEthPrice() {
+      const res = await fetchEthPriceFromOracle();
+      return res;
+    }
+
+    async function createTransactionZero() {
+      let transaction = {
+        eventType: "Create",
+        empty: 1,
+        buyer:
+          tokenData.tokenCreator ||
+          "0x0000000000000000000000000000000000000000",
+        pricePerToken: 1000000000,
+        ethPriceAtTime: "1",
+      };
+
+      if (tokenData.timestamp) {
+        transaction.timestamp = tokenData.timestamp;
+      } else {
+        transaction.timestamp = new Date(0).toISOString();
+      }
+
+      if (tokenData.ethPriceAtTime) {
+        transaction.ethPriceAtTime = tokenData.ethPriceAtTime;
+      } else {
+        transaction.ethPriceAtTime = await getEthPrice();
+      }
+      console.log("transaction", transaction);
+
+      setTransactionZero(transaction);
+    }
+    createTransactionZero();
+  }, [tokenData]);
+
+  const updateTransactions = useCallback(() => {
+    setTransactions((prevTransactions) => [
+      ...prevTransactions.filter(
+        (transaction) => transaction.eventType !== "Create"
+      ),
+      transactionZero,
+    ]);
+  }, [transactionZero]);
+
+  useEffect(() => {
+    // Check if transactionZero is already included in transactions
+    const hasTransactionZero = transactions.some(
+      (transaction) => transaction.eventType === "Create"
+    );
+    if (!hasTransactionZero) {
+      updateTransactions();
+    }
+  }, [transactions, updateTransactions]);
+
+  useEffect(() => {
+    updateTransactions();
+  }, [transactionZero, updateTransactions]);
 
   const fetchBalances = async (tokenAddress) => {
     try {
@@ -145,24 +199,6 @@ export function TokenPage({ tokenData }) {
     console.log("Database transactions call");
     fetchTransactionsFromDb(tokenAddress);
   }, [tokenAddress]);
-
-  useEffect(() => {
-    async function createTransactionZero() {
-      const ethPrice = await getEthPrice(); // Await the resolved value of the promise
-      setTransactionzero({
-        timestamp: tokenData.timestamp || "0",
-        eventType: "Create",
-        empty: 1,
-        buyer:
-          tokenData.tokenCreator ||
-          "0x0000000000000000000000000000000000000000",
-        pricePerToken: 0.000000001,
-        ethPriceAtTime: tokenData.ethPriceAtTime || ethPrice, // Use the resolved value here
-      });
-    }
-
-    createTransactionZero();
-  }, [tokenData]);
 
   useEffect(() => {
     async function fetchTransactionsFromBlockchain() {
@@ -386,7 +422,6 @@ export function TokenPage({ tokenData }) {
                 <TransactionsTable
                   transactions={transactions}
                   symbol={symbol}
-                  transactionZero={transactionZero}
                 />
               </TabsContent>
               <TabsContent value="distribution" className="mt-4">
