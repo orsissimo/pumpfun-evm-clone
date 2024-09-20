@@ -114,8 +114,6 @@ export function TransactionsTable({ transactions, symbol, transactionZero }) {
               </TableRow>
             ))
         )}
-        {/* Initial Transaction */}
-        <TableRowZero tx={transactionZero} />
       </TableBody>
     </Table>
   );
