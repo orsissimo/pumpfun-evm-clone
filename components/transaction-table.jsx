@@ -75,9 +75,12 @@ export function TransactionsTable({ transactions, symbol, transactionZero }) {
                         .replace(/,/g, "'")}
                 </TableCell>
                 <TableCell>
-                  {(Number(tx.ethSpent || tx.ethReceived) / 10 ** 18).toFixed(
-                    6
-                  )}{" "}
+                  {tx.empty
+                    ? "-"
+                    : (
+                        Number(tx.ethSpent || tx.ethReceived) /
+                        10 ** 18
+                      ).toFixed(6)}{" "}
                   ETH
                 </TableCell>
                 <TableCell>
