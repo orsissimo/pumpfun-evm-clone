@@ -76,7 +76,7 @@ export function TransactionsTable({ transactions, symbol, transactionZero }) {
                 </TableCell>
                 <TableCell>
                   {tx.empty
-                    ? "0"
+                    ? (1 * 10 ** 9 * tx.ethPriceAtTime) / 10 ** 18
                     : (
                         Number(tx.ethSpent || tx.ethReceived) /
                         10 ** 18
