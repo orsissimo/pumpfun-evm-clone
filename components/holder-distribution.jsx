@@ -50,10 +50,14 @@ export const HolderDistribution = ({ transactions }) => {
   const holderDistribution = calculateHolderDistribution(transactions);
 
   return (
-    <div className="col-span-full grid grid-cols-2 gap-8 h-full">
+    <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
+      {" "}
+      {/* Reduced gap for mobile */}
       {/* Holder Distribution Card */}
-      <div className="col-span-1 flex flex-col">
-        <Card className="h-[590px] flex flex-col">
+      <div className="flex flex-col order-2 md:order-1 mb-2 md:mb-0">
+        {" "}
+        {/* Added bottom margin for mobile */}
+        <Card className="h-full flex flex-col">
           <CardHeader className="border-b">
             <CardTitle>Holder Distribution</CardTitle>
           </CardHeader>
@@ -63,7 +67,7 @@ export const HolderDistribution = ({ transactions }) => {
                 ([holder, data], index) => (
                   <div
                     key={`holder-${index}`}
-                    className="flex items-center justify-between mt-4"
+                    className="flex items-center justify-between mt-2" // Reduced margin-top
                   >
                     <div className="flex items-center gap-2">
                       <div
@@ -95,12 +99,11 @@ export const HolderDistribution = ({ transactions }) => {
           </CardContent>
         </Card>
       </div>
-
       {/* Chart Component */}
-      <div className="col-span-1 flex justify-center items-center h-full">
-        <div className="h-[450px] w-[450px]">
-          {" "}
-          {/* Set fixed height/width to keep the chart responsive */}
+      <div className="flex justify-center items-center h-full order-1 md:order-2 mb-2 md:mb-0">
+        {" "}
+        {/* Added bottom margin for mobile */}
+        <div className="h-[200px] md:h-[450px] w-[200px] md:w-[450px]">
           <HolderDistributionChart distributionData={holderDistribution} />
         </div>
       </div>
