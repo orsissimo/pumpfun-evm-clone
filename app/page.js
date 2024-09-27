@@ -29,11 +29,37 @@ export default function Home() {
   const [needUpdate, setNeedUpdate] = useState(false);
 
   useEffect(() => {
-    async function fetch() {
-      //let data = await fetchEthPriceFromOracle();
-      // console.log(data);
+    /* async function updateAllTokensChainToEthereum() {
+      try {
+        // Fetch all tokens from the database using the API endpoint
+        const allTokens = await getData("Token", "findAll");
+
+        if (!allTokens || allTokens.result.length === 0) {
+          console.log("No tokens found to update.");
+          return;
+        }
+
+        // Loop through each token and update the chain to 'ethereum'
+        for (const token of allTokens.result) {
+          const tokenAddress = token.tokenAddress; // Unique identifier for each token
+
+          // Update each token's chain to 'ethereum' using the API endpoint
+          await getData(
+            "Token",
+            "findOneAndUpdate", // Operation type
+            { tokenAddress: tokenAddress }, // Criteria to find the token
+            { chain: "ethereum" } // Data to update the chain to 'ethereum'
+          );
+
+          console.log(`Updated token ${tokenAddress} to ethereum chain.`);
+        }
+
+        console.log("All tokens updated successfully.");
+      } catch (error) {
+        console.error("Error updating tokens:", error);
+      }
     }
-    fetch();
+    updateAllTokensChainToEthereum(); */
   }, []);
 
   // Fetch recent tokens and CreateToken events on component mount
@@ -156,6 +182,7 @@ export default function Home() {
                       twitterLink={token.twitterLink}
                       telegramLink={token.telegramLink}
                       websiteLink={token.websiteLink}
+                      chain={token.chain}
                     />
 
                     <div className="flex gap-4">
@@ -223,6 +250,7 @@ export default function Home() {
                     telegramLink={token.telegramLink} // Telegram link
                     websiteLink={token.websiteLink} // Website link
                     tokenFactory={token.tokenFactory}
+                    chain={token.chain}
                   />
                 </div>
               ))}
