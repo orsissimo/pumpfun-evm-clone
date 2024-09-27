@@ -53,61 +53,61 @@ export function TokenPage({ tokenData }) {
   /* const chain =
     tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base"; */
 
-  const [transactionZero, setTransactionZero] = useState({
+  /* const [transactionZero, setTransactionZero] = useState({
     timestamp: new Date(0).toISOString(),
     eventType: "Create",
     empty: 1,
     buyer: "0x0000000000000000000000000000000000000000",
     pricePerToken: 1000000000,
     ethPriceAtTime: 1,
-  });
+  }); */
 
-  useEffect(() => {
-    async function getEthPrice() {
-      const res = await fetchEthPriceFromOracle();
-      return res;
+  async function createTransactionZero(transactions, tokenData) {
+    let transaction = {
+      eventType: "Create",
+      empty: 1,
+      buyer:
+        tokenData.tokenCreator || "0x0000000000000000000000000000000000000000",
+      pricePerToken: 1000000000,
+      ethPriceAtTime: "1",
+    };
+
+    if (tokenData.timestamp) {
+      transaction.timestamp = tokenData.timestamp;
+    } else {
+      transaction.timestamp = new Date(0).toISOString();
+    }
+    let ethPriceAtTime = 0;
+    // Check if the first transaction has ethPriceAtTime
+    if (transactions.length > 0 && transactions[0].ethPriceAtTime) {
+      ethPriceAtTime = transactions[0].ethPriceAtTime;
+    } else {
+      // Fallback to Oracle price if no ethPriceAtTime is available
+      ethPriceAtTime = 0; // await fetchEthPriceFromOracle();
     }
 
-    async function createTransactionZero() {
-      let transaction = {
-        eventType: "Create",
-        empty: 1,
-        buyer:
-          tokenData.tokenCreator ||
-          "0x0000000000000000000000000000000000000000",
-        pricePerToken: 1000000000,
-        ethPriceAtTime: "1",
-      };
+    transaction.ethPriceAtTime = ethPriceAtTime;
 
-      if (tokenData.timestamp) {
-        transaction.timestamp = tokenData.timestamp;
-      } else {
-        transaction.timestamp = new Date(0).toISOString();
-      }
+    transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
 
-      if (tokenData.ethPriceAtTime) {
-        transaction.ethPriceAtTime = tokenData.ethPriceAtTime;
-      } else {
-        transaction.ethPriceAtTime = 0; //await fetchEthPriceFromOracle();
-      }
+    //console.log("transaction", transaction);
 
-      transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
+    return transaction;
+  }
 
-      //console.log("transaction", transaction);
-
-      setTransactionZero(transaction);
-    }
-    createTransactionZero();
-  }, [tokenData]);
-
-  const updateTransactions = useCallback(() => {
+  const updateTransactions = useCallback(async () => {
+    let transactionZero = await createTransactionZero(transactions, tokenData);
     setTransactions((prevTransactions) => [
       ...prevTransactions.filter(
         (transaction) => transaction.eventType !== "Create"
       ),
       transactionZero,
     ]);
-  }, [transactionZero]);
+  }, [transactions, tokenData]);
+
+  useEffect(() => {
+    updateTransactions();
+  }, [tokenData, updateTransactions]);
 
   useEffect(() => {
     // Check if transactionZero is already included in transactions
@@ -118,10 +118,10 @@ export function TokenPage({ tokenData }) {
       updateTransactions();
     }
   }, [transactions, updateTransactions]);
-
+  /* 
   useEffect(() => {
     updateTransactions();
-  }, [transactionZero, updateTransactions]);
+  }, [transactionZero, updateTransactions]); */
 
   const fetchBalances = useCallback(
     async (tokenAddress) => {
