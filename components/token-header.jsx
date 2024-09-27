@@ -76,8 +76,8 @@ export function TokenHeader({
             <Image
               src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
               alt={`${chain} icon`}
-              width={24}
-              height={24}
+              width={28}
+              height={28}
               className="ml-2"
             />
           </div>

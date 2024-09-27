@@ -75,7 +75,7 @@ export function TransactionsTable({
 
                 <TableCell>
                   {tx.empty
-                    ? "-"
+                    ? "0"
                     : Number(
                         Number(
                           Number(tx.tokensBought || tx.tokensSold) / 10 ** 18
