@@ -16,6 +16,7 @@ const tokenSchema = new mongoose.Schema(
     websiteLink: { type: String },
     ethPriceAtTime: { type: String },
     timestamp: { type: Date, required: true },
+    chain: { type: String },
   },
   { timestamps: true }
 );
