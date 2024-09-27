@@ -30,7 +30,7 @@ export function TokenHeader({
           width={180}
           height={180}
           alt={`${name} Logo`}
-          className="rounded-3xl w-full md:w-[180px] h-auto md:h-[180px] object-cover"
+          className="rounded-3xl w-full md:w-[180px] h-auto md:h-[180px] object-contain"
         />
       </div>
 

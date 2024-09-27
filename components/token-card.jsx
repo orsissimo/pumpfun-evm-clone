@@ -17,8 +17,13 @@ export function TokenCard({
   twitterLink,
   telegramLink,
   websiteLink,
+  tokenFactory,
 }) {
   const router = useRouter();
+
+  const chain =
+    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base";
+
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
     -4
@@ -31,7 +36,7 @@ export function TokenCard({
   const handleCardClick = (e) => {
     // Check if the click target is not one of the interactive elements
     if (!e.defaultPrevented && !e.target.closest("a, button")) {
-      router.push(`/${tokenAddress}`);
+      router.push(`/${chain}/${tokenAddress}`);
     }
   };
 
@@ -48,7 +53,7 @@ export function TokenCard({
               src={displayedImageUrl}
               alt={`${name} Logo`}
               layout="fill"
-              objectFit="cover"
+              objectFit="contain"
               className="rounded-xl"
             />
           </div>
