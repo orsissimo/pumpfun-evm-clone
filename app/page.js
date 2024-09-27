@@ -28,8 +28,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [needUpdate, setNeedUpdate] = useState(false);
 
-  useEffect(() => {
-    /* async function updateAllTokensChainToEthereum() {
+  /* useEffect(() => {
+    async function updateAllTokensChainToEthereum() {
       try {
         // Fetch all tokens from the database using the API endpoint
         const allTokens = await getData("Token", "findAll");
@@ -48,7 +48,7 @@ export default function Home() {
             "Token",
             "findOneAndUpdate", // Operation type
             { tokenAddress: tokenAddress }, // Criteria to find the token
-            { chain: "ethereum" } // Data to update the chain to 'ethereum'
+            { chain: "base" } // Data to update the chain to 'ethereum'
           );
 
           console.log(`Updated token ${tokenAddress} to ethereum chain.`);
@@ -59,8 +59,8 @@ export default function Home() {
         console.error("Error updating tokens:", error);
       }
     }
-    updateAllTokensChainToEthereum(); */
-  }, []);
+    updateAllTokensChainToEthereum();
+  }, []); */
 
   // Fetch recent tokens and CreateToken events on component mount
   useEffect(() => {
@@ -78,7 +78,7 @@ export default function Home() {
             sort: { timestamp: -1 },
           }
         );
-        // console.log(dbData);
+        //console.log(dbData);
         const dbTokens = dbData.result || [];
         if (dbTokens.length > 0) {
           // console.log("Database tokens", dbTokens);

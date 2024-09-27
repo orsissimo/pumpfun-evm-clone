@@ -85,6 +85,19 @@ export async function performDatabaseOperation(
         result = await model.findOneAndDelete(criteria);
         // console.log(`Deleted document: ${JSON.stringify(result)}`);
         break;
+      case "findOneAndUpdateIfNotExist":
+        // Check if the document exists
+        const existingDocument = await model.findOne(criteria);
+        if (!existingDocument) {
+          // Create a new document since it doesn't exist
+          result = await model.create(options);
+        } else {
+          // Return the existing document without updating
+          result = existingDocument;
+        }
+        console.log("result", result);
+        break;
+
       default:
         throw new Error(`Unsupported operation: ${operation}`);
     }

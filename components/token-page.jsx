@@ -88,12 +88,12 @@ export function TokenPage({ tokenData }) {
       if (tokenData.ethPriceAtTime) {
         transaction.ethPriceAtTime = tokenData.ethPriceAtTime;
       } else {
-        transaction.ethPriceAtTime = 0;
+        transaction.ethPriceAtTime = await fetchEthPriceFromOracle();
       }
 
       transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
 
-      // console.log("transaction", transaction);
+      console.log("transaction", transaction);
 
       setTransactionZero(transaction);
     }
@@ -123,17 +123,20 @@ export function TokenPage({ tokenData }) {
     updateTransactions();
   }, [transactionZero, updateTransactions]);
 
-  const fetchBalances = async (tokenAddress) => {
-    try {
-      const fetchedTokenBalance = await getTokenBalance(tokenAddress, chain); // Fetch token balance
-      const fetchedEthBalance = await getEtherBalance(chain); // Fetch Ethereum balance
+  const fetchBalances = useCallback(
+    async (tokenAddress) => {
+      try {
+        const fetchedTokenBalance = await getTokenBalance(tokenAddress, chain); // Fetch token balance
+        const fetchedEthBalance = await getEtherBalance(chain); // Fetch Ethereum balance
 
-      setTokenBalance(fetchedTokenBalance);
-      setEthBalance(fetchedEthBalance);
-    } catch (error) {
-      console.error("Failed to fetch balances", error);
-    }
-  };
+        setTokenBalance(fetchedTokenBalance);
+        setEthBalance(fetchedEthBalance);
+      } catch (error) {
+        console.error("Failed to fetch balances", error);
+      }
+    },
+    [chain]
+  );
 
   const fetchTransactionsFromDb = async (tokenAddress) => {
     try {
@@ -187,7 +190,7 @@ export function TokenPage({ tokenData }) {
   // Fetch balances when component mounts
   useEffect(() => {
     fetchBalances(tokenAddress);
-  }, [tokenAddress]);
+  }, [fetchBalances, tokenAddress]);
 
   // Fetch token ETH surplus and ETH cap
   useEffect(() => {
