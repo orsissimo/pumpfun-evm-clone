@@ -88,7 +88,7 @@ export function TokenPage({ tokenData }) {
       if (tokenData.ethPriceAtTime) {
         transaction.ethPriceAtTime = tokenData.ethPriceAtTime;
       } else {
-        transaction.ethPriceAtTime = await fetchEthPriceFromOracle();
+        transaction.ethPriceAtTime = 0; //await fetchEthPriceFromOracle();
       }
 
       transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
@@ -177,6 +177,7 @@ export function TokenPage({ tokenData }) {
           tokenAddress,
           chain
         );
+        fetchTransactionsFromDb(tokenAddress);
         // console.log("Fetched transactions", fetchedTransactions);
       } catch (error) {
         console.error("Failed to fetch transactions", error);
@@ -230,49 +231,6 @@ export function TokenPage({ tokenData }) {
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
     "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
-  const handleBuyToken = async () => {
-    // Validate required fields
-    if (!amount || amount <= 0) {
-      toast.error("Insert a valid amount.");
-      return;
-    }
-
-    try {
-      // Call buyToken function and wait for it to complete
-      await buyToken(amount, tokenAddress);
-
-      // Fetch updated balances after the buy operation is complete
-      await fetchBalances(tokenAddress);
-      await fetchTransactionsFromDb(tokenAddress);
-
-      toast.success("Token purchase successful!");
-    } catch (error) {
-      console.error("Error buying token:", error);
-      toast.error("Failed to buy tokens.");
-    }
-  };
-
-  const handleSellToken = async () => {
-    // Validate required fields
-    if (!amount || amount <= 1) {
-      toast.error("Insert a valid amount.");
-      return;
-    }
-
-    try {
-      // Call sellToken function and wait for it to complete
-      await sellToken(amount, tokenAddress);
-
-      // Fetch updated balances after the sell operation is complete
-      await fetchBalances(tokenAddress);
-      await fetchTransactionsFromDb(tokenAddress);
-
-      toast.success("Token sale successful!");
-    } catch (error) {
-      console.error("Error selling token:", error);
-      toast.error("Failed to sell tokens.");
-    }
-  };
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {
