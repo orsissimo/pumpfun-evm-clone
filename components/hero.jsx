@@ -39,7 +39,7 @@ export function Hero({
   const handleCardClick = (e) => {
     // Check if the click target is not one of the interactive elements
     if (!e.defaultPrevented && !e.target.closest("a, button")) {
-      router.push(`/${tokenAddress}`);
+      router.push(`/${chain}/${tokenAddress}`);
     }
   };
 
