@@ -51,24 +51,27 @@ export function TokenCard({
       onClick={handleCardClick}
     >
       {/* Top-right icon */}
-      <div className="absolute top-4 right-4 w-7 h-7">
+      <div className="absolute top-4 right-4">
         <Image
           src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
           alt={`${chain} icon`}
-          layout="fill"
-          objectFit="contain"
+          priority={true}
+          width={28}
+          height={28}
         />
       </div>
 
       <div className="flex p-4 md:p-5">
         {/* Left Column - Image */}
-        <div className="flex-shrink-0 mr-6">
+        <div className="flex-shrink-0 mr-6 overflow-hidden rounded-xl">
           <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] relative">
             <Image
               src={displayedImageUrl}
               alt={`${name} Logo`}
-              layout="fill"
-              objectFit="contain"
+              priority={true}
+              fill
+              sizes="(max-width: 768px) 100px, 120px"
+              style={{ objectFit: "fill" }}
               className="rounded-xl"
             />
           </div>

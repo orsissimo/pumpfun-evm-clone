@@ -110,7 +110,7 @@ export function CreateToken() {
 
   const handleChainChange = (value) => {
     setChain(value);
-    console.log("Selected chain:", value);
+    // console.log("Selected chain:", value);
   };
 
   const handleImageChange = (e) => {
@@ -200,7 +200,7 @@ export function CreateToken() {
                     alt="Ethereum"
                     width={22}
                     height={22}
-                    className="inline-block mr-2"
+                    className="inline-block mr-4"
                   />
                   Ethereum
                 </SelectItem>
@@ -210,7 +210,7 @@ export function CreateToken() {
                     alt="Base"
                     width={22}
                     height={22}
-                    className="inline-block mr-2"
+                    className="inline-block mr-4"
                   />
                   Base
                 </SelectItem>

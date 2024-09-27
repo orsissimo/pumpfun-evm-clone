@@ -49,7 +49,7 @@ const ConnectWallet = () => {
         console.error("User rejected account access", error);
       }
     } else {
-      console.log("Ethereum object doesn't exist!");
+      // console.log("Ethereum object doesn't exist!");
     }
   };
 
