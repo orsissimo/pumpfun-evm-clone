@@ -75,7 +75,9 @@ export function TransactionsTable({
 
                 <TableCell>
                   {tx.empty
-                    ? 10 ** 9
+                    ? Number(Number(10 ** 9).toFixed(4))
+                        .toLocaleString("en-US")
+                        .replace(/,/g, "'")
                     : Number(
                         Number(
                           Number(tx.tokensBought || tx.tokensSold) / 10 ** 18
