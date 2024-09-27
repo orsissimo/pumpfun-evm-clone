@@ -30,8 +30,7 @@ export default function Home() {
 
   useEffect(() => {
     async function fetch() {
-      let data = await fetchEthPriceFromOracle();
-
+      //let data = await fetchEthPriceFromOracle();
       // console.log(data);
     }
     fetch();
