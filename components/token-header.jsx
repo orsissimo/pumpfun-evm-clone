@@ -33,9 +33,11 @@ export function TokenHeader({
       <div className="flex-shrink-0 w-full md:w-auto">
         <Image
           src={displayedImageUrl}
+          priority={true}
           width={180}
           height={180}
           alt={`${name} Logo`}
+          style={{ objectFit: "fill" }}
           className="rounded-3xl w-full md:w-[180px] h-auto md:h-[180px] object-contain"
         />
       </div>

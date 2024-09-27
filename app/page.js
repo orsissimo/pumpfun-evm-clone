@@ -32,7 +32,7 @@ export default function Home() {
     async function fetch() {
       let data = await fetchEthPriceFromOracle();
 
-      console.log(data);
+      // console.log(data);
     }
     fetch();
   }, []);
@@ -41,9 +41,9 @@ export default function Home() {
   useEffect(() => {
     async function fetchTokensFromDb() {
       try {
-        //const fetchedTokens = await fetchCreateTokenEvents();
-        //console.log(fetchedTokens);
-        //setTokens(fetchedTokens);
+        // const fetchedTokens = await fetchCreateTokenEvents();
+        // console.log(fetchedTokens);
+        // setTokens(fetchedTokens);
 
         const dbData = await getData(
           "Token",
@@ -53,10 +53,10 @@ export default function Home() {
             sort: { timestamp: -1 },
           }
         );
-        console.log(dbData);
+        // console.log(dbData);
         const dbTokens = dbData.result || [];
         if (dbTokens.length > 0) {
-          console.log("Database tokens", dbTokens);
+          // console.log("Database tokens", dbTokens);
           setTokens(dbTokens);
         }
       } catch (err) {
@@ -76,9 +76,9 @@ export default function Home() {
     async function fetchTokensFromBlockchain() {
       try {
         const fetchedTokensEth = await fetchCreateTokenEvents(null, "ethereum");
-        console.log("Fetched tokens ETH: ", fetchedTokensEth);
+        // console.log("Fetched tokens ETH: ", fetchedTokensEth);
         const fetchedTokensBase = await fetchCreateTokenEvents(null, "base");
-        console.log("Fetched tokens BASE: ", fetchedTokensBase);
+        // console.log("Fetched tokens BASE: ", fetchedTokensBase);
       } catch (err) {
         console.error(
           "Error fetching recent tokens or events from the Blockchain:",
@@ -99,7 +99,7 @@ export default function Home() {
       token.tokenAddress.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  console.log(filteredTokens);
+  // console.log(filteredTokens);
 
   return (
     <div className="container mx-auto px-8 pt-10 pb-16">

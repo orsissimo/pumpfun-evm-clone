@@ -92,7 +92,7 @@ export function TokenPage({ tokenData }) {
 
       transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
 
-      console.log("transaction", transaction);
+      // console.log("transaction", transaction);
 
       setTransactionZero(transaction);
     }
@@ -136,7 +136,7 @@ export function TokenPage({ tokenData }) {
 
   const fetchTransactionsFromDb = async (tokenAddress) => {
     try {
-      console.log("Database transactions");
+      // console.log("Database transactions");
       const dbData = await getData(
         "TokenTransaction",
         "find",
@@ -148,7 +148,7 @@ export function TokenPage({ tokenData }) {
 
       const dbTrasactions = dbData.result || [];
       if (dbTrasactions.length > 0) {
-        console.log("Database transactions", dbTrasactions);
+        // console.log("Database transactions", dbTrasactions);
         setTransactions(dbTrasactions);
       }
     } catch (err) {
@@ -162,7 +162,7 @@ export function TokenPage({ tokenData }) {
   };
 
   useEffect(() => {
-    console.log("Database transactions call");
+    // console.log("Database transactions call");
     fetchTransactionsFromDb(tokenAddress);
   }, [tokenAddress]);
 
@@ -173,7 +173,7 @@ export function TokenPage({ tokenData }) {
           tokenAddress,
           chain
         );
-        console.log("Fetched transactions", fetchedTransactions);
+        // console.log("Fetched transactions", fetchedTransactions);
       } catch (error) {
         console.error("Failed to fetch transactions", error);
       } finally {

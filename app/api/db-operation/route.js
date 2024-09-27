@@ -19,7 +19,7 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    console.log({ model, operation, criteria, data });
+    // console.log({ model, operation, criteria, data });
 
     // Perform the database operation
     const result = await performDatabaseOperation(
@@ -61,7 +61,7 @@ const performDummyDbOperations = async () => {
           }),
         });
         const createResult = await createResponse.json();
-        console.log("Created dummy object:", createResult);
+        // ("Created dummy object:", createResult);
 
         // Read the created object
         const readResponse = await fetch("/api/db-operation", {
@@ -77,7 +77,7 @@ const performDummyDbOperations = async () => {
           }),
         });
         const readResult = await readResponse.json();
-        console.log("Read dummy object:", readResult);
+        // console.log("Read dummy object:", readResult);
 
         // Update the object with random values
         const updateResponse = await fetch("/api/db-operation", {
@@ -99,7 +99,7 @@ const performDummyDbOperations = async () => {
           }),
         });
         const updateResult = await updateResponse.json();
-        console.log("Updated dummy object:", updateResult);
+        // console.log("Updated dummy object:", updateResult);
 
         // Delete the object
         const deleteResponse = await fetch("/api/db-operation", {
@@ -115,7 +115,7 @@ const performDummyDbOperations = async () => {
           }),
         });
         const deleteResult = await deleteResponse.json();
-        console.log("Deleted dummy object:", deleteResult);
+        // console.log("Deleted dummy object:", deleteResult);
       } catch (error) {
         console.error("Error performing dummy DB operations:", error);
       }

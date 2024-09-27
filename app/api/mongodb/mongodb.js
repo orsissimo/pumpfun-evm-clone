@@ -7,7 +7,7 @@ mongoose.set("debug", true);
 
 export async function initMongoose() {
   if (MongooseModule.connection.readyState === 1) {
-    console.log("Already connected to MongoDB");
+    // console.log("Already connected to MongoDB");
     return MongooseModule.connection;
   }
 
@@ -16,12 +16,12 @@ export async function initMongoose() {
   }
 
   try {
-    console.log("Attempting to connect to MongoDB...");
+    // console.log("Attempting to connect to MongoDB...");
     const conn = await MongooseModule.connect(
       process.env.NEXT_PUBLIC_MONGODB,
       {}
     );
-    console.log("Connected to MongoDB");
+    // console.log("Connected to MongoDB");
     return conn;
   } catch (error) {
     console.error("Error connecting to MongoDB:", error);
@@ -30,7 +30,7 @@ export async function initMongoose() {
 }
 
 export function getModelByName(modelName) {
-  console.log(`Retrieving model by name: ${modelName}`);
+  // console.log(`Retrieving model by name: ${modelName}`);
   switch (modelName) {
     case "Token":
       return Token;
@@ -46,11 +46,11 @@ export async function performDatabaseOperation(
   criteria = {},
   options = {}
 ) {
-  console.log(
+  /* console.log(
     `Performing database operation: ${operation} on model: ${modelName}`
-  );
-  console.log(`Criteria: ${JSON.stringify(criteria)}`);
-  console.log(`Options: ${JSON.stringify(options)}`); // Changed 'Data' to 'Options'
+  ); */
+  // console.log(`Criteria: ${JSON.stringify(criteria)}`);
+  // console.log(`Options: ${JSON.stringify(options)}`); // Changed 'Data' to 'Options'
 
   const model = getModelByName(modelName);
 
@@ -59,31 +59,31 @@ export async function performDatabaseOperation(
     switch (operation) {
       case "create":
         result = await model.create(options);
-        console.log(`Created document: ${JSON.stringify(result)}`);
+        // console.log(`Created document: ${JSON.stringify(result)}`);
         break;
       case "find":
         // Apply sort options if provided
         result = await model.find(criteria).sort(options.sort || {});
-        console.log(`Found documents: ${JSON.stringify(result)}`);
+        // console.log(`Found documents: ${JSON.stringify(result)}`);
         break;
       case "findAll":
         result = await model.find().sort(options.sort || {}); // Find all documents without criteria
-        console.log(`Found all documents: ${JSON.stringify(result)}`);
+        // console.log(`Found all documents: ${JSON.stringify(result)}`);
         break;
       case "findOne":
         result = await model.findOne(criteria);
-        console.log(`Found document: ${JSON.stringify(result)}`);
+        // console.log(`Found document: ${JSON.stringify(result)}`);
         break;
       case "findOneAndUpdate":
         result = await model.findOneAndUpdate(criteria, options, {
           upsert: true,
           new: true,
         });
-        console.log(`Updated document: ${JSON.stringify(result)}`);
+        // console.log(`Updated document: ${JSON.stringify(result)}`);
         break;
       case "findOneAndDelete":
         result = await model.findOneAndDelete(criteria);
-        console.log(`Deleted document: ${JSON.stringify(result)}`);
+        // console.log(`Deleted document: ${JSON.stringify(result)}`);
         break;
       default:
         throw new Error(`Unsupported operation: ${operation}`);
