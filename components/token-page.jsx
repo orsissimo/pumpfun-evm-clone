@@ -89,6 +89,9 @@ export function TokenPage({ tokenData }) {
       } else {
         transaction.ethPriceAtTime = await getEthPrice();
       }
+
+      transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
+
       console.log("transaction", transaction);
 
       setTransactionZero(transaction);

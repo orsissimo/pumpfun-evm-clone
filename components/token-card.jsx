@@ -51,7 +51,7 @@ export function TokenCard({
       onClick={handleCardClick}
     >
       {/* Top-right icon */}
-      <div className="absolute top-4 right-4 w-8 h-8">
+      <div className="absolute top-4 right-4 w-7 h-7">
         <Image
           src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
           alt={`${chain} icon`}

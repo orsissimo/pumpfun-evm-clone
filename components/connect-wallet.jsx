@@ -3,15 +3,29 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers"; // Import ethers correctly
 import { Button } from "./ui/button";
+import Image from "next/image";
 
 const ConnectWallet = () => {
   const [account, setAccount] = useState(null);
+  const [chainId, setChainId] = useState(null);
 
   // Load account from localStorage on component mount
   useEffect(() => {
     const savedAccount = localStorage.getItem("connectedAccount");
     if (savedAccount) {
       setAccount(savedAccount);
+    }
+
+    if (typeof window.ethereum !== "undefined") {
+      // Detect the current chain and set it
+      window.ethereum.request({ method: "eth_chainId" }).then((chain) => {
+        setChainId(parseInt(chain, 16)); // Parse chainId to decimal
+      });
+
+      // Listen for chain changes and update the chain ID
+      window.ethereum.on("chainChanged", (newChainId) => {
+        setChainId(parseInt(newChainId, 16)); // Parse chainId to decimal
+      });
     }
   }, []);
 
@@ -27,6 +41,10 @@ const ConnectWallet = () => {
 
         // Save the connected account in localStorage
         localStorage.setItem("connectedAccount", signerAddress);
+
+        // Get the chain ID and set it
+        const network = await provider.getNetwork();
+        setChainId(network.chainId);
       } catch (error) {
         console.error("User rejected account access", error);
       }
@@ -40,10 +58,19 @@ const ConnectWallet = () => {
     return tokenAddress.slice(0, 6) + "..." + tokenAddress.slice(-4);
   };
 
-  /* const disconnectWallet = () => {
-    setAccount(null);
-    localStorage.removeItem("connectedAccount");
-  }; */
+  // Function to get the appropriate chain icon based on the chain ID
+  const getChainIcon = () => {
+    switch (chainId) {
+      case 1: // Ethereum mainnet (decimal)
+        return "/ethereum.png";
+      case 8453: // Base mainnet (decimal)
+        return "/base.png";
+      default:
+        return null; // No icon for unsupported networks
+    }
+  };
+
+  const chainIcon = getChainIcon(); // Get the chain icon based on the chain ID
 
   return (
     <div className="flex items-center gap-4">
@@ -51,8 +78,19 @@ const ConnectWallet = () => {
         variant="outline"
         size="sm"
         className="sm:inline-flex hover:bg-primary hover:text-primary-foreground transition-colors"
-        onClick={/* account ? disconnectWallet :  */ connectWallet}
+        onClick={connectWallet}
       >
+        {/* Only show the chain icon if it's Ethereum or Base */}
+        {account && chainIcon && (
+          <Image
+            src={chainIcon}
+            alt="Chain Icon"
+            width={22}
+            height={22}
+            className="mr-2" // Adds spacing between the icon and the address
+          />
+        )}
+
         {account ? shortenAddress(account) : "Connect Wallet"}
       </Button>
     </div>
