@@ -329,6 +329,7 @@ export function TokenPage({ tokenData }) {
           telegramLink={telegramLink}
           websiteLink={websiteLink}
           tokenAddress={tokenAddress}
+          chain={chain}
         />
 
         <div className="mb-6 mt-6">
@@ -341,7 +342,7 @@ export function TokenPage({ tokenData }) {
               </CardContent>
             </Card>
           ) : (
-            <CandlestickChart transactions={transactions} />
+            <CandlestickChart transactions={transactions} chain={chain} />
           )}
         </div>
       </div>
@@ -355,6 +356,7 @@ export function TokenPage({ tokenData }) {
           symbol={symbol}
           tokenAddress={tokenAddress}
           refreshData={refreshData} // Pass the refreshData function
+          chain={chain}
         />
         <TokenStatsCard
           transactions={transactions}
@@ -363,6 +365,7 @@ export function TokenPage({ tokenData }) {
           tokenEthCap={tokenEthCap}
           totalEthVolumeInUsd={totalEthVolumeInUsd}
           symbol={symbol}
+          chain={chain}
         />
       </div>
 
@@ -388,10 +391,11 @@ export function TokenPage({ tokenData }) {
                 <TransactionsTable
                   transactions={transactions}
                   symbol={symbol}
+                  chain={chain}
                 />
               </TabsContent>
               <TabsContent value="distribution" className="mt-4">
-                <HolderDistribution transactions={transactions} />
+                <HolderDistribution transactions={transactions} chain={chain} />
               </TabsContent>
             </Tabs>
           </CardContent>

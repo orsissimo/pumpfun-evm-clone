@@ -16,10 +16,16 @@ export function TokenHeader({
   telegramLink,
   websiteLink,
   tokenAddress,
+  chain,
 }) {
   const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(
     -4
   )}`;
+
+  const explorerUrl =
+    chain === "ethereum"
+      ? `https://etherscan.io/address/${tokenAddress}`
+      : `https://basescan.org/address/${tokenAddress}`;
 
   return (
     <div className="flex flex-col md:flex-row w-full max-w-3xl mx-auto gap-6 p-4 md:p-0">
@@ -47,7 +53,7 @@ export function TokenHeader({
           <div className="flex items-center gap-2">
             <Link
               className="text-sm text-blue-500 hover:underline truncate"
-              href={`https://etherscan.io/address/${tokenAddress}`}
+              href={explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
               prefetch={false}
@@ -65,6 +71,15 @@ export function TokenHeader({
               <CopyIcon className="w-5 h-5 text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
+
+            {/* Chain-specific icon on the right of the copy button */}
+            <Image
+              src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
+              alt={`${chain} icon`}
+              width={24}
+              height={24}
+              className="ml-2"
+            />
           </div>
         </div>
 

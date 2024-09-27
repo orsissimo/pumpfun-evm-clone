@@ -11,7 +11,17 @@ import TableRowZero from "./ui/tablerowzero";
 import { FaDollarSign } from "react-icons/fa";
 import { formatPrice } from "@/lib/utils";
 
-export function TransactionsTable({ transactions, symbol, transactionZero }) {
+export function TransactionsTable({
+  transactions,
+  symbol,
+  transactionZero,
+  chain,
+}) {
+  const explorerUrl =
+    chain === "ethereum"
+      ? `https://etherscan.io/address/`
+      : `https://basescan.org/address/`;
+
   return (
     <Table>
       <TableHeader>
@@ -102,9 +112,7 @@ export function TransactionsTable({ transactions, symbol, transactionZero }) {
                 </TableCell>
                 <TableCell>
                   <a
-                    href={`https://etherscan.io/address/${
-                      tx.buyer || tx.seller
-                    }`}
+                    href={`${explorerUrl}${tx.buyer || tx.seller}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="!text-blue-500 hover:underline"

@@ -12,6 +12,9 @@ const TableRowZero = ({ tx }) => {
     };
   };
 
+  const explorerUrl =
+    chain === "ethereum" ? `https://etherscan.io/` : `https://basescan.org/`;
+
   return (
     <TableRow>
       {/* Render transaction rows */}
@@ -67,7 +70,7 @@ const TableRowZero = ({ tx }) => {
       </TableCell>
       <TableCell>
         <a
-          href={`https://etherscan.io/address/${tx.buyer || tx.seller}`}
+          href={`${explorerUrl}${tx.buyer || tx.seller}`}
           target="_blank"
           rel="noopener noreferrer"
           className="!text-blue-500 hover:underline"

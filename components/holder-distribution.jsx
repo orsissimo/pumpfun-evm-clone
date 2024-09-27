@@ -2,7 +2,7 @@ import { HolderDistributionChart } from "./ui/holder-distrubution-chart";
 import { Card, CardHeader, CardTitle, CardContent } from "./ui/card";
 import Link from "next/link";
 
-export const HolderDistribution = ({ transactions }) => {
+export const HolderDistribution = ({ transactions, chain }) => {
   // Calculate the holder distribution
   const calculateHolderDistribution = (transactions) => {
     const holderDistribution = {};
@@ -49,6 +49,11 @@ export const HolderDistribution = ({ transactions }) => {
 
   const holderDistribution = calculateHolderDistribution(transactions);
 
+  const explorerUrl =
+    chain === "ethereum"
+      ? `https://etherscan.io/address/`
+      : `https://basescan.org/address/`;
+
   return (
     <div className="col-span-full grid grid-cols-1 md:grid-cols-2 gap-4 h-full">
       {" "}
@@ -79,7 +84,7 @@ export const HolderDistribution = ({ transactions }) => {
                       </div>
                       <div>
                         <Link
-                          href={`https://etherscan.io/address/${holder}`}
+                          href={`${explorerUrl}${holder}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
