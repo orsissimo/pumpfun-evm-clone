@@ -47,66 +47,80 @@ export function TokenPage({ tokenData }) {
     websiteLink,
     tokenAddress,
     tokenFactory,
+    chain,
   } = tokenData;
 
-  const chain =
-    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base";
+  /* const chain =
+    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base"; */
 
-  const [transactionZero, setTransactionZero] = useState({
+  /* const [transactionZero, setTransactionZero] = useState({
     timestamp: new Date(0).toISOString(),
     eventType: "Create",
     empty: 1,
     buyer: "0x0000000000000000000000000000000000000000",
     pricePerToken: 1000000000,
     ethPriceAtTime: 1,
-  });
+  }); */
+
+  async function createTransactionZero(transactions, tokenData) {
+    let transaction = {
+      eventType: "Create",
+      empty: 1,
+      buyer:
+        tokenData.tokenCreator || "0x0000000000000000000000000000000000000000",
+      pricePerToken: 1000000000,
+      ethPriceAtTime: "1",
+    };
+
+    if (tokenData.timestamp) {
+      transaction.timestamp = tokenData.timestamp;
+    } else {
+      transaction.timestamp = new Date(0).toISOString();
+    }
+    let ethPriceAtTime = 0;
+    if (tokenData.ethPriceAtTime) {
+      ethPriceAtTime = tokenData.ethPriceAtTime;
+    } else {
+      // Check if the first transaction has ethPriceAtTime
+      if (transactions.length > 0 && transactions[0].ethPriceAtTime) {
+        ethPriceAtTime = transactions[0].ethPriceAtTime;
+      } else {
+        // Fallback to Oracle price if no ethPriceAtTime is available
+        ethPriceAtTime = 0; // await fetchEthPriceFromOracle();
+      }
+    }
+
+    transaction.ethPriceAtTime = ethPriceAtTime;
+
+    transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
+
+    //console.log("transaction", transaction);
+
+    return transaction;
+  }
+
+  const updateTransactions = useCallback(async () => {
+    // Check if transactionZero is already included in transactions
+    const hasTransactionZero = transactions.some(
+      (transaction) => transaction.eventType === "Create"
+    );
+    if (!hasTransactionZero) {
+      let transactionZero = await createTransactionZero(
+        transactions,
+        tokenData
+      );
+      setTransactions((prevTransactions) => [
+        ...prevTransactions.filter(
+          (transaction) => transaction.eventType !== "Create"
+        ),
+        transactionZero,
+      ]);
+    }
+  }, [transactions, tokenData]);
 
   useEffect(() => {
-    async function getEthPrice() {
-      const res = await fetchEthPriceFromOracle();
-      return res;
-    }
-
-    async function createTransactionZero() {
-      let transaction = {
-        eventType: "Create",
-        empty: 1,
-        buyer:
-          tokenData.tokenCreator ||
-          "0x0000000000000000000000000000000000000000",
-        pricePerToken: 1000000000,
-        ethPriceAtTime: "1",
-      };
-
-      if (tokenData.timestamp) {
-        transaction.timestamp = tokenData.timestamp;
-      } else {
-        transaction.timestamp = new Date(0).toISOString();
-      }
-
-      if (tokenData.ethPriceAtTime) {
-        transaction.ethPriceAtTime = tokenData.ethPriceAtTime;
-      } else {
-        transaction.ethPriceAtTime = 0;
-      }
-
-      transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
-
-      // console.log("transaction", transaction);
-
-      setTransactionZero(transaction);
-    }
-    createTransactionZero();
-  }, [tokenData]);
-
-  const updateTransactions = useCallback(() => {
-    setTransactions((prevTransactions) => [
-      ...prevTransactions.filter(
-        (transaction) => transaction.eventType !== "Create"
-      ),
-      transactionZero,
-    ]);
-  }, [transactionZero]);
+    updateTransactions();
+  }, [tokenData, updateTransactions]);
 
   useEffect(() => {
     // Check if transactionZero is already included in transactions
@@ -117,22 +131,25 @@ export function TokenPage({ tokenData }) {
       updateTransactions();
     }
   }, [transactions, updateTransactions]);
-
+  /* 
   useEffect(() => {
     updateTransactions();
-  }, [transactionZero, updateTransactions]);
+  }, [transactionZero, updateTransactions]); */
 
-  const fetchBalances = async (tokenAddress) => {
-    try {
-      const fetchedTokenBalance = await getTokenBalance(tokenAddress, chain); // Fetch token balance
-      const fetchedEthBalance = await getEtherBalance(chain); // Fetch Ethereum balance
+  const fetchBalances = useCallback(
+    async (tokenAddress) => {
+      try {
+        const fetchedTokenBalance = await getTokenBalance(tokenAddress, chain); // Fetch token balance
+        const fetchedEthBalance = await getEtherBalance(chain); // Fetch Ethereum balance
 
-      setTokenBalance(fetchedTokenBalance);
-      setEthBalance(fetchedEthBalance);
-    } catch (error) {
-      console.error("Failed to fetch balances", error);
-    }
-  };
+        setTokenBalance(fetchedTokenBalance);
+        setEthBalance(fetchedEthBalance);
+      } catch (error) {
+        console.error("Failed to fetch balances", error);
+      }
+    },
+    [chain]
+  );
 
   const fetchTransactionsFromDb = async (tokenAddress) => {
     try {
@@ -173,6 +190,7 @@ export function TokenPage({ tokenData }) {
           tokenAddress,
           chain
         );
+        fetchTransactionsFromDb(tokenAddress);
         // console.log("Fetched transactions", fetchedTransactions);
       } catch (error) {
         console.error("Failed to fetch transactions", error);
@@ -186,7 +204,7 @@ export function TokenPage({ tokenData }) {
   // Fetch balances when component mounts
   useEffect(() => {
     fetchBalances(tokenAddress);
-  }, [tokenAddress]);
+  }, [fetchBalances, tokenAddress]);
 
   // Fetch token ETH surplus and ETH cap
   useEffect(() => {
@@ -226,49 +244,6 @@ export function TokenPage({ tokenData }) {
   const displayedImageUrl =
     `https://gateway.pinata.cloud/ipfs/${imageUrl}` ||
     "https://gateway.pinata.cloud/ipfs/Qme2CbcqAQ2kob78MLFWve7inyaKq5tPDU2LKqBnC1W6Fo";
-  const handleBuyToken = async () => {
-    // Validate required fields
-    if (!amount || amount <= 0) {
-      toast.error("Insert a valid amount.");
-      return;
-    }
-
-    try {
-      // Call buyToken function and wait for it to complete
-      await buyToken(amount, tokenAddress);
-
-      // Fetch updated balances after the buy operation is complete
-      await fetchBalances(tokenAddress);
-      await fetchTransactionsFromDb(tokenAddress);
-
-      toast.success("Token purchase successful!");
-    } catch (error) {
-      console.error("Error buying token:", error);
-      toast.error("Failed to buy tokens.");
-    }
-  };
-
-  const handleSellToken = async () => {
-    // Validate required fields
-    if (!amount || amount <= 1) {
-      toast.error("Insert a valid amount.");
-      return;
-    }
-
-    try {
-      // Call sellToken function and wait for it to complete
-      await sellToken(amount, tokenAddress);
-
-      // Fetch updated balances after the sell operation is complete
-      await fetchBalances(tokenAddress);
-      await fetchTransactionsFromDb(tokenAddress);
-
-      toast.success("Token sale successful!");
-    } catch (error) {
-      console.error("Error selling token:", error);
-      toast.error("Failed to sell tokens.");
-    }
-  };
 
   // Handler to set the max token balance to the input field
   const handleMaxToken = () => {
