@@ -87,7 +87,7 @@ export function TokenPage({ tokenData }) {
       if (tokenData.ethPriceAtTime) {
         transaction.ethPriceAtTime = tokenData.ethPriceAtTime;
       } else {
-        transaction.ethPriceAtTime = await getEthPrice();
+        transaction.ethPriceAtTime = 0;
       }
 
       transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
