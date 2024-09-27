@@ -78,12 +78,16 @@ export function TokenPage({ tokenData }) {
       transaction.timestamp = new Date(0).toISOString();
     }
     let ethPriceAtTime = 0;
-    // Check if the first transaction has ethPriceAtTime
-    if (transactions.length > 0 && transactions[0].ethPriceAtTime) {
-      ethPriceAtTime = transactions[0].ethPriceAtTime;
+    if (tokenData.ethPriceAtTime) {
+      ethPriceAtTime = tokenData.ethPriceAtTime;
     } else {
-      // Fallback to Oracle price if no ethPriceAtTime is available
-      ethPriceAtTime = 0; // await fetchEthPriceFromOracle();
+      // Check if the first transaction has ethPriceAtTime
+      if (transactions.length > 0 && transactions[0].ethPriceAtTime) {
+        ethPriceAtTime = transactions[0].ethPriceAtTime;
+      } else {
+        // Fallback to Oracle price if no ethPriceAtTime is available
+        ethPriceAtTime = 0; // await fetchEthPriceFromOracle();
+      }
     }
 
     transaction.ethPriceAtTime = ethPriceAtTime;
