@@ -18,11 +18,12 @@ export function TokenCard({
   telegramLink,
   websiteLink,
   tokenFactory,
+  chain,
 }) {
   const router = useRouter();
 
-  const chain =
-    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base";
+  /* const chain =
+    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base"; */
 
   // Format the token address for display (e.g., "0x1234...5678")
   const formattedAddress = `${tokenAddress.slice(0, 6)}...${tokenAddress.slice(

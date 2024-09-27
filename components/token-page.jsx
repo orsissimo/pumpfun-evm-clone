@@ -47,10 +47,11 @@ export function TokenPage({ tokenData }) {
     websiteLink,
     tokenAddress,
     tokenFactory,
+    chain,
   } = tokenData;
 
-  const chain =
-    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base";
+  /* const chain =
+    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base"; */
 
   const [transactionZero, setTransactionZero] = useState({
     timestamp: new Date(0).toISOString(),
