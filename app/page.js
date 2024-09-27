@@ -75,8 +75,10 @@ export default function Home() {
   useEffect(() => {
     async function fetchTokensFromBlockchain() {
       try {
-        const fetchedTokens = await fetchCreateTokenEvents();
-        console.log(fetchedTokens);
+        const fetchedTokensEth = await fetchCreateTokenEvents(null, "ethereum");
+        console.log("Fetched tokens ETH: ", fetchedTokensEth);
+        const fetchedTokensBase = await fetchCreateTokenEvents(null, "base");
+        console.log("Fetched tokens BASE: ", fetchedTokensBase);
       } catch (err) {
         console.error(
           "Error fetching recent tokens or events from the Blockchain:",
