@@ -96,13 +96,22 @@ export function TokenPage({ tokenData }) {
   }
 
   const updateTransactions = useCallback(async () => {
-    let transactionZero = await createTransactionZero(transactions, tokenData);
-    setTransactions((prevTransactions) => [
-      ...prevTransactions.filter(
-        (transaction) => transaction.eventType !== "Create"
-      ),
-      transactionZero,
-    ]);
+    // Check if transactionZero is already included in transactions
+    const hasTransactionZero = transactions.some(
+      (transaction) => transaction.eventType === "Create"
+    );
+    if (!hasTransactionZero) {
+      let transactionZero = await createTransactionZero(
+        transactions,
+        tokenData
+      );
+      setTransactions((prevTransactions) => [
+        ...prevTransactions.filter(
+          (transaction) => transaction.eventType !== "Create"
+        ),
+        transactionZero,
+      ]);
+    }
   }, [transactions, tokenData]);
 
   useEffect(() => {
