@@ -24,6 +24,7 @@ export function Hero({
   twitterLink,
   telegramLink,
   websiteLink,
+  chain,
 }) {
   const router = useRouter();
   // Format the token address for display (e.g., "0x1234...5678")
@@ -41,6 +42,11 @@ export function Hero({
       router.push(`/${tokenAddress}`);
     }
   };
+
+  const explorerUrl =
+    chain === "ethereum"
+      ? `https://etherscan.io/address/${tokenAddress}`
+      : `https://basescan.org/address/${tokenAddress}`;
 
   return (
     <div className="flex flex-col lg:flex-row items-start justify-center bg-background p-4 gap-8">
@@ -73,7 +79,7 @@ export function Hero({
             <div className="flex items-center gap-2 mb-4">
               <Link
                 className="text-sm md:text-base text-blue-500 hover:underline"
-                href={`https://etherscan.io/address/${tokenAddress}`}
+                href={explorerUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 prefetch={false}

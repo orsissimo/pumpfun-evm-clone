@@ -40,11 +40,26 @@ export function TokenCard({
     }
   };
 
+  const explorerUrl =
+    chain === "ethereum"
+      ? `https://etherscan.io/address/${tokenAddress}`
+      : `https://basescan.org/address/${tokenAddress}`;
+
   return (
     <Card
-      className="rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer"
+      className="relative rounded-xl overflow-hidden shadow-lg w-full max-w-3xl cursor-pointer"
       onClick={handleCardClick}
     >
+      {/* Top-right icon */}
+      <div className="absolute top-4 right-4 w-8 h-8">
+        <Image
+          src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
+          alt={`${chain} icon`}
+          layout="fill"
+          objectFit="contain"
+        />
+      </div>
+
       <div className="flex p-4 md:p-5">
         {/* Left Column - Image */}
         <div className="flex-shrink-0 mr-6">
@@ -61,17 +76,15 @@ export function TokenCard({
 
         {/* Right Column - Text content */}
         <div className="flex-grow flex flex-col min-w-0">
-          {/* <div className="flex items-center space-x-2"> */}
           <h1 className="text-md md:text-xl font-bold truncate">{name}</h1>
           <div className=" text-sm md:text-lg font-bold text-muted-foreground whitespace-nowrap">
             [ ${symbol} ]
           </div>
-          {/* </div> */}
 
           <div className="flex items-center gap-2">
             <Link
               className="text-xs text-blue-500 hover:underline truncate"
-              href={`https://etherscan.io/address/${tokenAddress}`}
+              href={explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
               prefetch={false}
