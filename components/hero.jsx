@@ -11,6 +11,7 @@ import {
   FaWandMagicSparkles,
   FaHatWizard,
   FaChartSimple,
+  FaTelegram,
 } from "react-icons/fa6";
 import { GiMagicLamp, GiMagicHat, GiBoltSpellCast } from "react-icons/gi";
 
@@ -160,11 +161,17 @@ export function Hero({
 
         {/* Lower Card */}
         <Card className="bg-background rounded-xl overflow-hidden shadow-lg w-full p-6">
-          <h2 className="text-xl font-bold mb-4">Pump Stats</h2>
-          <Button className="w-full h-auto text-lg" variant="outline">
-            <FaChartSimple className="mr-2 h-6 w-6" />
-            Soon
-          </Button>
+          <h2 className="text-xl font-bold mb-4">Telegram Bot</h2>
+          <Link
+            href="https://t.me/pumpstylebot"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button className="w-full h-auto text-lg" variant="outline">
+              <FaTelegramPlane className="mr-2 h-6 w-6" />
+              Pump
+            </Button>
+          </Link>
         </Card>
       </div>
     </div>
