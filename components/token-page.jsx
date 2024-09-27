@@ -2,28 +2,7 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import { useState, useEffect, useCallback } from "react";
-import Link from "next/link";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { FaEthereum } from "react-icons/fa";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "react-toastify";
 import {
   buyToken,
@@ -37,35 +16,15 @@ import {
   getTokenBalance,
 } from "@/lib/fetch";
 import CandlestickChart from "./chart";
-import { FaXTwitter } from "react-icons/fa6";
-import { FaTelegramPlane } from "react-icons/fa";
-import { FaDollarSign } from "react-icons/fa";
 import { getData } from "@/lib/mongodb";
-import {
-  fetchEthPriceFromOracle,
-  formatLargeNumber,
-  formatPrice,
-} from "@/lib/utils";
-import { Progress } from "./ui/progress";
-import { LoadingLines } from "@/components/ui/loading-rows";
-import Image from "next/image";
-import { TokenCard } from "./token-card";
-import { FaFire } from "react-icons/fa";
+import { fetchEthPriceFromOracle } from "@/lib/utils";
 import Confetti from "react-confetti";
-import {
-  TooltipProvider,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import TableRowZero from "./ui/tablerowzero";
 import { HolderDistribution } from "./holder-distribution";
-import { ArrowUpIcon, CopyIcon, GlobeIcon, LoadingSpinner } from "./ui/utils";
+import { LoadingSpinner } from "./ui/utils";
 import { TokenHeader } from "./token-header";
 import { BuySellCard } from "./buy-sell";
 import { TokenStatsCard } from "./token-stats";
 import { TransactionsTable } from "./transaction-table";
-import { ChatCard } from "./chat";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 
 export function TokenPage({ tokenData }) {
@@ -87,7 +46,11 @@ export function TokenPage({ tokenData }) {
     telegramLink,
     websiteLink,
     tokenAddress,
+    tokenFactory,
   } = tokenData;
+
+  const chain =
+    tokenFactory === process.env.NEXT_PUBLIC_FACTORY_ETH ? "ethereum" : "base";
 
   const [transactionZero, setTransactionZero] = useState({
     timestamp: new Date(0).toISOString(),
@@ -158,8 +121,8 @@ export function TokenPage({ tokenData }) {
 
   const fetchBalances = async (tokenAddress) => {
     try {
-      const fetchedTokenBalance = await getTokenBalance(tokenAddress); // Fetch token balance
-      const fetchedEthBalance = await getEtherBalance(); // Fetch Ethereum balance
+      const fetchedTokenBalance = await getTokenBalance(tokenAddress, chain); // Fetch token balance
+      const fetchedEthBalance = await getEtherBalance(chain); // Fetch Ethereum balance
 
       setTokenBalance(fetchedTokenBalance);
       setEthBalance(fetchedEthBalance);
@@ -203,7 +166,10 @@ export function TokenPage({ tokenData }) {
   useEffect(() => {
     async function fetchTransactionsFromBlockchain() {
       try {
-        const fetchedTransactions = await fetchTokenBuysAndSells(tokenAddress);
+        const fetchedTransactions = await fetchTokenBuysAndSells(
+          tokenAddress,
+          chain
+        );
         console.log("Fetched transactions", fetchedTransactions);
       } catch (error) {
         console.error("Failed to fetch transactions", error);
@@ -212,7 +178,7 @@ export function TokenPage({ tokenData }) {
       }
     }
     fetchTransactionsFromBlockchain();
-  }, [tokenAddress]);
+  }, [tokenAddress, chain]);
 
   // Fetch balances when component mounts
   useEffect(() => {
@@ -223,8 +189,8 @@ export function TokenPage({ tokenData }) {
   useEffect(() => {
     async function fetchEthData() {
       try {
-        const surplus = await getEthSurplus(tokenAddress); // Fetch surplus as a BigInt
-        const cap = await getFactoryCap(); // Fetch cap as a BigInt
+        const surplus = await getEthSurplus(tokenAddress, chain); // Fetch surplus as a BigInt
+        const cap = await getFactoryCap(chain); // Fetch cap as a BigInt
 
         // Divide both by 10**18 to get ETH values
         setTokenEthSurplus(Number(surplus) / 10 ** 18);
@@ -235,7 +201,7 @@ export function TokenPage({ tokenData }) {
     }
 
     fetchEthData();
-  }, [tokenAddress]);
+  }, [tokenAddress, chain]);
 
   const jailbreakPercentage =
     tokenEthCap > 0

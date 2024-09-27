@@ -13,7 +13,10 @@ export default function TokenDetail() {
   const [error, setError] = useState(null);
 
   const pathname = usePathname();
-  const tokenAddress = pathname.split("/")[1]; // Extract token address from the URL
+  const pathParts = pathname.split("/");
+  // Extract chain and token address from the URL
+  const chain = pathParts[1];
+  const tokenAddress = pathParts[2];
   const [needUpdate, setNeedUpdate] = useState(false);
 
   async function fetchTokensFromBlockchain(tokenAddress) {
@@ -72,7 +75,8 @@ export default function TokenDetail() {
           </h1>
           <p className="mt-4 text-center">
             We&apos;re unable to retrieve any information for{" "}
-            <span className="font-semibold">{tokenAddress}</span> at this time.
+            <span className="font-semibold">{tokenAddress}</span> on{" "}
+            <span className="font-semibold">{chain}</span> at this time.
           </p>
         </div>
       </div>

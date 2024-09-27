@@ -223,6 +223,7 @@ export default function Home() {
                     twitterLink={token.twitterLink} // Twitter link
                     telegramLink={token.telegramLink} // Telegram link
                     websiteLink={token.websiteLink} // Website link
+                    tokenFactory={token.tokenFactory}
                   />
                 </div>
               ))}

@@ -12,10 +12,19 @@ import { pinFileToIPFS } from "@/lib/pinata";
 import { FaXTwitter } from "react-icons/fa6";
 import { FaTelegramPlane } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import Image from "next/image";
 
 export function CreateToken() {
   const router = useRouter();
 
+  const [chain, setChain] = useState("");
   const [name, setName] = useState("");
   const [ticker, setTicker] = useState("");
   const [description, setDescription] = useState("");
@@ -31,8 +40,10 @@ export function CreateToken() {
     let tokenAddress = undefined;
     try {
       // Validate required fields
-      if (!name || !ticker || !description || !image) {
-        setErrorMessage("Name, Ticker, Description, and Image are required.");
+      if (!chain || !name || !ticker || !description || !image) {
+        setErrorMessage(
+          "Chain, Name, Ticker, Description, and Image are required."
+        );
         return;
       }
 
@@ -64,7 +75,8 @@ export function CreateToken() {
             formattedTwitter,
             formattedTelegram,
             formattedWebsite,
-            devBuyAmount
+            devBuyAmount,
+            chain
           );
         } else {
           toast.error(
@@ -82,7 +94,8 @@ export function CreateToken() {
           cid, // Use CID from IPFS
           formattedTwitter,
           formattedTelegram,
-          formattedWebsite
+          formattedWebsite,
+          chain
         );
       }
     } catch (error) {
@@ -90,9 +103,14 @@ export function CreateToken() {
       console.error(error);
     } finally {
       if (tokenAddress) {
-        router.push(`/${tokenAddress}`);
+        router.push(`/${chain}/${tokenAddress}`);
       }
     }
+  };
+
+  const handleChainChange = (value) => {
+    setChain(value);
+    console.log("Selected chain:", value);
   };
 
   const handleImageChange = (e) => {
@@ -168,6 +186,37 @@ export function CreateToken() {
           {errorMessage && (
             <p className="text-red-500 text-center">{errorMessage}</p>
           )}
+
+          <div>
+            <Label htmlFor="chain">Chain*</Label>
+            <Select value={chain} onValueChange={handleChainChange}>
+              <SelectTrigger id="chain" className="mt-1 w-full">
+                <SelectValue placeholder="Select a chain" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ethereum">
+                  <Image
+                    src="/ethereum.png"
+                    alt="Ethereum"
+                    width={22}
+                    height={22}
+                    className="inline-block mr-2"
+                  />
+                  Ethereum
+                </SelectItem>
+                <SelectItem value="base">
+                  <Image
+                    src="/base.png"
+                    alt="Base"
+                    width={22}
+                    height={22}
+                    className="inline-block mr-2"
+                  />
+                  Base
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <div>
             <Label htmlFor="name">Name*</Label>

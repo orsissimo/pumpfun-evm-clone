@@ -57,7 +57,7 @@ export function Hero({
                 src={displayedImageUrl}
                 alt={`${name} Logo`}
                 layout="fill"
-                objectFit="cover"
+                objectFit="contain"
                 className="rounded-xl"
               />
             </div>
