@@ -93,7 +93,7 @@ export function TokenPage({ tokenData }) {
 
       transaction.amount = Number(Number(1 * 10 ** 9).toFixed(4));
 
-      console.log("transaction", transaction);
+      //console.log("transaction", transaction);
 
       setTransactionZero(transaction);
     }
