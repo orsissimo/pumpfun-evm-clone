@@ -22,6 +22,17 @@ export function TransactionsTable({
       ? `https://etherscan.io/address/`
       : `https://basescan.org/address/`;
 
+  const formatPriceDisplay = (price, ethPriceAtTime) => {
+    if (ethPriceAtTime === 0) {
+      return {
+        leadingZeros: "5",
+        remainingFraction: "000000",
+      };
+    }
+
+    const formattedPrice = formatPrice(price);
+    return formattedPrice; // Return the formatted result directly
+  };
   return (
     <Table>
       <TableHeader>
@@ -100,14 +111,16 @@ export function TransactionsTable({
                     0.0
                     <span className="text-xs align-sub">
                       {
-                        formatPrice(
-                          (tx.pricePerToken * tx.ethPriceAtTime) / 10 ** 18
+                        formatPriceDisplay(
+                          (tx.pricePerToken * tx.ethPriceAtTime) / 10 ** 18,
+                          tx.ethPriceAtTime
                         ).leadingZeros
                       }
                     </span>
                     {
-                      formatPrice(
-                        (tx.pricePerToken * tx.ethPriceAtTime) / 10 ** 18
+                      formatPriceDisplay(
+                        (tx.pricePerToken * tx.ethPriceAtTime) / 10 ** 18,
+                        tx.ethPriceAtTime
                       ).remainingFraction
                     }
                   </span>
