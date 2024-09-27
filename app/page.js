@@ -15,10 +15,12 @@ import {
   FaWandMagicSparkles,
   FaHatWizard,
   FaChartSimple,
+  FaTelegram,
 } from "react-icons/fa6";
 import { GiMagicLamp, GiMagicHat, GiBoltSpellCast } from "react-icons/gi";
 import Link from "next/link";
 import { fetchEthPriceFromOracle } from "@/lib/utils";
+import { FaTelegramPlane } from "react-icons/fa";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -172,14 +174,20 @@ export default function Home() {
                       </Card>
 
                       <Card className="bg-background rounded-xl overflow-hidden shadow-lg flex-1 p-4">
-                        <h2 className="text-sm font-bold mb-2">Pump Stats</h2>
-                        <Button
-                          className="w-full h-auto text-sm"
-                          variant="outline"
+                        <h2 className="text-sm font-bold mb-2">Telegram Bot</h2>
+                        <Link
+                          href="https://t.me/pumpstylebot"
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
-                          <FaChartSimple className="mr-2 h-5 w-5" />
-                          Soon
-                        </Button>
+                          <Button
+                            className="w-full h-auto text-sm"
+                            variant="outline"
+                          >
+                            <FaTelegramPlane className="mr-2 h-5 w-5" />
+                            Pump
+                          </Button>
+                        </Link>
                       </Card>
                     </div>
                   </div>
