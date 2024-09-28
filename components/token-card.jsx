@@ -65,7 +65,7 @@ export function TokenCard({
       <div className="flex p-4 md:p-5">
         {/* Left Column - Image */}
         <div className="flex-shrink-0 mr-4 md:mr-6 overflow-hidden rounded-xl">
-          <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] relative">
+          <div className="w-[90px] h-[90px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] relative">
             <Image
               src={displayedImageUrl}
               alt={`${name} Logo`}

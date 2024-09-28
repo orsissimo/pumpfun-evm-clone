@@ -49,7 +49,7 @@ export function TokenHeader({
             <h1 className="text-lg font-bold truncate max-w-[calc(100%-80px)]">
               {name}
             </h1>
-            <div className="text-lg font-bold text-muted-foreground max-w-[calc(100%-80px)]">
+            <div className="text-lg font-bold text-muted-foreground max-w-[calc(100%-10px)]">
               [ ${symbol} ]
             </div>
           </div>
