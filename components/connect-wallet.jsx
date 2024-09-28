@@ -85,8 +85,8 @@ const ConnectWallet = () => {
           <Image
             src={chainIcon}
             alt="Chain Icon"
-            width={22}
-            height={22}
+            width={20}
+            height={20}
             className="mr-2" // Adds spacing between the icon and the address
           />
         )}

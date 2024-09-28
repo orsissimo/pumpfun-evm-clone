@@ -123,7 +123,7 @@ export function Navbar() {
                   className="flex items-center gap-2 w-full"
                   prefetch={false}
                 >
-                  <FaTelegramPlane className="h-6 w-6 mx-1 hover:text-blue-500" />
+                  <FaTelegramPlane className="h-6 w-6 mx-1 my-2 hover:text-blue-500" />
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuItem className="hover:bg-muted transition-colors">
@@ -132,7 +132,7 @@ export function Navbar() {
                   className="flex items-center gap-2 w-full"
                   prefetch={false}
                 >
-                  <FaXTwitter className="h-6 w-6 mx-1 hover:text-blue-500" />
+                  <FaXTwitter className="h-6 w-6 mx-1 my-2 hover:text-blue-500" />
                 </Link>
               </DropdownMenuItem>
             </div>
