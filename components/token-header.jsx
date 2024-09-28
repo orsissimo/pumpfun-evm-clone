@@ -37,7 +37,7 @@ export function TokenHeader({
           width={180}
           height={180}
           alt={`${name} Logo`}
-          style={{ objectFit: "fill" }}
+          style={{ objectFit: "cover" }}
           className="rounded-3xl w-full md:w-[180px] h-auto md:h-[180px] object-contain"
         />
       </div>
@@ -46,7 +46,7 @@ export function TokenHeader({
       <div className="flex-grow flex flex-col min-w-0 space-y-4 md:space-y-2">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold truncate">{name}</h1>
+            <h1 className="text-2xl font-bold truncate w-28">{name}</h1>
             <div className="text-2xl font-bold text-muted-foreground">
               [ ${symbol} ]
             </div>

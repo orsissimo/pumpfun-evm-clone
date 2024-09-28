@@ -72,7 +72,7 @@ export function TokenCard({
               priority={true}
               fill
               sizes="(max-width: 768px) 100px, 120px"
-              style={{ objectFit: "fill" }}
+              style={{ objectFit: "cover" }}
               className="rounded-xl"
             />
           </div>
@@ -80,7 +80,9 @@ export function TokenCard({
 
         {/* Right Column - Text content */}
         <div className="flex-grow flex flex-col min-w-0">
-          <h1 className="text-md md:text-xl font-bold truncate">{name}</h1>
+          <h1 className="text-md md:text-xl font-bold truncate w-20 2xl:w-36">
+            {name}
+          </h1>
           <div className=" text-sm md:text-lg font-bold text-muted-foreground whitespace-nowrap">
             [ ${symbol} ]
           </div>
