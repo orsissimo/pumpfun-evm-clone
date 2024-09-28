@@ -52,9 +52,19 @@ export function Hero({
     <div className="flex flex-col lg:flex-row items-start justify-center bg-background p-4 gap-8">
       {/* Left Column - Main Card */}
       <Card
-        className="hidden md:block rounded-xl overflow-hidden shadow-lg lg:w-2/5 cursor-pointer border-opacity-40"
+        className="hidden md:block rounded-xl overflow-hidden shadow-lg lg:w-2/5 cursor-pointer border-opacity-40 relative"
         onClick={handleCardClick}
       >
+        {/* Chain icon in top right corner */}
+        <div className="absolute top-4 right-4 p-4 z-10">
+          <Image
+            src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
+            alt={`${chain} icon`}
+            width={38}
+            height={38}
+          />
+        </div>
+
         <div className="flex flex-col md:flex-row p-6 md:p-8">
           {/* Left Column - Image */}
           <div className="flex-shrink-0 mb-6 md:mb-0 md:mr-8">
@@ -71,7 +81,7 @@ export function Hero({
 
           {/* Right Column - Text content */}
           <div className="flex-grow flex flex-col min-w-0">
-            <h1 className="text-2xl md:text-3xl font-bold">{name}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">{name}</h1>
             <div className="text-xl md:text-2xl font-bold text-muted-foreground">
               [ ${symbol} ]
             </div>

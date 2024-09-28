@@ -52,7 +52,7 @@ export function TokenCard({
       onClick={handleCardClick}
     >
       {/* Top-right icon */}
-      <div className="absolute top-4 right-4">
+      <div className="absolute top-4 right-4 z-10">
         <Image
           src={chain === "ethereum" ? "/ethereum.png" : "/base.png"}
           alt={`${chain} icon`}
@@ -64,14 +64,14 @@ export function TokenCard({
 
       <div className="flex p-4 md:p-5">
         {/* Left Column - Image */}
-        <div className="flex-shrink-0 mr-6 overflow-hidden rounded-xl">
-          <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] relative">
+        <div className="flex-shrink-0 mr-4 md:mr-6 overflow-hidden rounded-xl">
+          <div className="w-[80px] h-[80px] sm:w-[100px] sm:h-[100px] md:w-[120px] md:h-[120px] relative">
             <Image
               src={displayedImageUrl}
               alt={`${name} Logo`}
               priority={true}
               fill
-              sizes="(max-width: 768px) 100px, 120px"
+              sizes="(max-width: 640px) 80px, (max-width: 768px) 100px, 120px"
               style={{ objectFit: "cover" }}
               className="rounded-xl"
             />
@@ -79,17 +79,19 @@ export function TokenCard({
         </div>
 
         {/* Right Column - Text content */}
-        <div className="flex-grow flex flex-col min-w-0">
-          <h1 className="text-md md:text-xl font-bold truncate w-20 2xl:w-36">
-            {name}
-          </h1>
-          <div className=" text-sm md:text-lg font-bold text-muted-foreground whitespace-nowrap">
+        <div className="flex-grow flex flex-col min-w-0 space-y-1 md:space-y-2">
+          <div className="flex items-center justify-between pr-8 md:pr-10">
+            <h1 className="text-sm sm:text-md md:text-lg font-bold truncate max-w-[calc(100%-10px)]">
+              {name}
+            </h1>
+          </div>
+          <div className="text-xs sm:text-sm md:text-md font-bold text-muted-foreground whitespace-nowrap">
             [ ${symbol} ]
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link
-              className="text-xs text-blue-500 hover:underline truncate"
+              className="text-xs text-blue-500 hover:underline truncate max-w-[calc(100%-28px)]"
               href={explorerUrl}
               target="_blank"
               rel="noopener noreferrer"
@@ -101,13 +103,14 @@ export function TokenCard({
             <Button
               variant="ghost"
               size="icon"
+              className="h-6 w-6"
               onClick={(e) => {
                 e.stopPropagation();
                 navigator.clipboard.writeText(tokenAddress);
                 toast("Token address copied to clipboard");
               }}
             >
-              <CopyIcon className="w-4 h-4 text-blue-500" />
+              <CopyIcon className="w-3 h-3 text-blue-500" />
               <span className="sr-only">Copy token address</span>
             </Button>
           </div>
@@ -150,7 +153,9 @@ export function TokenCard({
               </Link>
             )}
             {!websiteLink && !twitterLink && !telegramLink && (
-              <Label className="text-muted-foreground">No social links</Label>
+              <Label className="text-xs text-muted-foreground">
+                No social links
+              </Label>
             )}
           </div>
         </div>

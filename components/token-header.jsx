@@ -46,8 +46,10 @@ export function TokenHeader({
       <div className="flex-grow flex flex-col min-w-0 space-y-4 md:space-y-2">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
           <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold truncate w-28">{name}</h1>
-            <div className="text-2xl font-bold text-muted-foreground">
+            <h1 className="text-lg font-bold truncate max-w-[calc(100%-80px)]">
+              {name}
+            </h1>
+            <div className="text-lg font-bold text-muted-foreground max-w-[calc(100%-80px)]">
               [ ${symbol} ]
             </div>
           </div>
