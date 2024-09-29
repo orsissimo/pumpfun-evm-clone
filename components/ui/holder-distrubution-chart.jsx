@@ -11,7 +11,7 @@ export const HolderDistributionChart = ({ distributionData }) => {
       {
         label: "Holder Percentage",
         data: Object.values(distributionData).map(
-          (holder) => holder.percentage
+          (holder) => holder.percentage / 1000
         ),
         backgroundColor: [
           "rgba(59, 130, 246, 1)", // Fully opaque (brightest)

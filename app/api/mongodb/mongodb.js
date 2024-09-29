@@ -88,14 +88,22 @@ export async function performDatabaseOperation(
       case "findOneAndUpdateIfNotExist":
         // Check if the document exists
         const existingDocument = await model.findOne(criteria);
+        //console.log("existingDocument", existingDocument);
         if (!existingDocument) {
+          //console.log("Create");
           // Create a new document since it doesn't exist
           result = await model.create(options);
         } else {
+          //console.log("skip");
           // Return the existing document without updating
           result = existingDocument;
         }
-        console.log("result", result);
+        //console.log("result", result);
+        break;
+      case "delete":
+        // Delete multiple documents that match the criteria
+        result = await model.deleteMany(criteria);
+        //console.log(`Deleted documents: ${JSON.stringify(result)}`);
         break;
 
       default:
