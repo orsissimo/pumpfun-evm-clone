@@ -318,14 +318,14 @@ contract PumpFactory is ReentrancyGuard {
 
         token.approve(uniswapRouter, tokenFactoryBalance);
 
-        uint256 minTokenAmount = tokenFactoryBalance * (10000 - slippageTolerance) / 10000;
-        uint256 minEthAmount = ethToAddLiquidity * (10000 - slippageTolerance) / 10000;
+        // uint256 minTokenAmount = tokenFactoryBalance * (10000 - slippageTolerance) / 10000;
+        // uint256 minEthAmount = ethToAddLiquidity * (10000 - slippageTolerance) / 10000;
 
         IUniswapV2Router02(uniswapRouter).addLiquidityETH{value: ethToAddLiquidity}(
             tokenAddress,
             tokenFactoryBalance,
-            minTokenAmount,
-            minEthAmount,
+            0,
+            0,
             tokenCreator,
             block.timestamp + 300
         );
