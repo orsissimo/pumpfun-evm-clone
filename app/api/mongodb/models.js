@@ -36,7 +36,7 @@ const tokenTransactionSchema = new mongoose.Schema(
     tokensSold: { type: String }, // Only applicable for TokenSold events
     pricePerToken: { type: String, required: true },
     ethPriceAtTime: { type: String, required: true }, // New field for ETH price at the time of the transaction
-    transactionHash: { type: String, required: true }, // New field for the transaction hash
+    transactionHash: { type: String, required: true, unique: true }, // New field for the transaction hash
     timestamp: { type: Date, required: true },
   },
   { timestamps: true }
