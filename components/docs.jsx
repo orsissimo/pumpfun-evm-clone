@@ -146,7 +146,7 @@ function Introduction(props) {
       <div className="max-w-3xl space-y-6 text-left">
         <Image
           src="/docs-1.jpg"
-          alt="How it works"
+          alt="Introduction"
           width={1200}
           height={400}
           className="mx-auto w-full max-w-3xl rounded-lg object-cover"
@@ -190,10 +190,10 @@ function HowItWorks(props) {
         <Image
           src="/docs-2.png"
           alt="How it works"
-          width={1200}
-          height={400}
+          width={1600}
+          height={900}
           className="mx-auto w-full max-w-3xl rounded-lg object-cover"
-          style={{ aspectRatio: "1200/400", objectFit: "cover" }}
+          style={{ aspectRatio: "1600/900", objectFit: "cover" }}
         />
         <p className="text-muted-foreground text-lg md:text-xl">
           Once the token's market cap reaches approximately $10,000 (with slight
@@ -238,12 +238,12 @@ function HowToCreate(props) {
           </li>
         </ol>
         <Image
-          src="/docs-3.jpg"
-          alt="How it works"
-          width={1200}
-          height={400}
+          src="/docs-3.png"
+          alt="How to create"
+          width={1600}
+          height={900}
           className="mx-auto w-full max-w-3xl rounded-lg object-cover"
-          style={{ aspectRatio: "1200/400", objectFit: "cover" }}
+          style={{ aspectRatio: "1600/900", objectFit: "cover" }}
         />
       </div>
     </div>
@@ -273,11 +273,11 @@ function HowToBuy(props) {
         </ol>
         <Image
           src="/docs-4.png"
-          alt="How it works"
-          width={1200}
-          height={400}
+          alt="How to buy"
+          width={1600}
+          height={900}
           className="mx-auto w-full max-w-3xl rounded-lg object-cover"
-          style={{ aspectRatio: "1200/400", objectFit: "cover" }}
+          style={{ aspectRatio: "1600/900", objectFit: "cover" }}
         />
       </div>
     </div>

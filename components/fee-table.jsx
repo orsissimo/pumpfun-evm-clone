@@ -56,7 +56,7 @@ export function FeeTable() {
               <TableRow>
                 <TableCell>Listing on Uniswap</TableCell>
                 <TableCell>
-                  $400 in ETH (rebalanced into the bonding curve)
+                  4% in ETH (rebalanced into the bonding curve)
                 </TableCell>
               </TableRow>
             </TableBody>
