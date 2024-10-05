@@ -17,6 +17,7 @@ export function BuySellCard({
   symbol,
   tokenAddress,
   refreshData, // Function to refresh data in TokenPage
+  chain,
 }) {
   const [amount, setAmount] = useState(0);
 
@@ -40,7 +41,7 @@ export function BuySellCard({
 
     try {
       // Call buyToken function and wait for it to complete
-      await buyToken(amount, tokenAddress);
+      await buyToken(amount, tokenAddress, chain);
 
       // Notify TokenPage to refresh data
       if (refreshData) {
@@ -63,7 +64,7 @@ export function BuySellCard({
 
     try {
       // Call sellToken function and wait for it to complete
-      await sellToken(amount, tokenAddress);
+      await sellToken(amount, tokenAddress, chain);
 
       // Notify TokenPage to refresh data
       if (refreshData) {

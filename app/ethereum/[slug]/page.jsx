@@ -16,6 +16,8 @@ export default function TokenDetail() {
   const pathParts = pathname.split("/");
   // Extract chain and token address from the URL
   const chain = pathParts[1];
+  console.log("Chain:", chain);
+  console.log(tokenData);
   const tokenAddress = pathParts[2];
   const [needUpdate, setNeedUpdate] = useState(false);
 
