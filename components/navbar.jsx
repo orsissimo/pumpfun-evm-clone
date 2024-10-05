@@ -15,7 +15,7 @@ import { Menu } from "lucide-react";
 
 export function Navbar() {
   return (
-    <header className="flex items-center justify-between h-16 px-4 bg-background border-b border-muted sm:px-6">
+    <header className="flex items-center justify-between h-16 px-4 bg-background border-muted sm:px-6">
       <div className="flex gap-x-12">
         <Link
           href="/"
