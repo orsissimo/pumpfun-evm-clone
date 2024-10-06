@@ -7,7 +7,6 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import TableRowZero from "./ui/tablerowzero";
 import { FaDollarSign } from "react-icons/fa";
 import { formatPrice } from "@/lib/utils";
 
