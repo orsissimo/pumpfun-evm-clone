@@ -70,13 +70,19 @@ export function TokenPage({ tokenData }) {
         tokenData.tokenCreator || "0x0000000000000000000000000000000000000000",
       pricePerToken: 1000000000,
       ethPriceAtTime: "1",
+      tokensBought: 0 * 10 ** 18,
     };
 
     if (tokenData.timestamp) {
-      transaction.timestamp = tokenData.timestamp;
+      transaction.timestamp = new Date(
+        new Date(tokenData.timestamp).getTime() - 0.001
+      ).toISOString();
     } else {
-      transaction.timestamp = new Date(0).toISOString();
+      transaction.timestamp = new Date(
+        new Date(0).getTime() - 0.001
+      ).toISOString(); // Subtracting 1 ms from the Unix epoch
     }
+
     let ethPriceAtTime = 0;
     if (tokenData.ethPriceAtTime) {
       ethPriceAtTime = tokenData.ethPriceAtTime;
@@ -86,7 +92,7 @@ export function TokenPage({ tokenData }) {
         ethPriceAtTime = transactions[0].ethPriceAtTime;
       } else {
         // Fallback to Oracle price if no ethPriceAtTime is available
-        ethPriceAtTime = 0; // await fetchEthPriceFromOracle();
+        ethPriceAtTime = 1; // await fetchEthPriceFromOracle();
       }
     }
 
