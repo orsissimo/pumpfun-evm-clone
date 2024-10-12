@@ -38,8 +38,8 @@ export function TransactionsTable({
         <TableRow>
           <TableHead>Time</TableHead>
           <TableHead>Type</TableHead>
-          <TableHead>{symbol}</TableHead>
-          <TableHead>For</TableHead>
+          <TableHead className="text-right">{symbol}</TableHead>
+          <TableHead className="text-right">For (ETH)</TableHead>
           <TableHead>
             <div className="flex items-center space-x-1">
               <span>Price in</span> <FaDollarSign className="h-4 w-4" />
@@ -83,7 +83,7 @@ export function TransactionsTable({
                     : "Create"}
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="text-right">
                   {tx.empty
                     ? Number(Number(10 ** 9).toFixed(4))
                         .toLocaleString("en-US")
@@ -94,9 +94,10 @@ export function TransactionsTable({
                         ).toFixed(4)
                       )
                         .toLocaleString("en-US")
-                        .replace(/,/g, "'")}
+                        .replace(/,/g, "'")}{" "}
+                  {symbol}
                 </TableCell>
-                <TableCell>
+                <TableCell className="text-right">
                   {tx.empty
                     ? "0"
                     : (
