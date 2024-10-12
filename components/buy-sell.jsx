@@ -63,14 +63,17 @@ export function BuySellCard({
 
     try {
       // Call sellToken function and wait for it to complete
-      await sellToken(amount, tokenAddress);
+      const res = await sellToken(amount, tokenAddress);
 
       // Notify TokenPage to refresh data
       if (refreshData) {
         await refreshData();
       }
-
-      toast.success("Token sale successful!");
+      if (res) {
+        toast.success("Token sale successful!");
+      } else {
+        toast.error("Token sale failed");
+      }
     } catch (error) {
       console.error("Error selling token:", error);
       toast.error("Failed to sell tokens.");
