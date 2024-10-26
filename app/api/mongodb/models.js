@@ -17,6 +17,9 @@ const tokenSchema = new mongoose.Schema(
     ethPriceAtTime: { type: String },
     timestamp: { type: Date, required: true },
     chain: { type: String },
+    jailbreak: { type: String },
+    marketCap: { type: String },
+    dayVolume: { type: String },
   },
   { timestamps: true }
 );
