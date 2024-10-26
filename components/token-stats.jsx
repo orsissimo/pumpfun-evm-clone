@@ -9,7 +9,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { formatLargeNumber } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getData } from "@/lib/mongodb";
 
 export function TokenStatsCard({
@@ -20,54 +20,69 @@ export function TokenStatsCard({
   totalEthVolumeInUsd,
   symbol,
 }) {
-  const jailbreak = jailbreakPercentage || 0;
-  const marketCap =
+  const calculatedMarketCap =
     formatLargeNumber(
       tokenEthCap * 10 ** 9 * transactions[0]?.ethPriceAtTime
     ) || 0;
-  const dayVolume = totalEthVolumeInUsd || 0;
+  // State variables
+  const [jailbreak, setJailbreak] = useState(jailbreakPercentage || 0);
+  const [marketCap, setMarketCap] = useState(calculatedMarketCap);
+  const [dayVolume, setDayVolume] = useState(totalEthVolumeInUsd || 0);
 
-  // Function to update jailbreak, marketCap, and dayVolume in the database
-  const updateTokenStatsInDb = async (
-    tokenAddress,
-    jailbreak,
-    marketCap,
-    dayVolume
-  ) => {
-    try {
-      const updateResult = await getData(
+  useEffect(() => {
+    // Function to update the values in the database
+    const updateTokenStatsInDb = async () => {
+      const res = await getData(
         "Token",
         "findOneAndUpdate",
-        { tokenAddress: tokenAddress },
+        { tokenAddress: transactions[0]?.tokenAddress },
         {
           jailbreak: jailbreak,
           marketCap: marketCap,
           dayVolume: dayVolume,
         }
       );
-      if (updateResult.success) {
-        console.log("Token stats updated successfully:", updateResult.result);
-      } else {
-        console.error("Failed to update token stats:", updateResult.error);
+      if (!res.success) {
+        console.error("Failed to update token stats:", res.error);
       }
-    } catch (error) {
-      console.error("Error updating token stats in database:", error);
-    }
-  };
+    };
 
-  useEffect(() => {
     if (tokenEthCap > 0) {
-      updateTokenStatsInDb(
-        transactions[0]?.tokenAddress,
-
-        jailbreakPercentage,
+      // Calculate and set marketCap and dayVolume if tokenEthCap is valid
+      const calculatedMarketCap =
         formatLargeNumber(
-          tokenEthCap * 10 ** 9 * transactions[0].ethPriceAtTime
-        ), // calculated marketCap
-        totalEthVolumeInUsd // dayVolume in USD
-      );
+          tokenEthCap * 10 ** 9 * transactions[0]?.ethPriceAtTime
+        ) || 0;
+      setMarketCap(calculatedMarketCap);
+      setDayVolume(totalEthVolumeInUsd || 0);
+      setJailbreak(jailbreakPercentage || 0);
+
+      // Update the database with the calculated values
+      updateTokenStatsInDb();
+    } else {
+      // Fetch values from the database if tokenEthCap is 0
+      const fetchStatsFromDb = async () => {
+        const dbData = await getData("Token", "findOne", {
+          tokenAddress: transactions[0]?.tokenAddress,
+        });
+        console.log(dbData.result);
+        if (dbData.result) {
+          setJailbreak(dbData.result.jailbreak || 0);
+          setMarketCap(dbData.result.marketCap || 0);
+          setDayVolume(dbData.result.dayVolume || 0);
+        }
+      };
+      fetchStatsFromDb();
     }
-  }, [jailbreakPercentage, tokenEthCap, totalEthVolumeInUsd, transactions]);
+  }, [
+    dayVolume,
+    jailbreak,
+    jailbreakPercentage,
+    marketCap,
+    tokenEthCap,
+    totalEthVolumeInUsd,
+    transactions,
+  ]);
 
   return (
     <Card className="flex flex-col h-[275px]">
@@ -84,29 +99,19 @@ export function TokenStatsCard({
                 </div>
               </div>
               <div className="font-bold">
-                {transactions.length > 0
-                  ? formatLargeNumber(
-                      (transactions[0].pricePerToken / 10 ** 18) *
-                        10 ** 9 *
-                        transactions[0].ethPriceAtTime
-                    )
-                  : "-"}
+                {/[$]\d/.test(marketCap) ? marketCap : "-"}
               </div>
             </div>
 
             <div>
               <div className="text-muted-foreground">1D Volume</div>
-              <div className="font-bold">
-                {lastDayTransactions.length > 0
-                  ? formatLargeNumber(totalEthVolumeInUsd)
-                  : "-"}
-              </div>
+              <div className="font-bold">{dayVolume > 0 ? dayVolume : "-"}</div>
             </div>
           </div>
           <div>
             <div className="text-muted-foreground flex items-center">
               <span>Jailbreak</span>
-              {jailbreakPercentage >= 100 && (
+              {jailbreak >= 100 && (
                 <BsFire className="ml-1 text-red-500 h-5 w-5" />
               )}
             </div>
@@ -116,12 +121,10 @@ export function TokenStatsCard({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <div className="flex items-center cursor-pointer">
-                        <span className="flex items-center">
-                          {jailbreakPercentage}%
-                        </span>
+                        <span className="flex items-center">{jailbreak}%</span>
                       </div>
                     </TooltipTrigger>
-                    {jailbreakPercentage >= 100 && (
+                    {jailbreak >= 100 && (
                       <TooltipContent className="max-w-xs bg-background text-foreground shadow-lg rounded-md p-3">
                         <p>LP Burned</p>
                       </TooltipContent>
@@ -132,7 +135,7 @@ export function TokenStatsCard({
                 "-"
               )}
             </div>
-            <Progress value={jailbreakPercentage} />
+            <Progress value={jailbreak} />
           </div>
         </div>
       </CardContent>
