@@ -9,6 +9,8 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { formatLargeNumber } from "@/lib/utils";
+import { useEffect } from "react";
+import { getData } from "@/lib/mongodb";
 
 export function TokenStatsCard({
   transactions,
@@ -18,6 +20,55 @@ export function TokenStatsCard({
   totalEthVolumeInUsd,
   symbol,
 }) {
+  const jailbreak = jailbreakPercentage || 0;
+  const marketCap =
+    formatLargeNumber(
+      tokenEthCap * 10 ** 9 * transactions[0]?.ethPriceAtTime
+    ) || 0;
+  const dayVolume = totalEthVolumeInUsd || 0;
+
+  // Function to update jailbreak, marketCap, and dayVolume in the database
+  const updateTokenStatsInDb = async (
+    tokenAddress,
+    jailbreak,
+    marketCap,
+    dayVolume
+  ) => {
+    try {
+      const updateResult = await getData(
+        "Token",
+        "findOneAndUpdate",
+        { tokenAddress: tokenAddress },
+        {
+          jailbreak: jailbreak,
+          marketCap: marketCap,
+          dayVolume: dayVolume,
+        }
+      );
+      if (updateResult.success) {
+        console.log("Token stats updated successfully:", updateResult.result);
+      } else {
+        console.error("Failed to update token stats:", updateResult.error);
+      }
+    } catch (error) {
+      console.error("Error updating token stats in database:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (tokenEthCap > 0) {
+      updateTokenStatsInDb(
+        transactions[0]?.tokenAddress,
+
+        jailbreakPercentage,
+        formatLargeNumber(
+          tokenEthCap * 10 ** 9 * transactions[0].ethPriceAtTime
+        ), // calculated marketCap
+        totalEthVolumeInUsd // dayVolume in USD
+      );
+    }
+  }, [jailbreakPercentage, tokenEthCap, totalEthVolumeInUsd, transactions]);
+
   return (
     <Card className="flex flex-col h-[275px]">
       <CardHeader className="border-b">
